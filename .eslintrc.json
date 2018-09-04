@@ -1,0 +1,25 @@
+{
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module"
+  },
+  "globals" : {
+    "artifacts": false,
+    "contract": false,
+    "assert": false,
+    "web3": false
+  },
+  "extends": [
+    "standard"
+  ],
+  "plugins": [
+    "babel"
+  ],
+  "rules": {
+    "key-spacing"          : 0,
+    "jsx-quotes"           : [2, "prefer-single"],
+    "max-len"              : [2, 120, 2],
+    "object-curly-spacing" : [2, "always"]
+  }
+}
