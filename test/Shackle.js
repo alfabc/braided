@@ -65,7 +65,16 @@ contract('Shackle', (accounts) => {
       await expectThrow(shackle.recordBlock(5, 1, '0x2020202'))
     })
 
-    xit('should retrieve hashes for block numbers', async () => {
+    xit('should retrieve highest block number in a chain', async () => {
+    })
+
+    xit('should not retrieve block numbers for invalid chains', async () => {
+    })
+
+    xit('should not retrieve block numbers for empty chains', async () => {
+    })
+
+    xit('should retrieve hashes for specific block numbers', async () => {
     })
 
     xit('should require increasing block numbers for any given chain', async () => {
