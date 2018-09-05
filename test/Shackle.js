@@ -25,6 +25,17 @@ contract('Shackle', (accounts) => {
   const kovanGenesis = '0xa3c565fc15c7478862d50ccd6561e3c06b24cc509bf388941c25ea985ce32cb9'
   const rinkebyGenesis = '0x6341fd3daf94b748c72ced5a5b26028f2474f5f00d824504e4fa37a75767e177'
 
+  // Other block hashes of note
+  const zero = '0x0000000000000000000000000000000000000000000000000000000000000000'
+  // these are real hashes for these block numbers, btw
+  const mainnet1 = '0x88e96d4537bea4d9c05d12549907b32561d3bf31f45aae734cdc119f13406cb6'
+  const mainnet2 = '0xb495a1d7e6663152ae92708da4843337b958146015a2802f4193a410044698c9'
+  const mainnet3 = '0x3d6122660cc824376f11ee842f83addc3525e2dd6756b9bcf0affa6aa88cf741'
+  const mainnet8 = '0x2ce94342df186bab4165c268c43ab982d360c9474f429fec5565adfc5d1f258b'
+  const mainnet9 = '0x997e47bf4cac509c627753c06385ac866641ec6f883734ff7944411000dc576e'
+  const ropsten1 = '0x41800b5c3f1717687d85fc9018faac0a6e90b39deaa0b99e7fe4fe796ddeb26a'
+  const ropsten2 = '0x88e8bc1dd383672e96d77ee247e7524622ff3b15c337bd33ef602f15ba82d920'
+
   before(async () => {
     shackle = await Shackle.new()
   })
@@ -42,7 +53,7 @@ contract('Shackle', (accounts) => {
     })
 
     it('should not allow chain ID 0', async () => {
-      await expectThrow(shackle.addChain(0, '0x00', 'zero'))
+      await expectThrow(shackle.addChain(0, zero, 'ZE'))
     })
 
     it('should get chain info per ID', async () => {
@@ -53,31 +64,52 @@ contract('Shackle', (accounts) => {
     })
 
     it('should not allow a duplicate chain with the same ID', async () => {
-      await expectThrow(shackle.addChain(mainnetID, '0x9909', 'Dup'));
-      // make sure unmodified
+      await expectThrow(shackle.addChain(mainnetID, zero, 'Dup'));
+      // ensure unmodified
       (await shackle.getChainGenesisBlockHashByChainID(mainnetID)).should.be.eq(mainnetGenesis)
     })
 
     it('should add hashes', async () => {
-      await shackle.recordBlock(mainnetID, 1, '0x1010101')
-      await shackle.recordBlock(ropstenID, 1, '0x3030303')
+      await shackle.addBlock(mainnetID, 1, mainnet1)
+      await shackle.addBlock(mainnetID, 2, mainnet2)
+      await shackle.addBlock(mainnetID, 3, mainnet3)
+      await shackle.addBlock(ropstenID, 1, ropsten1)
+      await shackle.addBlock(ropstenID, 2, ropsten2)
+      await shackle.addBlock(classicID, 1, mainnet1)
       // invalid chain
-      await expectThrow(shackle.recordBlock(5, 1, '0x2020202'))
+      await expectThrow(shackle.addBlock(5, 1, mainnet1))
     })
 
-    xit('should retrieve highest block number in a chain', async () => {
+    it('should retrieve highest block number in a chain', async () => {
+      (await shackle.getHighestBlockNumber(mainnetID)).toNumber().should.be.eq(3);
+      (await shackle.getHighestBlockNumber(ropstenID)).toNumber().should.be.eq(2);
+      (await shackle.getHighestBlockNumber(classicID)).toNumber().should.be.eq(1)
     })
 
-    xit('should not retrieve block numbers for invalid chains', async () => {
+    it('should not retrieve highest block number for invalid chains', async () => {
+      await expectThrow(shackle.getHighestBlockNumber(5))
     })
 
-    xit('should not retrieve block numbers for empty chains', async () => {
+    it('should not retrieve highest block number for empty chains', async () => {
+      await expectThrow(shackle.getHighestBlockNumber(kovanID))
     })
 
-    xit('should retrieve hashes for specific block numbers', async () => {
+    it('should retrieve hashes for specific block numbers', async () => {
+      (await shackle.getBlockHash(mainnetID, 1)).should.be.eq(mainnet1);
+      (await shackle.getBlockHash(mainnetID, 2)).should.be.eq(mainnet2);
+      (await shackle.getBlockHash(mainnetID, 3)).should.be.eq(mainnet3);
+      (await shackle.getBlockHash(ropstenID, 1)).should.be.eq(ropsten1);
+      (await shackle.getBlockHash(ropstenID, 2)).should.be.eq(ropsten2);
+      (await shackle.getBlockHash(classicID, 1)).should.be.eq(mainnet1)
     })
 
-    xit('should require increasing block numbers for any given chain', async () => {
+    it('should require increasing block numbers for any given chain', async () => {
+      await shackle.addBlock(mainnetID, 9, mainnet9)
+      await expectThrow(shackle.addBlock(mainnetID, 8, mainnet8))
+    })
+
+    it('should not retrieve hashes for nonexistent block numbers', async () => {
+      await expectThrow(shackle.getBlockHash(mainnetID, 8))
     })
   })
 })
