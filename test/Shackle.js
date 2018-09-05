@@ -57,16 +57,16 @@ contract('Shackle', (accounts) => {
     })
 
     it('should get chain info per ID', async () => {
-      (await shackle.getChainGenesisBlockHashByChainID(mainnetID)).should.be.eq(mainnetGenesis)
-      String(await shackle.getChainDescriptionByChainID(ropstenID)).should.be.eq('Ropsten testnet')
-      await expectThrow(shackle.getChainGenesisBlockHashByChainID(33))
-      await expectThrow(shackle.getChainDescriptionByChainID(83))
+      (await shackle.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
+      String(await shackle.getChainDescription(ropstenID)).should.be.eq('Ropsten testnet')
+      await expectThrow(shackle.getGenesisBlockHash(33))
+      await expectThrow(shackle.getChainDescription(83))
     })
 
     it('should not allow a duplicate chain with the same ID', async () => {
       await expectThrow(shackle.addChain(mainnetID, zero, 'Dup'));
       // ensure unmodified
-      (await shackle.getChainGenesisBlockHashByChainID(mainnetID)).should.be.eq(mainnetGenesis)
+      (await shackle.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
     })
 
     it('should add hashes', async () => {

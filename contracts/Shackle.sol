@@ -32,8 +32,11 @@ contract Shackle {
   function addChain(uint chainID, bytes32 genesisBlockHash, string description) external {
     // chain 0 is reserved
     require(chainID != 0, INVALID_CHAIN);
-    require(chainIndexByChainID[chainID] == 0, "chain ID in use");
+    // chainID must not already be in use
+    require(chainIndexByChainID[chainID] == 0, INVALID_CHAIN);
+    // Add the chain
     chains.push(Chain(chainID, genesisBlockHash, description));
+    // make it possible to find the chain in the array by chainID
     chainIndexByChainID[chainID] = chains.length - 1;
   }
 
@@ -49,12 +52,12 @@ contract Shackle {
   }
 
   // get the genesis block hash for the specified chain
-  function getChainGenesisBlockHashByChainID(uint chainID) external view validChainID(chainID) returns (bytes32) {
+  function getGenesisBlockHash(uint chainID) external view validChainID(chainID) returns (bytes32) {
     return chains[chainIndexByChainID[chainID]].genesisBlockHash;
   }
 
   // get the description for the specified chain
-  function getChainDescriptionByChainID(uint chainID) external view validChainID(chainID) returns (string) {
+  function getChainDescription(uint chainID) external view validChainID(chainID) returns (string) {
     return chains[chainIndexByChainID[chainID]].description;
   }
 
@@ -62,7 +65,9 @@ contract Shackle {
   function addBlock(uint chainID, uint blockNumber, bytes32 blockHash) external validChainID(chainID) {
     // the block numbers must increase
     require(blocks[chainID].length == 0 || blocks[chainID][blocks[chainID].length - 1].blockNumber < blockNumber, INVALID_BLOCK);
+    // add the block
     blocks[chainID].push(Block(blockNumber, blockHash));
+    // make it possible to look up the block by block number
     blockByNumber[chainID][blockNumber] = blocks[chainID].length - 1;
   }
 
