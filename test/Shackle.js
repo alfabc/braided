@@ -20,13 +20,14 @@ contract('Shackle', (accounts) => {
   const agent4 = accounts[6]
   const rando = accounts[7]
 
-  // Network IDs
+  // Network IDs (from https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md)
   const mainnetID = 1
   const mordenID = 2
   const ropstenID = 3
-  const kovanID = 4
-  const rinkebyID = 42
-  const classicID = 10001 // this is made up. Classic folks would insist this is "1"
+  const rinkebyID = 4
+  const kovanID = 42
+  const classicID = 61
+  const classictestID = 62
 
   // genesis block hashes
   const mainnetGenesis = '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'
