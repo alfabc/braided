@@ -20,6 +20,10 @@ contract Shackle is Superuser {
   // error messages
   string constant INVALID_BLOCK = "invalid block";
   string constant INVALID_CHAIN = "invalid chain";
+  string constant NO_PERMISSION = "no permission";
+
+  // roles
+  string constant ROLE_ADD_BLOCK = "addBlock";
 
   Chain[] public chains;
   mapping(uint => uint) internal chainIndexByChainID;
@@ -64,8 +68,20 @@ contract Shackle is Superuser {
     return chains[chainIndexByChainID[chainID]].description;
   }
 
+  // grant role to specified account
+  function addAgent(address agent) external onlyOwnerOrSuperuser() {
+    addRole(agent, ROLE_ADD_BLOCK);
+  }
+
+  // revoke role from specied account
+  function removeAgent(address agent) external onlyOwnerOrSuperuser() {
+    removeRole(agent, ROLE_ADD_BLOCK);
+  }
+
   // add a block to the specified chain
   function addBlock(uint chainID, uint blockNumber, bytes32 blockHash) external validChainID(chainID) {
+    // caller must have permission
+    require(hasRole(msg.sender, ROLE_ADD_BLOCK), NO_PERMISSION );
     // the block numbers must increase
     require(blocks[chainID].length == 0 || blocks[chainID][blocks[chainID].length - 1].blockNumber < blockNumber, INVALID_BLOCK);
     // add the block

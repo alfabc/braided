@@ -17,7 +17,8 @@ contract('Shackle', (accounts) => {
   const agent1 = accounts[3]
   const agent2 = accounts[4]
   const agent3 = accounts[5]
-  const rando = accounts[6]
+  const agent4 = accounts[6]
+  const rando = accounts[7]
 
   // Network IDs
   const mainnetID = 1
@@ -67,28 +68,29 @@ contract('Shackle', (accounts) => {
       await shackle.transferOwnership(owner1, { from: superuser })
     })
 
-    xit('should allow owner to add agent', async () => {
+    it('should allow owner to add agent', async () => {
       await shackle.addAgent(agent1, { from: owner1 })
+      await shackle.addAgent(agent2, { from: owner1 })
     })
 
-    xit('should allow superuser to add agent', async () => {
-      await shackle.addAgent(agent2, { from: superuser })
+    it('should allow superuser to add agent', async () => {
       await shackle.addAgent(agent3, { from: superuser })
+      await shackle.addAgent(agent4, { from: superuser })
     })
 
-    xit('should not allow non-superuser/non-owner to add agent', async () => {
+    it('should not allow non-superuser/non-owner to add agent', async () => {
       await expectThrow(shackle.addAgent(agent1, { from: owner2 }))
     })
 
-    xit('should allow superuser to remove agent', async () => {
+    it('should allow superuser to remove agent', async () => {
       await shackle.removeAgent(agent2, { from: superuser })
     })
 
-    xit('should allow owner to remove agent', async () => {
+    it('should allow owner to remove agent', async () => {
       await shackle.removeAgent(agent3, { from: owner1 })
     })
 
-    xit('should not allow non-superuser/non-owner to remove agent', async () => {
+    it('should not allow non-superuser/non-owner to remove agent', async () => {
       await expectThrow(shackle.addAgent(agent1, { from: owner2 }))
     })
   })
@@ -130,14 +132,14 @@ contract('Shackle', (accounts) => {
       await shackle.addBlock(mainnetID, 1, mainnet1, { from: agent1 })
       await shackle.addBlock(mainnetID, 2, mainnet2, { from: agent1 })
       await shackle.addBlock(mainnetID, 3, mainnet3, { from: agent1 })
-      await shackle.addBlock(ropstenID, 1, ropsten1, { from: agent1 })
-      await shackle.addBlock(ropstenID, 2, ropsten2, { from: agent1 })
-      await shackle.addBlock(classicID, 1, mainnet1, { from: agent1 })
+      await shackle.addBlock(ropstenID, 1, ropsten1, { from: agent4 })
+      await shackle.addBlock(ropstenID, 2, ropsten2, { from: agent4 })
+      await shackle.addBlock(classicID, 1, mainnet1, { from: agent4 })
       // invalid chain
       await expectThrow(shackle.addBlock(5, 1, mainnet1, { from: agent1 }))
     })
 
-    xit('should not allow non-agents to add hashes', async () => {
+    it('should not allow non-agents to add hashes', async () => {
       await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: superuser }))
       await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: owner2 }))
       await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: agent2 }))
