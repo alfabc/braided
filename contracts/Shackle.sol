@@ -81,7 +81,7 @@ contract Shackle is Superuser {
   // add a block to the specified chain
   function addBlock(uint chainID, uint blockNumber, bytes32 blockHash) external validChainID(chainID) {
     // caller must have permission
-    require(hasRole(msg.sender, ROLE_ADD_BLOCK), NO_PERMISSION );
+    require(hasRole(msg.sender, ROLE_ADD_BLOCK), NO_PERMISSION);
     // the block numbers must increase
     require(blocks[chainID].length == 0 || blocks[chainID][blocks[chainID].length - 1].blockNumber < blockNumber, INVALID_BLOCK);
     // add the block

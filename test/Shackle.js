@@ -27,7 +27,7 @@ contract('Shackle', (accounts) => {
   const rinkebyID = 4
   const kovanID = 42
   const classicID = 61
-  const classictestID = 62
+  // const classictestID = 62
 
   // genesis block hashes
   const mainnetGenesis = '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'
