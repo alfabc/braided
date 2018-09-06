@@ -52,7 +52,7 @@ contract('Shackle', (accounts) => {
   })
 
   // Exercises use of openzeppelin-solidity/Superuser
-  context('ownership', () => {
+  context('ownership and permissions', () => {
     it('should not allow non-superuser/non-owner to set new owner', async () => {
       await expectThrow(shackle.transferOwnership(rando, { from: rando }))
     })
