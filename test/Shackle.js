@@ -16,7 +16,8 @@ contract('Shackle', (accounts) => {
   const owner2 = accounts[2]
   const agent1 = accounts[3]
   const agent2 = accounts[4]
-  const rando = accounts[5]
+  const agent3 = accounts[5]
+  const rando = accounts[6]
 
   // Network IDs
   const mainnetID = 1
@@ -67,12 +68,28 @@ contract('Shackle', (accounts) => {
     })
 
     xit('should allow owner to add agent', async () => {
+      await shackle.addAgent(agent1, { from: owner1 })
     })
 
     xit('should allow superuser to add agent', async () => {
+      await shackle.addAgent(agent2, { from: superuser })
+      await shackle.addAgent(agent3, { from: superuser })
     })
 
-    xit('should not allow non-owner to add agent', async () => {
+    xit('should not allow non-superuser/non-owner to add agent', async () => {
+      await expectThrow(shackle.addAgent(agent1, { from: owner2 }))
+    })
+
+    xit('should allow superuser to remove agent', async () => {
+      await shackle.removeAgent(agent2, { from: superuser })
+    })
+
+    xit('should allow owner to remove agent', async () => {
+      await shackle.removeAgent(agent3, { from: owner1 })
+    })
+
+    xit('should not allow non-superuser/non-owner to remove agent', async () => {
+      await expectThrow(shackle.addAgent(agent1, { from: owner2 }))
     })
   })
 
@@ -109,15 +126,23 @@ contract('Shackle', (accounts) => {
       (await shackle.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
     })
 
-    it('should add hashes', async () => {
-      await shackle.addBlock(mainnetID, 1, mainnet1)
-      await shackle.addBlock(mainnetID, 2, mainnet2)
-      await shackle.addBlock(mainnetID, 3, mainnet3)
-      await shackle.addBlock(ropstenID, 1, ropsten1)
-      await shackle.addBlock(ropstenID, 2, ropsten2)
-      await shackle.addBlock(classicID, 1, mainnet1)
+    it('should allow agents to add hashes', async () => {
+      await shackle.addBlock(mainnetID, 1, mainnet1, { from: agent1 })
+      await shackle.addBlock(mainnetID, 2, mainnet2, { from: agent1 })
+      await shackle.addBlock(mainnetID, 3, mainnet3, { from: agent1 })
+      await shackle.addBlock(ropstenID, 1, ropsten1, { from: agent1 })
+      await shackle.addBlock(ropstenID, 2, ropsten2, { from: agent1 })
+      await shackle.addBlock(classicID, 1, mainnet1, { from: agent1 })
       // invalid chain
-      await expectThrow(shackle.addBlock(5, 1, mainnet1))
+      await expectThrow(shackle.addBlock(5, 1, mainnet1, { from: agent1 }))
+    })
+
+    xit('should not allow non-agents to add hashes', async () => {
+      await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: superuser }))
+      await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: owner2 }))
+      await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: agent2 }))
+      await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: agent3 }))
+      await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: rando }))
     })
 
     it('should retrieve highest block number in a chain', async () => {
@@ -144,8 +169,8 @@ contract('Shackle', (accounts) => {
     })
 
     it('should require increasing block numbers for any given chain', async () => {
-      await shackle.addBlock(mainnetID, 9, mainnet9)
-      await expectThrow(shackle.addBlock(mainnetID, 8, mainnet8))
+      await shackle.addBlock(mainnetID, 9, mainnet9, { from: agent1 })
+      await expectThrow(shackle.addBlock(mainnetID, 8, mainnet8, { from: agent1 }))
     })
 
     it('should not retrieve hashes for nonexistent block numbers', async () => {
