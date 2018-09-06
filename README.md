@@ -66,7 +66,7 @@ The contract is deployed on each blockchain by a **superuser** (which can be a r
 
 The contract is not upgradeable, cannot be destroyed, and its chain and block/hash data cannot be modified or deleted.  When new functionality is required a new instance will be deployed, and the old contract will be ignored (it can be programmatically abandoned by removing all agent permissions and setting the superuser and owner to a burn address).
 
-Anyone may deploy their own instance of the contract.  If it is determined that a single contract instance is useful or desirable the **superuser** could be a DAO, particularly if deployed on a network for which transactions cost real-world money.
+Anyone may deploy their own instance of the contract.  If it is determined that a single contract instance is useful or desirable the superuser could be a DAO, particularly if deployed on a network for which transactions cost real-world money.
 
 ## Conclusion
 Although this solution has substantial limitations, is somewhat naive and and in some ways inelegant, it is most importantly something that *gets the job done now*, and allows us as developers to secure the integrity of our main networks, test networks and our other Ethereum networks without waiting for protocol updates and magical tokens which solve everything for everyone.
