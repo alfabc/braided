@@ -19,10 +19,13 @@ But our "test" networks are also important.  Test networks are where developers 
 
 Finally, chains fork, and will continue to fork as long as blockchains exist. We need a solution which works within the economic and practical constraints of the blockchains that already exist today.
 
-## Limitations
+## The solution
+The solution is a smart contract deployed on multiple blockchains, with automated agents which watch for new blocks to be created on each chain, and then record that block number and its block hash (the "block/hash") for all chains in each chain.
+
+### Limitations
 In order to provide the necessary security on multiple blockchains **now**, without requiring forks, changes to [consensus algorithms](https://github.com/ethereum/casper), agreements between multiple parties with different interests, sale of utility tokens, or escrowed deposits, this solution is necessarily limited in multiple ways: it does not inherently scale to an infinite number of chains, nor does it allow for trust-free participation of recorders, nor does it automatically provide on-chain notification of the detection of irregularites.  Instead it is intended to provide observers with a convenient data source, useful tools for analysis and timely alerts when something happens.
 
-## Roles
+### Roles
 The contract is deployed on each blockchain, each with an owner who can license agents with the permission to record hashes.  The owner can issue and revoke that license; the agent cannot do anything but record hashes. The owner can also add new blockchains (but not delete chains or hashes).
 
 ## Failure modes
@@ -58,8 +61,16 @@ All agents responsible for recording block/hashes on a given chain, or for given
 ## Recovery
 Recovery from any failure mode consists of bringing the agent back online, bringing a new agent online, or adding a new chain to the contract on each recording chain.  New block/hashes will be recorded as blocks are created. Life goes on until the next alert.
 
+## Lifecycle and governance
+The contract is deployed on each blockchain by a **superuser** (which can be a regular account or a smart contract). The superuser can make another account (or contract) an **owner** (which is transferrable but revocable by the superuser). The superuser and owner give an **agent** account (or contract) permission to record block/hashes on that contract instance.
+
+The contract is not upgradeable, cannot be destroyed, and its chain and block/hash data cannot be modified or deleted.  When new functionality is required a new instance will be deployed, and the old contract will be ignored (it can be programmatically abandoned by removing all agent permissions and setting the superuser and owner to a burn address).
+
+Anyone may deploy their own instance of the contract.  If it is determined that a single contract instance is useful or desirable the **superuser** could be a DAO, particularly if deployed on a network for which transactions cost real-world money.
+
 ## Conclusion
-Although this solution has substantial limitations, is somewhat naive and and in some ways inelegant, it is most importantly something that *gets the job done now*, and allows us as developers to secure the integrity of our "test networks" and our other Ethereum networks without waiting for protocol updates and magical tokens which solve everything for everyone.
+Although this solution has substantial limitations, is somewhat naive and and in some ways inelegant, it is most importantly something that *gets the job done now*, and allows us as developers to secure the integrity of our main networks, test networks and our other Ethereum networks without waiting for protocol updates and magical tokens which solve everything for everyone.
+
 
 Copyright © 2018 Alfa Blockchain Consulting
 Published under the [AGPL 3.0](https://opensource.org/licenses/AGPL-3.0).

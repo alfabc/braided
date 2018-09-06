@@ -69,12 +69,12 @@ contract('Shackle', (accounts) => {
       await shackle.transferOwnership(owner1, { from: superuser })
     })
 
-    it('should allow owner to add agent', async () => {
+    it('should allow owner to add agents', async () => {
       await shackle.addAgent(agent1, { from: owner1 })
       await shackle.addAgent(agent2, { from: owner1 })
     })
 
-    it('should allow superuser to add agent', async () => {
+    it('should allow superuser to add agents', async () => {
       await shackle.addAgent(agent3, { from: superuser })
       await shackle.addAgent(agent4, { from: superuser })
     })
@@ -110,7 +110,7 @@ contract('Shackle', (accounts) => {
     })
 
     it('should not allow chain ID 0', async () => {
-      await expectThrow(shackle.addChain(0, zero, 'ZE'))
+      await expectThrow(shackle.addChain(0, zero, 'zero'))
     })
 
     it('should not allow non-owner to add chain', async () => {
@@ -137,7 +137,7 @@ contract('Shackle', (accounts) => {
       await shackle.addBlock(ropstenID, 1, ropsten1, { from: agent4 })
       await shackle.addBlock(ropstenID, 2, ropsten2, { from: agent4 })
       await shackle.addBlock(classicID, 1, mainnet1, { from: agent4 })
-      // invalid chain
+      // but not on an invalid chain
       await expectThrow(shackle.addBlock(5, 1, mainnet1, { from: agent1 }))
     })
 
