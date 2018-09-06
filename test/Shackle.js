@@ -27,7 +27,7 @@ contract('Shackle', (accounts) => {
   const rinkebyID = 4
   const kovanID = 42
   const classicID = 61
-  // const classictestID = 62
+  const classictestID = 62
 
   // genesis block hashes
   const mainnetGenesis = '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'
@@ -99,13 +99,14 @@ contract('Shackle', (accounts) => {
   // Test linking multiple testnets together
   context('Link testnets', () => {
     it('should add chains', async () => {
-      await shackle.addChain(mainnetID, mainnetGenesis, 'Ethereum Foundation mainnet', { from: superuser })
-      await shackle.addChain(mordenID, mordenGenesis, 'Ethereum Classic morden testnet', { from: owner1 })
-      await shackle.addChain(ropstenID, ropstenGenesis, 'Ropsten testnet', { from: superuser })
-      await shackle.addChain(kovanID, kovanGenesis, 'Kovan testnet', { from: owner1 })
-      await shackle.addChain(rinkebyID, rinkebyGenesis, 'Rinkeby testnet', { from: owner1 })
-      await shackle.addChain(classicID, mainnetGenesis, 'Ethereum Classic mainnet', { from: owner1 });
-      (await shackle.getChainCount()).toNumber().should.be.eq(6)
+      await shackle.addChain(mainnetID, mainnetGenesis, 'Foundation', { from: superuser })
+      await shackle.addChain(mordenID, mordenGenesis, 'morden', { from: owner1 })
+      await shackle.addChain(ropstenID, ropstenGenesis, 'Ropsten', { from: superuser })
+      await shackle.addChain(kovanID, kovanGenesis, 'Kovan', { from: owner1 })
+      await shackle.addChain(rinkebyID, rinkebyGenesis, 'Rinkeby', { from: owner1 })
+      await shackle.addChain(classicID, mainnetGenesis, 'Classic', { from: owner1 })
+      await shackle.addChain(classictestID, mordenGenesis, 'Classic test', { from: owner1 });
+      (await shackle.getChainCount()).toNumber().should.be.eq(7)
     })
 
     it('should not allow chain ID 0', async () => {
