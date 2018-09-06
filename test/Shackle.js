@@ -119,7 +119,7 @@ contract('Shackle', (accounts) => {
 
     it('should get chain info per ID', async () => {
       (await shackle.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
-      String(await shackle.getChainDescription(ropstenID)).should.be.eq('Ropsten testnet')
+      String(await shackle.getChainDescription(ropstenID)).should.be.eq('Ropsten')
       await expectThrow(shackle.getGenesisBlockHash(33))
       await expectThrow(shackle.getChainDescription(83))
     })
