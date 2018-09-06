@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import 'openzeppelin-solidity/contracts/ownership/Superuser.sol';
+import "openzeppelin-solidity/contracts/ownership/Superuser.sol";
 
 
 // Smart contract for interchain linking
