@@ -1,7 +1,10 @@
 pragma solidity ^0.4.24;
 
+import 'openzeppelin-solidity/contracts/ownership/Superuser.sol';
 
-contract Shackle {
+
+// Smart contract for interchain linking
+contract Shackle is Superuser {
 
   struct Block {
     uint blockNumber;
@@ -29,7 +32,7 @@ contract Shackle {
   }
 
   // Add a chain
-  function addChain(uint chainID, bytes32 genesisBlockHash, string description) external {
+  function addChain(uint chainID, bytes32 genesisBlockHash, string description) external onlyOwnerOrSuperuser() {
     // chain 0 is reserved
     require(chainID != 0, INVALID_CHAIN);
     // chainID must not already be in use

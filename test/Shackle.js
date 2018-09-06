@@ -10,6 +10,14 @@ const should = require('chai') // eslint-disable-line no-unused-vars
 contract('Shackle', (accounts) => {
   let shackle
 
+  // users
+  const superuser = accounts[0]
+  const owner1 = accounts[1]
+  const owner2 = accounts[2]
+  const agent1 = accounts[3]
+  const agent2 = accounts[4]
+  const rando = accounts[5]
+
   // Network IDs
   const mainnetID = 1
   const mordenID = 2
@@ -40,20 +48,52 @@ contract('Shackle', (accounts) => {
     shackle = await Shackle.new()
   })
 
+  // Exercises use of openzeppelin-solidity/Superuser
+  context('ownership', () => {
+    it('should not allow non-superuser/non-owner to set new owner', async () => {
+      await expectThrow(shackle.transferOwnership(rando, { from: rando }))
+    })
+
+    it('should allow superuser/owner to set new owner', async () => {
+      await shackle.transferOwnership(owner1, { from: superuser })
+    })
+
+    it('should allow owner to set new owner', async () => {
+      await shackle.transferOwnership(owner2, { from: owner1 })
+    })
+
+    it('should allow superuser to set new owner', async () => {
+      await shackle.transferOwnership(owner1, { from: superuser })
+    })
+
+    xit('should allow owner to add agent', async () => {
+    })
+
+    xit('should allow superuser to add agent', async () => {
+    })
+
+    xit('should not allow non-owner to add agent', async () => {
+    })
+  })
+
   // Test linking multiple testnets together
   context('Link testnets', () => {
     it('should add chains', async () => {
-      await shackle.addChain(mainnetID, mainnetGenesis, 'Ethereum Foundation mainnet')
-      await shackle.addChain(mordenID, mordenGenesis, 'Ethereum Classic morden testnet')
-      await shackle.addChain(ropstenID, ropstenGenesis, 'Ropsten testnet')
-      await shackle.addChain(kovanID, kovanGenesis, 'Kovan testnet')
-      await shackle.addChain(rinkebyID, rinkebyGenesis, 'Rinkeby testnet')
-      await shackle.addChain(classicID, mainnetGenesis, 'Ethereum Classic mainnet');
+      await shackle.addChain(mainnetID, mainnetGenesis, 'Ethereum Foundation mainnet', { from: superuser })
+      await shackle.addChain(mordenID, mordenGenesis, 'Ethereum Classic morden testnet', { from: owner1 })
+      await shackle.addChain(ropstenID, ropstenGenesis, 'Ropsten testnet', { from: superuser })
+      await shackle.addChain(kovanID, kovanGenesis, 'Kovan testnet', { from: owner1 })
+      await shackle.addChain(rinkebyID, rinkebyGenesis, 'Rinkeby testnet', { from: owner1 })
+      await shackle.addChain(classicID, mainnetGenesis, 'Ethereum Classic mainnet', { from: owner1 });
       (await shackle.getChainCount()).toNumber().should.be.eq(6)
     })
 
     it('should not allow chain ID 0', async () => {
       await expectThrow(shackle.addChain(0, zero, 'ZE'))
+    })
+
+    it('should not allow non-owner to add chain', async () => {
+      await expectThrow(shackle.addChain(7, mainnetGenesis, 'unlucky', { from: agent1 }))
     })
 
     it('should get chain info per ID', async () => {
@@ -64,7 +104,7 @@ contract('Shackle', (accounts) => {
     })
 
     it('should not allow a duplicate chain with the same ID', async () => {
-      await expectThrow(shackle.addChain(mainnetID, zero, 'Dup'));
+      await expectThrow(shackle.addChain(mainnetID, zero, 'Dup', { from: owner1 }));
       // ensure unmodified
       (await shackle.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
     })
