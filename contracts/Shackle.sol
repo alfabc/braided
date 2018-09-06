@@ -32,7 +32,7 @@ contract Shackle is Superuser {
 
   constructor() public {
     // Chain 0 is reserved
-    chains.push(Chain(0,0,""));
+    chains.push(Chain(0, 0, ""));
   }
 
   // Add a chain
