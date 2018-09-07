@@ -10,6 +10,8 @@
     "coverage": "./node_modules/.bin/solidity-coverage",
     "solium": "./node_modules/.bin/solium --dir contracts/",
     "lint": "./node_modules/.bin/eslint .",
+    "migrate-ganache": "truffle migrate --network ganache",
+    "migrate-ropsten": "truffle migrate --network ropsten",
     "test": "truffle test"
   },
   "repository": {
