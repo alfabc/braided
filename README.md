@@ -55,6 +55,11 @@ Each agent require requires gas to record new block/hashes on each chain. If the
 
 This can be avoided by using [https://github.com/EtherAlerter](EtherAlerter) to notify the Alerter or Owner that the alerter needs more funds, and by automating the funding of gas through faucets or other mechanisms.  The alerter software itself may be adapted to do this automatically, but ultimately requires some human intervention as the contract has no mechanism for self-funding.
 
+### Network congestion
+Any of the networks can experience high demand at some point, whether by a single actor, a DDoS, or a popular [new application](https://cryptovest.com/news/cryptokitties-ethereums-biggest-gas-guzzler/).  This would delay the recording of block/hashes on the affected chain(s).
+
+The agent may need to increase the gas price used for transactions on the affected chains, or simply wait for the storm to pass.
+
 ### Agent failure
 All agents responsible for recording block/hashes on a given chain, or for given chains, will occasionally be disconnected from the network, power outage, maintanence or otherwise experience downtime.
 
@@ -69,8 +74,7 @@ The contract is not upgradeable, cannot be destroyed, and its chain and block/ha
 Anyone may deploy their own instance of the contract.  If it is determined that a single contract instance is useful or desirable the superuser could be a DAO, particularly if deployed on a network for which transactions cost real-world money.
 
 ## Conclusion
-Although this solution has substantial limitations, is somewhat naive and and in some ways inelegant, it is most importantly something that *gets the job done now*, and allows us as developers to secure the integrity of our main networks, test networks and our other Ethereum networks without waiting for protocol updates and magical tokens which solve everything for everyone.
-
+Although this solution has substantial limitations, is somewhat naive and and in some ways inelegant, it is most importantly something that can *get the job done now*, and allows us as developers to secure the integrity of our main networks, test networks and our other Ethereum networks without waiting for everyone to adopt controversial protocol updates and for the winner of the battle for [token-powered interchain protocols](http://troubles.md/posts/comparison-of-inter-blockchain-communication-technologies/) to be universally accepted.
 
 Copyright © 2018 Alfa Blockchain Consulting
 Published under the [AGPL 3.0](https://opensource.org/licenses/AGPL-3.0).
