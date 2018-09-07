@@ -46,9 +46,9 @@ In the case of a planned, non-contentious hard fork, attempts to record new bloc
 In the case of a contentious hard fork the agent will continue to follow the old chain, recording the new block/hashes on the old chain. The agent (or another agent) will have to be configured to record on the new chain as well.
 
 ### Consensus failure
-Consensus failures (aka unintentional forks) arise from different node software. We've seen about [one](https://blog.ethereum.org/2016/11/25/security-alert-11242016-consensus-bug-geth-v1-4-19-v1-5-2/) [per](https://github.com/ethereumproject/ECIPs/blob/master/ECIPs/ECIP-1039.md) [year](https://www.trustnodes.com/2018/06/06/parity-finds-consensus-bug-urges-upgrade-new-client), sometimes due to bugs, sometimes due to ambiguity in the specifications.  In this situation different agents using different node software to monitor the same networks may diverge on the forks.
+Consensus failures (aka unintentional forks) arise from different node software. We've seen about [one](https://blog.ethereum.org/2016/11/25/security-alert-11242016-consensus-bug-geth-v1-4-19-v1-5-2/) or [more](https://github.com/ethereumproject/ECIPs/blob/master/ECIPs/ECIP-1039.md) [per](https://www.trustnodes.com/2018/06/06/parity-finds-consensus-bug-urges-upgrade-new-client) [year](https://blog.infura.io/rinkeby-consensus-post-mortem-4abbcace0539), sometimes due to bugs, sometimes due to ambiguity in the specifications.  In this situation different agents using different node software to monitor the same networks may diverge on the forks.
 
-Resolution is the same as for intentional forks.
+Resolution is the same as for intentional forks, by upgrading the client node software.
 
 ### Out of gas
 Each agent require requires gas to record new block/hashes on each chain. If the agent runs out of gas it will stop recording, and this will cause an error or alert.
