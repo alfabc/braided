@@ -4,19 +4,21 @@ import "openzeppelin-solidity/contracts/ownership/Superuser.sol";
 
 
 // Smart contract for interchain linking
-contract Shackle is Superuser {
+contract ChainBlockHashes is Superuser {
 
-  struct Block {
-    uint blockNumber;
-    bytes32 blockHash;
-  }
-
+  // identifies a specific chain that for which block/hashes are stored
   struct Chain {
     uint chainID;
     bytes32 genesisBlockHash;
     string description;
   }
   
+  // identifies a block by number and its hash
+  struct Block {
+    uint blockNumber;
+    bytes32 blockHash;
+  }
+
   // error messages
   string constant INVALID_BLOCK = "invalid block";
   string constant INVALID_CHAIN = "invalid chain";
