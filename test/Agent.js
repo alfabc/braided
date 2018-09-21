@@ -24,7 +24,7 @@ And a watched chain Chain4
 Chain1 should subscribe to block notifications for Chain2-3-4
 When the watched Chain2-4 produces a new block 101
   ... And its block number is higher than the current highest block number on the recording chain Chain1 (100)
-    Then the block number and block hash should be added to Chain1
+    Then the block/hash should be added to Chain1
 
   ...  And the block number is less than the current highest block number
     // the Agent for Chain2-4 might just be behind
@@ -52,9 +52,9 @@ When the watched chain adds a new block/hash
        Then AgentA should log an ALERT
 
 // record block/hash confirmations from the watched chains
-Chain1 should subscribe to addBlock events for Chain2-4 from Chain2-4
-When the watched chain adds a new block/hash
-  ... and the block number is higher than the highest block/hash recorded on Chain1 for that chain
+Chain1 subscribes to addBlock events for ChainX(2-4) from ChainY(2-4)
+When a watched chain adds a new block/hash
+  ... and ChainX.ChainY block number >= Chain1.getHighestBlockNumber(ChainY) 
   ... and the new block/hash is not already recorded in the Shackle contract on Chain1
     Then the block/hash should be added to Chain1
 
