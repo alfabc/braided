@@ -1,4 +1,4 @@
-// Tests the agent which reads blocks, records block/hashes, 
+// Tests the agent which reads blocks, records block/hashes,
 // reads block/hashes, issues alerts, and writes confirmations.
 
 // To make this testable, the Agent contains callback functions
@@ -16,21 +16,20 @@
 /* eslint-env node, mocha */
 /* eslint no-unused-expressions: 0 */
 /* eslint prefer-const: 0 */
-const ChainBlockHashes = artifacts.require('../contracts/ChainBlockHashes.sol')
-const expectThrow = require('./helpers/expectThrow.js')
-const should = require('chai') // eslint-disable-line no-unused-vars
-  .use(require('chai-as-promised'))
-  .should()
+// const ChainBlockHashes = artifacts.require('../contracts/ChainBlockHashes.sol')
+// const expectThrow = require('./helpers/expectThrow.js')
+// const should = require('chai') // eslint-disable-line no-unused-vars
+//   .use(require('chai-as-promised'))
+//   .should()
 
 contract('ChainBlockHashes', (accounts) => {
   // Exercises use of openzeppelin-solidity/Superuser
   context('ownership and permissions', () => {
     xit('should not allow non-superuser/non-owner to set new owner', async () => {
-      await expectThrow(shackle.transferOwnership(rando, { from: rando }))
+      // await expectThrow(shackle.transferOwnership(rando, { from: rando }))
     })
   })
 })
-
 
 // Given an agent AgentA
 // And a recording chain Chain1
@@ -45,38 +44,38 @@ contract('ChainBlockHashes', (accounts) => {
 //     Then the block/hash should be added to Chain1
 
 //   ...  And the block number is less than the current highest block number
-    // the Agent for Chain2-4 might just be behind
-//     Then AgentA should log an EVENT
-    // perhaps start a counter? issue an alert after X occurrances?
+//     the Agent for Chain2-4 might just be behind
+//   Then AgentA should log an EVENT
+//   //  perhaps start a counter? issue an alert after X occurrances?
 
 // Recording chain should watch out for itself
 // Chain1 should subscribe to addBlock events for Chain1 from Chain2-4
 // When the watched chain adds a new block/hash
 //   ... and the block number exists in the local chain
 
-    // The recording node might be behind. If it stays that way...
-//     ... and the block number does not exist in the local chain
-//     Then AgentA should log an EVENT
-    // perhaps start a counter? issue an alert after X occurrances?
+// The recording node might be behind. If it stays that way...
+//   ... and the block number does not exist in the local chain
+//   Then AgentA should log an EVENT
+//    // perhaps start a counter? issue an alert after X occurrances?
 
 //    ... and the block number exists in the local chain
 
-//       ... and the watched block/hash == hash of the block on Chain1
-       // should AgentA record confirmation of its own block?
-       // is this necessary or desirable?
+//    ... and the watched block/hash == hash of the block on Chain1
+//       // should AgentA record confirmation of its own block?
+//       // is this necessary or desirable?
 
-//       ... and the watched block/hash != hash of the block on Chain1
-       // Fork detection / consensus failure
-//       Then AgentA should log an ALERT
+//    ... and the watched block/hash != hash of the block on Chain1
+//       // Fork detection / consensus failure
+//    Then AgentA should log an ALERT
 
 // record block/hash confirmations from the watched chains
 // Chain1 subscribes to addBlock events for ChainX(2-4) from ChainY(2-4)
 // When a watched chain adds a new block/hash
-//   ... and ChainX.ChainY block number >= Chain1.getHighestBlockNumber(ChainY) 
+//   ... and ChainX.ChainY block number >= Chain1.getHighestBlockNumber(ChainY)
 //   ... and the new block/hash is not already recorded in the Shackle contract on Chain1
 //     Then the block/hash should be added to Chain1
 
-//   ... and the block number is 
+//   ... and the block number is
 
 // When the watched chain produces a new block
 // And the new block is already recorded in the Shackle contract on the recording chain
@@ -86,4 +85,4 @@ contract('ChainBlockHashes', (accounts) => {
 // an error is reported (MECHANISM?)
 
 // When the watched chain produces a new block
-// And a higher block number already exists 
+// And a higher block number already exists
