@@ -16,17 +16,73 @@
 /* eslint-env node, mocha */
 /* eslint no-unused-expressions: 0 */
 /* eslint prefer-const: 0 */
-// const ChainBlockHashes = artifacts.require('../contracts/ChainBlockHashes.sol')
+const parse = require('csv-parse/lib/sync')
+const fs = require('fs')
+const util = require('util')
+const readFile = util.promisify(fs.readFile)
+const ChainBlockHashes = artifacts.require('../contracts/ChainBlockHashes.sol')
+
 // const expectThrow = require('./helpers/expectThrow.js')
 // const should = require('chai') // eslint-disable-line no-unused-vars
 //   .use(require('chai-as-promised'))
 //   .should()
 
+const chainCount = 4
+const fixtureLines = 30
+let fixtures = []
+let contracts = []
+const mainnetGenesis = '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'
+const mordenGenesis = '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303'
+const ropstenGenesis = '0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d'
+const kovanGenesis = '0xa3c565fc15c7478862d50ccd6561e3c06b24cc509bf388941c25ea985ce32cb9'
+
 contract('ChainBlockHashes', (accounts) => {
-  // Exercises use of openzeppelin-solidity/Superuser
-  context('ownership and permissions', () => {
-    xit('should not allow non-superuser/non-owner to set new owner', async () => {
-      // await expectThrow(shackle.transferOwnership(rando, { from: rando }))
+  let superuser = accounts[0]
+
+  context('loading test data', () => {
+    it('should load the test data', async () => {
+      for (let c = 0; c < chainCount; c++) {
+        fixtures.push(parse(await readFile('./test/data/net' + (c + 1) + '.csv')))
+      }
+      fixtures.length.should.be.eq(chainCount)
+    })
+
+    it('should instantiate a ChainBlockHashes contract for each chain', async () => {
+      for (let c = 0; c < chainCount; c++) {
+        contracts.push(await ChainBlockHashes.new())
+        await contracts[c].addAgent(accounts[c + 1], { from: superuser })
+        if (c !== 0) {
+          await contracts[c].addChain(1, mainnetGenesis, 'Foundation', { from: superuser })
+        }
+        if (c !== 1) {
+          await contracts[c].addChain(2, mordenGenesis, 'morden', { from: superuser })
+        }
+        if (c !== 2) {
+          await contracts[c].addChain(3, ropstenGenesis, 'Ropsten', { from: superuser })
+        }
+        if (c !== 3) {
+          await contracts[c].addChain(4, kovanGenesis, 'Kovan', { from: superuser })
+        }
+        (await contracts[c].getChainCount()).toNumber().should.be.eq(chainCount - 1)
+      }
+      contracts.length.should.be.eq(chainCount)
+    })
+
+    it('should write the test data', async () => {
+      // For each line in the sample data
+      // skip the header line
+      for (let l = 1; l < fixtureLines; l++) {
+        // process the line for each chain
+        for (let c = 0; c < chainCount; c++) {
+          // skip new blocks and empty lines
+          if (fixtures[c][l][0] === '' && fixtures[c][l][2] !== '') {
+            let chain = parseInt(fixtures[c][l][2].charAt(4))
+            let block = parseInt(fixtures[c][l][3])
+            let hash = '0x' + fixtures[c][l][4]
+            await contracts[c].addBlock(chain, block, hash, { from: accounts[c + 1] })
+          }
+        }
+      }
     })
   })
 })
