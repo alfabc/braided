@@ -23,9 +23,6 @@ const readFile = util.promisify(fs.readFile)
 const ChainBlockHashes = artifacts.require('../contracts/ChainBlockHashes.sol')
 const expectThrow = require('./helpers/expectThrow.js')
 const md5 = require('md5')
-// const should = require('chai') // eslint-disable-line no-unused-vars
-//   .use(require('chai-as-promised'))
-//   .should()
 
 const chainCount = 4
 const fixtureLines = 30
