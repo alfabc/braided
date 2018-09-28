@@ -97,6 +97,8 @@ contract ChainBlockHashes is Superuser {
     return blocks[chainID][blocks[chainID].length - 1].blockNumber;
   }
 
+  // get the previous block recorded to the one supplied for the specified chain
+  // used to walk the chain backwards
   function getPreviousBlockNumber(uint chainID, uint blockNumber) external view validChainID(chainID) returns (uint) {
     // Assume they want the latest block if they say block 0
     if (blockNumber == 0) {
