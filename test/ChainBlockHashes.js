@@ -3,7 +3,9 @@
 /* eslint prefer-const: 0 */
 const ChainBlockHashes = artifacts.require('../contracts/ChainBlockHashes.sol')
 const expectThrow = require('./helpers/expectThrow.js')
+const BigNumber = require('bignumber.js')
 const should = require('chai') // eslint-disable-line no-unused-vars
+  .use(require('chai-bignumber')(BigNumber))
   .use(require('chai-as-promised'))
   .should()
 
@@ -179,6 +181,19 @@ contract('ChainBlockHashes', (accounts) => {
 
     it('should not retrieve hashes for nonexistent block numbers', async () => {
       await expectThrow(shackle.getBlockHash(mainnetID, 8))
+    })
+
+    it('should get previous block number', async () => {
+      (await shackle.getPreviousBlockNumber(mainnetID, 9)).toNumber().should.be.eq(3)
+    })
+
+    it('should fail to get previous block number for an unrecorded block', async () => {
+      await expectThrow(shackle.getPreviousBlockNumber(mainnetID, 8))
+    })
+
+    it('should assume highest block number when zero is specified for previous block', async () => {
+      (await shackle.getPreviousBlockNumber(mainnetID, 0)).should.be.bignumber.eq(
+        await shackle.getHighestBlockNumber(mainnetID))
     })
   })
 })

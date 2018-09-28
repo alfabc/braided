@@ -97,6 +97,15 @@ contract ChainBlockHashes is Superuser {
     return blocks[chainID][blocks[chainID].length - 1].blockNumber;
   }
 
+  function getPreviousBlockNumber(uint chainID, uint blockNumber) external view validChainID(chainID) returns (uint) {
+    // Assume they want the latest block if they say block 0
+    if (blockNumber == 0) {
+      return this.getHighestBlockNumber(chainID);
+    }
+
+    return blocks[chainID][blockByNumber[chainID][blockNumber] - 1].blockNumber;
+  }
+
   // get the block hash for the block number on the specified chain
   function getBlockHash(uint chainID, uint blockNumber) external view validChainID(chainID) returns (bytes32) {
     Block memory theBlock = blocks[chainID][blockByNumber[chainID][blockNumber]];
