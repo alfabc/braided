@@ -194,12 +194,16 @@ contract('ChainBlockHashes', (accounts) => {
       block[1].should.be.eq(mainnet3)
     })
 
-    it('should fail to get previous block number for an unrecorded block', async () => {
+    it('should fail to get previous block number for unrecorded blocks', async () => {
       await expectThrow(shackle.getPreviousBlockNumber(mainnetID, 8))
+      await expectThrow(shackle.getPreviousBlockNumber(mainnetID, 0))
+      await expectThrow(shackle.getPreviousBlockNumber(mainnetID, 11))
     })
 
-    it('should fail to get previous block for an unrecorded block', async () => {
+    it('should fail to get previous block for unrecorded blocks', async () => {
       await expectThrow(shackle.getPreviousBlock(mainnetID, 8))
+      await expectThrow(shackle.getPreviousBlock(mainnetID, 0))
+      await expectThrow(shackle.getPreviousBlock(mainnetID, 11))
     })
   })
 })
