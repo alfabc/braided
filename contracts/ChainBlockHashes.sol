@@ -97,15 +97,19 @@ contract ChainBlockHashes is Superuser {
     return blocks[chainID][blocks[chainID].length - 1].blockNumber;
   }
 
-  // get the previous block recorded to the one supplied for the specified chain
-  // used to walk the chain backwards
+  // get the previous block number recorded to the one supplied for the
+  // specified chain (used to walk the chain backwards)
   function getPreviousBlockNumber(uint chainID, uint blockNumber) external view validChainID(chainID) returns (uint) {
-    // Assume they want the latest block if they say block 0
-    if (blockNumber == 0) {
-      return this.getHighestBlockNumber(chainID);
-    }
-
     return blocks[chainID][blockByNumber[chainID][blockNumber] - 1].blockNumber;
+  }
+
+  // get the previous block recorded to the one supplied for the specified
+  // chain (used to walk the chain backwards)
+  function getPreviousBlock(uint chainID, uint blockNumber) external view validChainID(chainID)
+    returns (uint prevBlockNumber, bytes32 prevBlockHash) { // solium-disable-line lbrace
+    Block memory theBlock = blocks[chainID][blockByNumber[chainID][blockNumber] - 1];
+    prevBlockNumber = theBlock.blockNumber;
+    prevBlockHash = theBlock.blockHash;
   }
 
   // get the block hash for the block number on the specified chain

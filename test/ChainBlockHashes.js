@@ -181,19 +181,25 @@ contract('ChainBlockHashes', (accounts) => {
 
     it('should not retrieve hashes for nonexistent block numbers', async () => {
       await expectThrow(shackle.getBlockHash(mainnetID, 8))
+      await expectThrow(shackle.getBlockHash(mainnetID, 0))
     })
 
     it('should get previous block number', async () => {
       (await shackle.getPreviousBlockNumber(mainnetID, 9)).toNumber().should.be.eq(3)
     })
 
+    it('should get previous block', async () => {
+      let block = await shackle.getPreviousBlock(mainnetID, 9)
+      block[0].toNumber().should.be.eq(3)
+      block[1].should.be.eq(mainnet3)
+    })
+
     it('should fail to get previous block number for an unrecorded block', async () => {
       await expectThrow(shackle.getPreviousBlockNumber(mainnetID, 8))
     })
 
-    it('should assume highest block number when zero is specified for previous block', async () => {
-      (await shackle.getPreviousBlockNumber(mainnetID, 0)).should.be.bignumber.eq(
-        await shackle.getHighestBlockNumber(mainnetID))
+    it('should fail to get previous block for an unrecorded block', async () => {
+      await expectThrow(shackle.getPreviousBlock(mainnetID, 8))
     })
   })
 })
