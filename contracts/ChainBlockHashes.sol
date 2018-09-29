@@ -1,10 +1,11 @@
 pragma solidity ^0.4.24;
 
+import "./BraidedInterface.sol";
 import "openzeppelin-solidity/contracts/ownership/Superuser.sol";
 
 
 // Smart contract for interchain linking
-contract ChainBlockHashes is Superuser {
+contract ChainBlockHashes is BraidedInterface, Superuser {
 
   // identifies a specific chain that for which block/hashes are stored
   struct Chain {
@@ -92,6 +93,15 @@ contract ChainBlockHashes is Superuser {
     blockByNumber[chainID][blockNumber] = blocks[chainID].length - 1;
   }
 
+  // get the block hash for the block number on the specified chain
+  function getBlockHash(uint chainID, uint blockNumber) external view validChainID(chainID) returns (bytes32) {
+    Block memory theBlock = blocks[chainID][blockByNumber[chainID][blockNumber]];
+    // blockByNumber has 0 for blocks that don't exist, 
+    // which could give the wrong block, so check.
+    require(theBlock.blockNumber == blockNumber, INVALID_BLOCK);
+    return theBlock.blockHash;
+  }
+
   // get the highest block number recorded for the specified chain
   function getHighestBlockNumber(uint chainID) external view validChainID(chainID) returns (uint) {
     return blocks[chainID][blocks[chainID].length - 1].blockNumber;
@@ -110,14 +120,5 @@ contract ChainBlockHashes is Superuser {
     Block memory theBlock = blocks[chainID][blockByNumber[chainID][blockNumber] - 1];
     prevBlockNumber = theBlock.blockNumber;
     prevBlockHash = theBlock.blockHash;
-  }
-
-  // get the block hash for the block number on the specified chain
-  function getBlockHash(uint chainID, uint blockNumber) external view validChainID(chainID) returns (bytes32) {
-    Block memory theBlock = blocks[chainID][blockByNumber[chainID][blockNumber]];
-    // blockByNumber has 0 for blocks that don't exist, 
-    // which could give the wrong block, so check.
-    require(theBlock.blockNumber == blockNumber, INVALID_BLOCK);
-    return theBlock.blockHash;
   }
 }
