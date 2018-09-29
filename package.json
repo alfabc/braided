@@ -1,5 +1,5 @@
 {
-  "name": "shackle",
+  "name": "braided",
   "version": "1.0.0",
   "description": "Link Ethereum block chains with block hashes",
   "main": "truffle.js",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/alfabc/shackle.git"
+    "url": "git+ssh://git@github.com/alfabc/braided.git"
   },
   "keywords": [
     "ethereum",
@@ -25,9 +25,9 @@
   "author": "Alfa Blockchain Consulting Barcelona S.L.",
   "license": "AGPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/alfabc/shackle/issues"
+    "url": "https://github.com/alfabc/braided/issues"
   },
-  "homepage": "https://github.com/alfabc/shackle#readme",
+  "homepage": "https://github.com/alfabc/braided#readme",
   "dependencies": {
     "babel-core": "^6.26.3",
     "babel-eslint": "^9.0.0",

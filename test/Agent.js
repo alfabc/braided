@@ -3,7 +3,7 @@
 
 // To make this testable, the Agent contains callback functions
 // which are used to subscribe to Web3 notifications for new
-// blocks and for `Shackle.addBlock()`
+// blocks and for `Braided.addBlock()`
 
 // So, for a given agent, we can test it by creating an object
 // and throwing a bunch of alerts at it. We don't have to mock
@@ -198,14 +198,14 @@ contract('ChainBlockHashes', (accounts) => {
 // Chain1 subscribes to addBlock events for ChainX(2-4) from ChainY(2-4)
 // When a watched chain adds a new block/hash
 //   ... and ChainX.ChainY block number >= Chain1.getHighestBlockNumber(ChainY)
-//   ... and the new block/hash is not already recorded in the Shackle contract on Chain1
+//   ... and the new block/hash is not already recorded in the Braided contract on Chain1
 //     Then the block/hash should be added to Chain1
 
 //   ... and the block number is
 
 // When the watched chain produces a new block
-// And the new block is already recorded in the Shackle contract on the recording chain
-// If the block hash matches the block hash recorded in the Shackle contract
+// And the new block is already recorded in the Braided contract on the recording chain
+// If the block hash matches the block hash recorded in the Braided contract
 // Then nothing happens
 // Else
 // an error is reported (MECHANISM?)

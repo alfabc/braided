@@ -10,7 +10,7 @@ const should = require('chai') // eslint-disable-line no-unused-vars
   .should()
 
 contract('ChainBlockHashes', (accounts) => {
-  let shackle
+  let braided
 
   // users
   const superuser = accounts[0]
@@ -50,160 +50,160 @@ contract('ChainBlockHashes', (accounts) => {
   const ropsten2 = '0x88e8bc1dd383672e96d77ee247e7524622ff3b15c337bd33ef602f15ba82d920'
 
   before(async () => {
-    shackle = await ChainBlockHashes.new()
+    braided = await ChainBlockHashes.new()
   })
 
   // Exercises use of openzeppelin-solidity/Superuser
   context('ownership and permissions', () => {
     it('should not allow non-superuser/non-owner to set new owner', async () => {
-      await expectThrow(shackle.transferOwnership(rando, { from: rando }))
+      await expectThrow(braided.transferOwnership(rando, { from: rando }))
     })
 
     it('should allow superuser/owner to set new owner', async () => {
-      await shackle.transferOwnership(owner1, { from: superuser })
+      await braided.transferOwnership(owner1, { from: superuser })
     })
 
     it('should allow owner to set new owner', async () => {
-      await shackle.transferOwnership(owner2, { from: owner1 })
+      await braided.transferOwnership(owner2, { from: owner1 })
     })
 
     it('should allow superuser to set new owner', async () => {
-      await shackle.transferOwnership(owner1, { from: superuser })
+      await braided.transferOwnership(owner1, { from: superuser })
     })
 
     it('should allow owner to add agents', async () => {
-      await shackle.addAgent(agent1, { from: owner1 })
-      await shackle.addAgent(agent2, { from: owner1 })
+      await braided.addAgent(agent1, { from: owner1 })
+      await braided.addAgent(agent2, { from: owner1 })
     })
 
     it('should allow superuser to add agents', async () => {
-      await shackle.addAgent(agent3, { from: superuser })
-      await shackle.addAgent(agent4, { from: superuser })
+      await braided.addAgent(agent3, { from: superuser })
+      await braided.addAgent(agent4, { from: superuser })
     })
 
     it('should not allow non-superuser/non-owner to add agent', async () => {
-      await expectThrow(shackle.addAgent(agent1, { from: owner2 }))
+      await expectThrow(braided.addAgent(agent1, { from: owner2 }))
     })
 
     it('should allow superuser to remove agent', async () => {
-      await shackle.removeAgent(agent2, { from: superuser })
+      await braided.removeAgent(agent2, { from: superuser })
     })
 
     it('should allow owner to remove agent', async () => {
-      await shackle.removeAgent(agent3, { from: owner1 })
+      await braided.removeAgent(agent3, { from: owner1 })
     })
 
     it('should not allow non-superuser/non-owner to remove agent', async () => {
-      await expectThrow(shackle.addAgent(agent1, { from: owner2 }))
+      await expectThrow(braided.addAgent(agent1, { from: owner2 }))
     })
   })
 
   // Test linking multiple testnets together
   context('Link testnets', () => {
     it('should add chains', async () => {
-      await shackle.addChain(mainnetID, mainnetGenesis, 'Foundation', { from: superuser })
-      await shackle.addChain(mordenID, mordenGenesis, 'morden', { from: owner1 })
-      await shackle.addChain(ropstenID, ropstenGenesis, 'Ropsten', { from: superuser })
-      await shackle.addChain(kovanID, kovanGenesis, 'Kovan', { from: owner1 })
-      await shackle.addChain(rinkebyID, rinkebyGenesis, 'Rinkeby', { from: owner1 })
-      await shackle.addChain(classicID, mainnetGenesis, 'Classic', { from: owner1 })
-      await shackle.addChain(classictestID, mordenGenesis, 'Classic test', { from: owner1 });
-      (await shackle.getChainCount()).toNumber().should.be.eq(7)
+      await braided.addChain(mainnetID, mainnetGenesis, 'Foundation', { from: superuser })
+      await braided.addChain(mordenID, mordenGenesis, 'morden', { from: owner1 })
+      await braided.addChain(ropstenID, ropstenGenesis, 'Ropsten', { from: superuser })
+      await braided.addChain(kovanID, kovanGenesis, 'Kovan', { from: owner1 })
+      await braided.addChain(rinkebyID, rinkebyGenesis, 'Rinkeby', { from: owner1 })
+      await braided.addChain(classicID, mainnetGenesis, 'Classic', { from: owner1 })
+      await braided.addChain(classictestID, mordenGenesis, 'Classic test', { from: owner1 });
+      (await braided.getChainCount()).toNumber().should.be.eq(7)
     })
 
     it('should not allow chain ID 0', async () => {
-      await expectThrow(shackle.addChain(0, zero, 'zero'))
+      await expectThrow(braided.addChain(0, zero, 'zero'))
     })
 
     it('should not allow non-owner to add chain', async () => {
-      await expectThrow(shackle.addChain(7, mainnetGenesis, 'unlucky', { from: agent1 }))
+      await expectThrow(braided.addChain(7, mainnetGenesis, 'unlucky', { from: agent1 }))
     })
 
     it('should get chain info per ID', async () => {
-      (await shackle.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
-      String(await shackle.getChainDescription(ropstenID)).should.be.eq('Ropsten')
-      await expectThrow(shackle.getGenesisBlockHash(33))
-      await expectThrow(shackle.getChainDescription(83))
+      (await braided.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
+      String(await braided.getChainDescription(ropstenID)).should.be.eq('Ropsten')
+      await expectThrow(braided.getGenesisBlockHash(33))
+      await expectThrow(braided.getChainDescription(83))
     })
 
     it('should not allow a duplicate chain with the same ID', async () => {
-      await expectThrow(shackle.addChain(mainnetID, zero, 'Dup', { from: owner1 }));
+      await expectThrow(braided.addChain(mainnetID, zero, 'Dup', { from: owner1 }));
       // ensure unmodified
-      (await shackle.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
+      (await braided.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
     })
 
     it('should allow agents to add hashes', async () => {
-      await shackle.addBlock(mainnetID, 1, mainnet1, { from: agent1 })
-      await shackle.addBlock(mainnetID, 2, mainnet2, { from: agent1 })
-      await shackle.addBlock(mainnetID, 3, mainnet3, { from: agent1 })
-      await shackle.addBlock(ropstenID, 1, ropsten1, { from: agent4 })
-      await shackle.addBlock(ropstenID, 2, ropsten2, { from: agent4 })
-      await shackle.addBlock(classicID, 1, mainnet1, { from: agent4 })
+      await braided.addBlock(mainnetID, 1, mainnet1, { from: agent1 })
+      await braided.addBlock(mainnetID, 2, mainnet2, { from: agent1 })
+      await braided.addBlock(mainnetID, 3, mainnet3, { from: agent1 })
+      await braided.addBlock(ropstenID, 1, ropsten1, { from: agent4 })
+      await braided.addBlock(ropstenID, 2, ropsten2, { from: agent4 })
+      await braided.addBlock(classicID, 1, mainnet1, { from: agent4 })
       // but not on an invalid chain
-      await expectThrow(shackle.addBlock(5, 1, mainnet1, { from: agent1 }))
+      await expectThrow(braided.addBlock(5, 1, mainnet1, { from: agent1 }))
     })
 
     it('should not allow non-agents to add hashes', async () => {
-      await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: superuser }))
-      await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: owner2 }))
-      await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: agent2 }))
-      await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: agent3 }))
-      await expectThrow(shackle.addBlock(classicID, 2, mainnet2, { from: rando }))
+      await expectThrow(braided.addBlock(classicID, 2, mainnet2, { from: superuser }))
+      await expectThrow(braided.addBlock(classicID, 2, mainnet2, { from: owner2 }))
+      await expectThrow(braided.addBlock(classicID, 2, mainnet2, { from: agent2 }))
+      await expectThrow(braided.addBlock(classicID, 2, mainnet2, { from: agent3 }))
+      await expectThrow(braided.addBlock(classicID, 2, mainnet2, { from: rando }))
     })
 
     it('should retrieve highest block number in a chain', async () => {
-      (await shackle.getHighestBlockNumber(mainnetID)).toNumber().should.be.eq(3);
-      (await shackle.getHighestBlockNumber(ropstenID)).toNumber().should.be.eq(2);
-      (await shackle.getHighestBlockNumber(classicID)).toNumber().should.be.eq(1)
+      (await braided.getHighestBlockNumber(mainnetID)).toNumber().should.be.eq(3);
+      (await braided.getHighestBlockNumber(ropstenID)).toNumber().should.be.eq(2);
+      (await braided.getHighestBlockNumber(classicID)).toNumber().should.be.eq(1)
     })
 
     it('should not retrieve highest block number for invalid chains', async () => {
-      await expectThrow(shackle.getHighestBlockNumber(5))
+      await expectThrow(braided.getHighestBlockNumber(5))
     })
 
     it('should not retrieve highest block number for empty chains', async () => {
-      await expectThrow(shackle.getHighestBlockNumber(kovanID))
+      await expectThrow(braided.getHighestBlockNumber(kovanID))
     })
 
     it('should retrieve hashes for specific block numbers', async () => {
-      (await shackle.getBlockHash(mainnetID, 1)).should.be.eq(mainnet1);
-      (await shackle.getBlockHash(mainnetID, 2)).should.be.eq(mainnet2);
-      (await shackle.getBlockHash(mainnetID, 3)).should.be.eq(mainnet3);
-      (await shackle.getBlockHash(ropstenID, 1)).should.be.eq(ropsten1);
-      (await shackle.getBlockHash(ropstenID, 2)).should.be.eq(ropsten2);
-      (await shackle.getBlockHash(classicID, 1)).should.be.eq(mainnet1)
+      (await braided.getBlockHash(mainnetID, 1)).should.be.eq(mainnet1);
+      (await braided.getBlockHash(mainnetID, 2)).should.be.eq(mainnet2);
+      (await braided.getBlockHash(mainnetID, 3)).should.be.eq(mainnet3);
+      (await braided.getBlockHash(ropstenID, 1)).should.be.eq(ropsten1);
+      (await braided.getBlockHash(ropstenID, 2)).should.be.eq(ropsten2);
+      (await braided.getBlockHash(classicID, 1)).should.be.eq(mainnet1)
     })
 
     it('should require increasing block numbers for any given chain', async () => {
-      await shackle.addBlock(mainnetID, 9, mainnet9, { from: agent1 })
-      await expectThrow(shackle.addBlock(mainnetID, 8, mainnet8, { from: agent1 }))
+      await braided.addBlock(mainnetID, 9, mainnet9, { from: agent1 })
+      await expectThrow(braided.addBlock(mainnetID, 8, mainnet8, { from: agent1 }))
     })
 
     it('should not retrieve hashes for nonexistent block numbers', async () => {
-      await expectThrow(shackle.getBlockHash(mainnetID, 8))
-      await expectThrow(shackle.getBlockHash(mainnetID, 0))
+      await expectThrow(braided.getBlockHash(mainnetID, 8))
+      await expectThrow(braided.getBlockHash(mainnetID, 0))
     })
 
     it('should get previous block number', async () => {
-      (await shackle.getPreviousBlockNumber(mainnetID, 9)).toNumber().should.be.eq(3)
+      (await braided.getPreviousBlockNumber(mainnetID, 9)).toNumber().should.be.eq(3)
     })
 
     it('should get previous block', async () => {
-      let block = await shackle.getPreviousBlock(mainnetID, 9)
+      let block = await braided.getPreviousBlock(mainnetID, 9)
       block[0].toNumber().should.be.eq(3)
       block[1].should.be.eq(mainnet3)
     })
 
     it('should fail to get previous block number for unrecorded blocks', async () => {
-      await expectThrow(shackle.getPreviousBlockNumber(mainnetID, 8))
-      await expectThrow(shackle.getPreviousBlockNumber(mainnetID, 0))
-      await expectThrow(shackle.getPreviousBlockNumber(mainnetID, 11))
+      await expectThrow(braided.getPreviousBlockNumber(mainnetID, 8))
+      await expectThrow(braided.getPreviousBlockNumber(mainnetID, 0))
+      await expectThrow(braided.getPreviousBlockNumber(mainnetID, 11))
     })
 
     it('should fail to get previous block for unrecorded blocks', async () => {
-      await expectThrow(shackle.getPreviousBlock(mainnetID, 8))
-      await expectThrow(shackle.getPreviousBlock(mainnetID, 0))
-      await expectThrow(shackle.getPreviousBlock(mainnetID, 11))
+      await expectThrow(braided.getPreviousBlock(mainnetID, 8))
+      await expectThrow(braided.getPreviousBlock(mainnetID, 0))
+      await expectThrow(braided.getPreviousBlock(mainnetID, 11))
     })
   })
 })

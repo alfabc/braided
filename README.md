@@ -1,10 +1,10 @@
-[![Build Status](https://travis-ci.org/alfabc/shackle.svg?branch=master)](https://travis-ci.org/alfabc/shackle)
-[![Coverage Status](https://coveralls.io/repos/github/alfabc/shackle/badge.svg?branch=master)](https://coveralls.io/github/alfabc/shackle?branch=master)
+[![Build Status](https://travis-ci.org/alfabc/braided.svg?branch=master)](https://travis-ci.org/alfabc/braided)
+[![Coverage Status](https://coveralls.io/repos/github/alfabc/braided/badge.svg?branch=master)](https://coveralls.io/github/alfabc/braided?branch=master)
 
-# shackle 
+# braided 
 
 ## Overview
-Shackle improves the censorship and forgery resistance of Ethereum blockchains by using smart contracts to share block hashes among multiple chains, thus helping to reduce the probability of [51% attacks](https://www.crypto51.app/about.html).  By tying together multiple, independently verified chains with different consensus algorithms and trust methods, this method would make it necessary for an attacker to simultaneously attack all chains, thus increasing the cost and reducing the likelihood of a successful attack.
+Braided improves the censorship and forgery resistance of Ethereum blockchains by using smart contracts to share block hashes among multiple chains, thus helping to reduce the probability of [51% attacks](https://www.crypto51.app/about.html).  By tying together multiple, independently verified chains with different consensus algorithms and trust methods, this method would make it necessary for an attacker to simultaneously attack all chains, thus increasing the cost and reducing the likelihood of a successful attack.
 
 This is achieved by the simple method of recording recent block numbers and block hashes for different blockchains, and doing this simultaneously on multiple chains at the same time.  When executed on multiple chains which have low (or no) economic value to their gas, this makes mutual verification of chains possible without spending ETH that is worth money.
 
