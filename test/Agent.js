@@ -27,6 +27,7 @@ const md5 = require('md5')
 const chainCount = 4
 const fixtureLines = 30
 let fixtures = []
+
 // For the purposes of this test we're pretending these contracts
 // are deployed on four different chains
 let contracts = []
@@ -54,25 +55,32 @@ contract('ChainBlockHashes', (accounts) => {
     })
 
     it('should instantiate a ChainBlockHashes contract for each chain', async () => {
+      // create contracts (as if they were on different chains)
       for (let c = 0; c < chainCount; c++) {
         contracts.push(await ChainBlockHashes.new())
+      }
+
+      // add chains
+      for (let c = 0; c < chainCount; c++) {
         await contracts[c].addAgent(accounts[c + 1], { from: superuser })
         if (c !== 0) {
-          await contracts[c].addChain(1, contracts[0].contract.address, mainnetGenesis, 'Foundation', { from: superuser })
+          await contracts[c].addChain(1, contracts[0].contract.address, mainnetGenesis,
+            'Foundation', { from: superuser })
         }
         if (c !== 1) {
-          await contracts[c].addChain(2, contracts[0].contract.address, mordenGenesis, 'morden', { from: superuser })
+          await contracts[c].addChain(2, contracts[1].contract.address, mordenGenesis, 'morden', { from: superuser })
         }
         if (c !== 2) {
-          await contracts[c].addChain(3, contracts[0].contract.address, ropstenGenesis, 'Ropsten', { from: superuser })
+          await contracts[c].addChain(3, contracts[2].contract.address, ropstenGenesis, 'Ropsten', { from: superuser })
         }
         if (c !== 3) {
-          await contracts[c].addChain(4, contracts[0].contract.address, kovanGenesis, 'Kovan', { from: superuser })
+          await contracts[c].addChain(4, contracts[3].contract.address, kovanGenesis, 'Kovan', { from: superuser })
         }
 
         // each chain should have all but itself
         (await contracts[c].getChainCount()).toNumber().should.be.eq(chainCount - 1)
       }
+
       contracts.length.should.be.eq(chainCount)
     })
 
