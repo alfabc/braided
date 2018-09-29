@@ -2,8 +2,9 @@ pragma solidity ^0.4.24;
 
 // A common external interface to Braided contracts
 interface BraidedInterface {
-  function addChain(uint, bytes32, string) external;
+  function addChain(uint, address, bytes32, string) external;
   function getChainCount() external view returns (uint);
+  function getBraidedContract(uint) external view returns (address);
   function getGenesisBlockHash(uint) external view returns (bytes32);
   function getChainDescription(uint) external view returns (string);
   function addAgent(address) external;

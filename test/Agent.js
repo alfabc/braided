@@ -58,16 +58,16 @@ contract('ChainBlockHashes', (accounts) => {
         contracts.push(await ChainBlockHashes.new())
         await contracts[c].addAgent(accounts[c + 1], { from: superuser })
         if (c !== 0) {
-          await contracts[c].addChain(1, mainnetGenesis, 'Foundation', { from: superuser })
+          await contracts[c].addChain(1, contracts[0].contract.address, mainnetGenesis, 'Foundation', { from: superuser })
         }
         if (c !== 1) {
-          await contracts[c].addChain(2, mordenGenesis, 'morden', { from: superuser })
+          await contracts[c].addChain(2, contracts[0].contract.address, mordenGenesis, 'morden', { from: superuser })
         }
         if (c !== 2) {
-          await contracts[c].addChain(3, ropstenGenesis, 'Ropsten', { from: superuser })
+          await contracts[c].addChain(3, contracts[0].contract.address, ropstenGenesis, 'Ropsten', { from: superuser })
         }
         if (c !== 3) {
-          await contracts[c].addChain(4, kovanGenesis, 'Kovan', { from: superuser })
+          await contracts[c].addChain(4, contracts[0].contract.address, kovanGenesis, 'Kovan', { from: superuser })
         }
 
         // each chain should have all but itself

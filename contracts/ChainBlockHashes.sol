@@ -10,6 +10,7 @@ contract ChainBlockHashes is BraidedInterface, Superuser {
   // identifies a specific chain that for which block/hashes are stored
   struct Chain {
     uint chainID;
+    address braidedContract; // must support BraidedInterface if present
     bytes32 genesisBlockHash;
     string description;
   }
@@ -35,17 +36,17 @@ contract ChainBlockHashes is BraidedInterface, Superuser {
 
   constructor() public {
     // Chain 0 is reserved
-    chains.push(Chain(0, 0, ""));
+    chains.push(Chain(0, 0, 0, ""));
   }
 
   // Add a chain
-  function addChain(uint chainID, bytes32 genesisBlockHash, string description) external onlyOwnerOrSuperuser() {
+  function addChain(uint chainID, address braidedContract, bytes32 genesisBlockHash, string description) external onlyOwnerOrSuperuser() {
     // chain 0 is reserved
     require(chainID != 0, INVALID_CHAIN);
     // chainID must not already be in use
     require(chainIndexByChainID[chainID] == 0, INVALID_CHAIN);
     // Add the chain
-    chains.push(Chain(chainID, genesisBlockHash, description));
+    chains.push(Chain(chainID, braidedContract, genesisBlockHash, description));
     // make it possible to find the chain in the array by chainID
     chainIndexByChainID[chainID] = chains.length - 1;
   }
@@ -59,6 +60,13 @@ contract ChainBlockHashes is BraidedInterface, Superuser {
   // return total number of chains
   function getChainCount() external view returns (uint) {
     return chains.length - 1;
+  }
+
+  // get the Braided Contract deployed on the specified chain (if any).
+  // If a new instance of the Braided Contract is deployed, then that will
+  // have to be a new Chain ID.
+  function getBraidedContract(uint chainID) external view validChainID(chainID) returns (address) {
+    return chains[chainIndexByChainID[chainID]].braidedContract;
   }
 
   // get the genesis block hash for the specified chain

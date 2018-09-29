@@ -101,33 +101,34 @@ contract('ChainBlockHashes', (accounts) => {
   // Test linking multiple testnets together
   context('Link testnets', () => {
     it('should add chains', async () => {
-      await braided.addChain(mainnetID, mainnetGenesis, 'Foundation', { from: superuser })
-      await braided.addChain(mordenID, mordenGenesis, 'morden', { from: owner1 })
-      await braided.addChain(ropstenID, ropstenGenesis, 'Ropsten', { from: superuser })
-      await braided.addChain(kovanID, kovanGenesis, 'Kovan', { from: owner1 })
-      await braided.addChain(rinkebyID, rinkebyGenesis, 'Rinkeby', { from: owner1 })
-      await braided.addChain(classicID, mainnetGenesis, 'Classic', { from: owner1 })
-      await braided.addChain(classictestID, mordenGenesis, 'Classic test', { from: owner1 });
+      await braided.addChain(mainnetID, braided.contract.address, mainnetGenesis, 'Foundation', { from: superuser })
+      await braided.addChain(mordenID, braided.contract.address, mordenGenesis, 'morden', { from: owner1 })
+      await braided.addChain(ropstenID, braided.contract.address, ropstenGenesis, 'Ropsten', { from: superuser })
+      await braided.addChain(kovanID, braided.contract.address, kovanGenesis, 'Kovan', { from: owner1 })
+      await braided.addChain(rinkebyID, braided.contract.address, rinkebyGenesis, 'Rinkeby', { from: owner1 })
+      await braided.addChain(classicID, braided.contract.address, mainnetGenesis, 'Classic', { from: owner1 })
+      await braided.addChain(classictestID, braided.contract.address, mordenGenesis, 'Classic test', { from: owner1 });
       (await braided.getChainCount()).toNumber().should.be.eq(7)
     })
 
     it('should not allow chain ID 0', async () => {
-      await expectThrow(braided.addChain(0, zero, 'zero'))
+      await expectThrow(braided.addChain(0, braided.contract.address, zero, 'zero'))
     })
 
     it('should not allow non-owner to add chain', async () => {
-      await expectThrow(braided.addChain(7, mainnetGenesis, 'unlucky', { from: agent1 }))
+      await expectThrow(braided.addChain(7, braided.contract.address, mainnetGenesis, 'unlucky', { from: agent1 }))
     })
 
     it('should get chain info per ID', async () => {
       (await braided.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
       String(await braided.getChainDescription(ropstenID)).should.be.eq('Ropsten')
+      String(await braided.getBraidedContract(ropstenID)).should.be.eq(braided.contract.address)
       await expectThrow(braided.getGenesisBlockHash(33))
       await expectThrow(braided.getChainDescription(83))
     })
 
     it('should not allow a duplicate chain with the same ID', async () => {
-      await expectThrow(braided.addChain(mainnetID, zero, 'Dup', { from: owner1 }));
+      await expectThrow(braided.addChain(mainnetID, braided.contract.address, zero, 'Dup', { from: owner1 }));
       // ensure unmodified
       (await braided.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
     })
