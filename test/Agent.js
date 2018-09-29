@@ -20,7 +20,7 @@ const parse = require('csv-parse/lib/sync')
 const fs = require('fs')
 const util = require('util')
 const readFile = util.promisify(fs.readFile)
-const ChainBlockHashes = artifacts.require('../contracts/ChainBlockHashes.sol')
+const Braided = artifacts.require('../contracts/Braided.sol')
 const expectThrow = require('./helpers/expectThrow.js')
 const md5 = require('md5')
 
@@ -43,7 +43,7 @@ function fakeHash (value) {
   return '0x' + hash + hash
 }
 
-contract('ChainBlockHashes', (accounts) => {
+contract('Braided', (accounts) => {
   let superuser = accounts[0]
 
   context('loading test data', () => {
@@ -54,10 +54,10 @@ contract('ChainBlockHashes', (accounts) => {
       fixtures.length.should.be.eq(chainCount)
     })
 
-    it('should instantiate a ChainBlockHashes contract for each chain', async () => {
+    it('should instantiate a Braided contract for each chain', async () => {
       // create contracts (as if they were on different chains)
       for (let c = 0; c < chainCount; c++) {
-        contracts.push(await ChainBlockHashes.new())
+        contracts.push(await Braided.new())
       }
 
       // add chains

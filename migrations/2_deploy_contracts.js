@@ -1,5 +1,5 @@
-const ChainBlockHashes = artifacts.require('ChainBlockHashes')
+const Braided = artifacts.require('Braided')
 
 module.exports = function (deployer) {
-  deployer.deploy(ChainBlockHashes)
+  deployer.deploy(Braided)
 }

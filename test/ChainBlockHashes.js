@@ -1,7 +1,7 @@
 /* eslint-env node, mocha */
 /* eslint no-unused-expressions: 0 */
 /* eslint prefer-const: 0 */
-const ChainBlockHashes = artifacts.require('../contracts/ChainBlockHashes.sol')
+const Braided = artifacts.require('../contracts/Braided.sol')
 const expectThrow = require('./helpers/expectThrow.js')
 const BigNumber = require('bignumber.js')
 const should = require('chai') // eslint-disable-line no-unused-vars
@@ -9,7 +9,7 @@ const should = require('chai') // eslint-disable-line no-unused-vars
   .use(require('chai-as-promised'))
   .should()
 
-contract('ChainBlockHashes', (accounts) => {
+contract('Braided', (accounts) => {
   let braided
 
   // users
@@ -50,7 +50,7 @@ contract('ChainBlockHashes', (accounts) => {
   const ropsten2 = '0x88e8bc1dd383672e96d77ee247e7524622ff3b15c337bd33ef602f15ba82d920'
 
   before(async () => {
-    braided = await ChainBlockHashes.new()
+    braided = await Braided.new()
   })
 
   // Exercises use of openzeppelin-solidity/Superuser

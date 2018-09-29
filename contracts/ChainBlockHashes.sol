@@ -5,7 +5,7 @@ import "openzeppelin-solidity/contracts/ownership/Superuser.sol";
 
 
 // Smart contract for interchain linking
-contract ChainBlockHashes is BraidedInterface, Superuser {
+contract Braided is BraidedInterface, Superuser {
 
   // identifies a specific chain that for which block/hashes are stored
   struct Chain {
