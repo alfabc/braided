@@ -70,32 +70,6 @@ contract('Braided', (accounts) => {
     it('should allow superuser to set new owner', async () => {
       await braided.transferOwnership(owner1, { from: superuser })
     })
-
-    it('should allow owner to add agents', async () => {
-      await braided.addAgent(agent1, { from: owner1 })
-      await braided.addAgent(agent2, { from: owner1 })
-    })
-
-    it('should allow superuser to add agents', async () => {
-      await braided.addAgent(agent3, { from: superuser })
-      await braided.addAgent(agent4, { from: superuser })
-    })
-
-    it('should not allow non-superuser/non-owner to add agent', async () => {
-      await expectThrow(braided.addAgent(agent1, { from: owner2 }))
-    })
-
-    it('should allow superuser to remove agent', async () => {
-      await braided.removeAgent(agent2, { from: superuser })
-    })
-
-    it('should allow owner to remove agent', async () => {
-      await braided.removeAgent(agent3, { from: owner1 })
-    })
-
-    it('should not allow non-superuser/non-owner to remove agent', async () => {
-      await expectThrow(braided.addAgent(agent1, { from: owner2 }))
-    })
   })
 
   // Test linking multiple testnets together
@@ -132,7 +106,39 @@ contract('Braided', (accounts) => {
       // ensure unmodified
       (await braided.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
     })
+  })
 
+  context('Add agents', () => {
+    it('should add chains', async () => {
+      await braided.addAgent(agent1, mainnetID, { from: owner1 })
+      await braided.addAgent(agent2, mainnetID, { from: owner1 })
+    })
+
+    it('should allow superuser to add agents', async () => {
+      await braided.addAgent(agent3, mainnetID, { from: superuser })
+      await braided.addAgent(agent4, mainnetID, { from: superuser })
+      await braided.addAgent(agent4, ropstenID, { from: superuser })
+      await braided.addAgent(agent4, classicID, { from: superuser })
+    })
+
+    it('should not allow non-superuser/non-owner to add agent', async () => {
+      await expectThrow(braided.addAgent(agent1, mainnetID, { from: owner2 }))
+    })
+
+    it('should allow superuser to remove agent', async () => {
+      await braided.removeAgent(agent2, mainnetID, { from: superuser })
+    })
+
+    it('should allow owner to remove agent', async () => {
+      await braided.removeAgent(agent3, mainnetID, { from: owner1 })
+    })
+
+    it('should not allow non-superuser/non-owner to remove agent', async () => {
+      await expectThrow(braided.addAgent(agent1, mainnetID, { from: owner2 }))
+    })
+  })
+
+  context('set and get hashes', () => {
     it('should allow agents to add hashes', async () => {
       await braided.addBlock(mainnetID, 1, mainnet1, { from: agent1 })
       await braided.addBlock(mainnetID, 2, mainnet2, { from: agent1 })

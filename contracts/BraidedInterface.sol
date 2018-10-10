@@ -7,8 +7,8 @@ interface BraidedInterface {
   function getBraidedContract(uint) external view returns (address);
   function getGenesisBlockHash(uint) external view returns (bytes32);
   function getChainDescription(uint) external view returns (string);
-  function addAgent(address) external;
-  function removeAgent(address) external;
+  function addAgent(address, uint) external;
+  function removeAgent(address, uint) external;
   function addBlock(uint, uint, bytes32) external;
   function getBlockHash(uint, uint) external view returns (bytes32);
   function getHighestBlockNumber(uint) external view returns (uint);
