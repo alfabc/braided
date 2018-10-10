@@ -60,21 +60,24 @@ contract('Braided', (accounts) => {
         contracts.push(await Braided.new())
       }
 
-      // add chains
+      // add chains, and permissions for agents to add blocks to those chains
       for (let c = 0; c < chainCount; c++) {
-        await contracts[c].addAgent(accounts[c + 1], { from: superuser })
         if (c !== 0) {
           await contracts[c].addChain(1, contracts[0].contract.address, mainnetGenesis,
             'Foundation', { from: superuser })
+          await contracts[c].addAgent(accounts[c + 1], 1, { from: superuser })
         }
         if (c !== 1) {
           await contracts[c].addChain(2, contracts[1].contract.address, mordenGenesis, 'morden', { from: superuser })
+          await contracts[c].addAgent(accounts[c + 1], 2, { from: superuser })
         }
         if (c !== 2) {
           await contracts[c].addChain(3, contracts[2].contract.address, ropstenGenesis, 'Ropsten', { from: superuser })
+          await contracts[c].addAgent(accounts[c + 1], 3, { from: superuser })
         }
         if (c !== 3) {
           await contracts[c].addChain(4, contracts[3].contract.address, kovanGenesis, 'Kovan', { from: superuser })
+          await contracts[c].addAgent(accounts[c + 1], 4, { from: superuser })
         }
 
         // each chain should have all but itself
