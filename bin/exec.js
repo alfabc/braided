@@ -6,7 +6,7 @@ const treeKill = require('tree-kill')
 
 const config = reqCwd.silent('./.braided.js') || {}
 
-let clients = []
+let clients = {}
 
 death((signal, err) => cleanUp())
 
@@ -39,16 +39,16 @@ function launchClients () {
         if (error);
       })
       console.log(`Spawned ${chain.client} pid ${proc.pid} for ${chain.id}`)
-      clients.push(proc)
+      clients[chain.id] = proc
     }
   })
 }
 
 function cleanUp () {
-  for (let client of clients) {
-    let pid = client.pid
+  for (let key in clients) {
+    let pid = clients[key].pid
     treeKill(pid, function () {
-      console.log(`shutting down pid ${pid}`)
+      console.log(`shutting down pid ${pid} for ${key}`)
     })
   }
 }

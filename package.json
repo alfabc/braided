@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Link Ethereum block chains with block hashes",
   "main": "truffle.js",
+  "bin": {
+    "braided": "./bin/exec.js"
+  },
   "directories": {
     "test": "test"
   },
