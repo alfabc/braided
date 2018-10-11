@@ -17,7 +17,7 @@ launchClients()
 
 // for each agent, add the appropriate watchers for each chain
 // according to the config
-console.log("HERE!!!")
+console.log('HERE!!!')
 
 // launch a client for each chain listed in the config;
 // each includes a Geth/Parity config
@@ -35,7 +35,9 @@ function launchClients () {
         console.log(`Configuration error: Unsupported client '${chain.client}'`)
         return (1)
       }
-      let proc = childprocess.exec(`${chain.client} ${params}`, (err, stdout, stderr) => {})
+      let proc = childprocess.exec(`${chain.client} ${params}`, (error, stdout, stderr) => {
+        if (error);
+      })
       console.log(`Spawned ${chain.client} pid ${proc.pid} for ${chain.id}`)
       clients.push(proc)
     }
