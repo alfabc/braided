@@ -10,6 +10,7 @@
     "test": "test"
   },
   "scripts": {
+    "compile": "truffle compile",
     "coverage": "./node_modules/.bin/solidity-coverage",
     "solium": "./node_modules/.bin/solium --dir contracts/",
     "lint": "./node_modules/.bin/eslint .",
