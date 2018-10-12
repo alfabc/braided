@@ -18,16 +18,7 @@ let web3s = {}
 death((signal, err) => cleanUp())
 
 // launch an agent for each listed in the config
-launchClients()
-
-// create contract and instance for each contract on each strand
-for (let key in config.strands) {
-  let strand = config.strands[key]
-  contracts[key] = contract(braidedArtifacts)
-  contracts[key].setProvider(web3s[strand.chain].currentProvider)
-  contracts[key].defaults({ gas: '250000' })
-  strands[key] = contracts[key].at(strand.contractAddress)
-}
+launch()
 
 // for each agent, add the appropriate watchers for each chain
 // according to the config
@@ -39,17 +30,18 @@ for (let agent of config.agents) {
 
 // launch a client for each chain listed in the config;
 // each includes a Geth/Parity config
-function launchClients () {
+function launch() {
   return new Promise((resolve, reject) => {
     for (let key in config.chains) {
       let chain = config.chains[key]
       let params = ''
       let port = 30700 + chain.networkID
       let rpcport = 3370 + chain.networkID
+      let wsport = 8546 + chain.networkID
       if (chain.client === 'geth') {
-        params = `--port ${port} --rpc --rpcaddr "0.0.0.0" --rpcport ${rpcport} --rpcapi "web3,eth,net,debug" --rpccorsdomain "*" --syncmode "light" --${chain.clientChainName}` // eslint-disable-line max-len
+        params = `--port ${port} --rpc --rpcaddr "0.0.0.0" --rpcport ${rpcport} --rpcapi "web3,eth,net,debug" --rpccorsdomain "*" --ws --wsport ${wsport} --wsaddr 0.0.0.0 --wsorigins "*" --syncmode "light" --${chain.clientChainName}` // eslint-disable-line max-len
       } else if (chain.client === 'parity') {
-        params = `--light --port=${port} --jsonrpc-port=${rpcport} --chain=${key}`
+        params = `--light --port=${port} --jsonrpc-port=${rpcport} --ws-port=${wsport} --chain=${key}`
       } else {
         console.log(`Configuration error: Unsupported client '${chain.client}'`)
         return (1)
@@ -61,11 +53,43 @@ function launchClients () {
       clients[key] = proc
 
       // create a Web3 instance for each client
-      web3s[key] = new Web3(new Web3.providers.HttpProvider('http://localhost:' + rpcport))
+      web3s[key] = new Web3('ws://localhost:' + wsport)
+
+      sleep(150000)
 
       // add a watcher for new blocks
+      // pass in the key so we know which chain it comes from
+      // console.log(web3s[key])
+      //console.log(web3s[key].providers)
+      web3s[key].eth.subscribe('newBlockHeaders', function(error, result){
+        if (!error) {
+          // console.log(result);
+        }
+        // console.error(error);
+      })
+      .on("data", function(blockHeader){
+        handleNewBlock(key, blockHeader);
+      })
+      .on("error", function(error) {
+        console.error(`${key} subscription error: ${error}`)
+      })
+    }
+
+    // create contract and instance for each contract on each strand
+    for (let key in config.strands) {
+      let strand = config.strands[key]
+      contracts[key] = contract(braidedArtifacts)
+    //  console.log("strand.chain: " + strand.chain)
+    //  console.log(web3s)
+      contracts[key].setProvider(web3s[strand.chain].currentProvider)
+      contracts[key].defaults({ gas: '250000' })
+      strands[key] = contracts[key].at(strand.contractAddress)
     }
   })
+}
+
+function handleNewBlock (chainKey, blockHeader) {
+  console.log(`handleNewBlock: ${chainKey} ${blockHeader.number} ${blockHeader.hash}`)
 }
 
 function cleanUp () {
@@ -75,4 +99,15 @@ function cleanUp () {
       console.log(`shutting down pid ${pid} for ${key}`)
     })
   }
+}
+
+function sleep(milliseconds) {
+  console.log("asleep")
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+  console.log("awake")
 }
