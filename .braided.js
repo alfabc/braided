@@ -1,9 +1,20 @@
 module.exports = {
+  // Chains are public blockchains
   chains: [
     { id: 'mainnet', client: 'geth', networkID: 1, clientChainName: '' },
     { id: 'ropsten', client: 'geth', networkID: 3, clientChainName: 'testnet' },
     { id: 'rinkeby', client: 'geth', networkID: 4, clientChainName: 'rinkeby' },
     { id: 'kovan', client: 'parity', networkID: 42, clientChainName: 'kovan' }],
+
+  // Strands are deployed Braided contracts on public blockchains
+  // There can be multiple strands deployed on a single chain; old versions,
+  // abandoned, competing, forked, etc.
+  strands: [
+    { chain: 'mainnet', contract: '0x00C8Bc664147389328Cb56f0b1EDc391c591191f' },
+    { chain: 'ropsten', contract: '0x00C8Bc664147389328Cb56f0b1EDc391c591191f' },
+    { chain: 'rinkeby', contract: '0x00C8Bc664147389328Cb56f0b1EDc391c591191f' },
+    { chain: 'kovan', contract: '0x00C8Bc664147389328Cb56f0b1EDc391c591191f' },
+  ],
 
   // write chain, [read chains, block count interval, seconds interval]
   // interval "0" means every block or every second (no delay)
