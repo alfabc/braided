@@ -30,7 +30,7 @@ for (let agent of config.agents) {
 
 // launch a client for each chain listed in the config;
 // each includes a Geth/Parity config
-function launch() {
+function launch () {
   return new Promise((resolve, reject) => {
     for (let key in config.chains) {
       let chain = config.chains[key]
@@ -60,27 +60,27 @@ function launch() {
       // add a watcher for new blocks
       // pass in the key so we know which chain it comes from
       // console.log(web3s[key])
-      //console.log(web3s[key].providers)
-      web3s[key].eth.subscribe('newBlockHeaders', function(error, result){
+      // console.log(web3s[key].providers)
+      web3s[key].eth.subscribe('newBlockHeaders', function (error, result) {
         if (!error) {
           // console.log(result);
         }
         // console.error(error);
       })
-      .on("data", function(blockHeader){
-        handleNewBlock(key, blockHeader);
-      })
-      .on("error", function(error) {
-        console.error(`${key} subscription error: ${error}`)
-      })
+        .on('data', function (blockHeader) {
+          handleNewBlock(key, blockHeader)
+        })
+        .on('error', function (error) {
+          console.error(`${key} subscription error: ${error}`)
+        })
     }
 
     // create contract and instance for each contract on each strand
     for (let key in config.strands) {
       let strand = config.strands[key]
       contracts[key] = contract(braidedArtifacts)
-    //  console.log("strand.chain: " + strand.chain)
-    //  console.log(web3s)
+      // console.log("strand.chain: " + strand.chain)
+      // console.log(web3s)
       contracts[key].setProvider(web3s[strand.chain].currentProvider)
       contracts[key].defaults({ gas: '250000' })
       strands[key] = contracts[key].at(strand.contractAddress)
@@ -101,13 +101,13 @@ function cleanUp () {
   }
 }
 
-function sleep(milliseconds) {
-  console.log("asleep")
-  var start = new Date().getTime();
+function sleep (milliseconds) {
+  console.log('asleep')
+  var start = new Date().getTime()
   for (var i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > milliseconds){
-      break;
+    if ((new Date().getTime() - start) > milliseconds) {
+      break
     }
   }
-  console.log("awake")
+  console.log('awake')
 }
