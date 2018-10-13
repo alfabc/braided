@@ -1,10 +1,10 @@
 module.exports = {
   // Chains are public blockchains
   chains: {
-    mainnet: { client: 'geth', networkID: 1, clientChainName: '' },
-    ropsten: { client: 'geth', networkID: 3, clientChainName: 'testnet' },
-    rinkeby: { client: 'geth', networkID: 4, clientChainName: 'rinkeby' },
-    kovan: { client: 'parity', networkID: 42, clientChainName: 'kovan' } },
+    mainnet: { client: 'geth', networkID: 1, mode: 'full', chainName: '' },
+    ropsten: { client: 'geth', networkID: 3, mode: 'light', chainName: 'testnet' },
+    rinkeby: { client: 'geth', networkID: 4, mode: 'light', chainName: 'rinkeby' },
+    kovan: { client: 'parity', networkID: 42, mode: 'light', chainName: 'kovan' } },
 
   // Strands are deployed Braided contracts on public blockchains
   // There can be multiple strands deployed on a single chain; old versions,

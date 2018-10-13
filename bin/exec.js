@@ -40,9 +40,9 @@ function launch () {
       let rpcport = 3370 + chain.networkID
       let wsport = 8546 + chain.networkID
       if (chain.client === 'geth') {
-        params = `--port ${port} --rpc --rpcaddr "0.0.0.0" --rpcport ${rpcport} --rpcapi "web3,eth,net,debug" --rpccorsdomain "*" --ws --wsport ${wsport} --wsaddr 0.0.0.0 --wsorigins "*" --syncmode "light" --${chain.clientChainName}` // eslint-disable-line max-len
+        params = `--port ${port} --rpc --rpcaddr "0.0.0.0" --rpcport ${rpcport} --rpcapi "web3,eth,net,debug" --rpccorsdomain "*" --ws --wsport ${wsport} --wsaddr 0.0.0.0 --wsorigins "*" --syncmode "${chain.mode}" --${chain.chainName}` // eslint-disable-line max-len
       } else if (chain.client === 'parity') {
-        params = `--light --port=${port} --jsonrpc-port=${rpcport} --ws-port=${wsport} --chain=${key}`
+        params = `--${chain.mode} --port=${port} --jsonrpc-port=${rpcport} --ws-port=${wsport} --chain=${chain.chainName}` // eslint-disable-line max-len
       } else {
         console.log(`Configuration error: Unsupported client '${chain.client}'`)
         return (1)
