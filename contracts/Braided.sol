@@ -34,6 +34,8 @@ contract Braided is BraidedInterface, Superuser {
   mapping(uint => Block[]) internal blocks;
   mapping(uint => mapping(uint => uint)) internal blockByNumber;
 
+  event BlockAdded(uint indexed chainID, uint indexed blockNumber, bytes32 blockHash);
+
   constructor() public {
     // Chain 0 is reserved
     chains.push(Chain(0, 0, 0, ""));
@@ -99,6 +101,8 @@ contract Braided is BraidedInterface, Superuser {
     blocks[chainID].push(Block(blockNumber, blockHash));
     // make it possible to look up the block by block number
     blockByNumber[chainID][blockNumber] = blocks[chainID].length - 1;
+    // add the event for notification
+    emit BlockAdded(chainID, blockNumber, blockHash);
   }
 
   // get the block hash for the block number on the specified chain

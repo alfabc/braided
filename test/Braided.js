@@ -46,6 +46,7 @@ contract('Braided', (accounts) => {
   const mainnet3 = '0x3d6122660cc824376f11ee842f83addc3525e2dd6756b9bcf0affa6aa88cf741'
   const mainnet8 = '0x2ce94342df186bab4165c268c43ab982d360c9474f429fec5565adfc5d1f258b'
   const mainnet9 = '0x997e47bf4cac509c627753c06385ac866641ec6f883734ff7944411000dc576e'
+  const mainneta = '0x4ff4a38b278ab49f7739d3a4ed4e12714386a9fdf72192f2e8f7da7822f10b4d'
   const ropsten1 = '0x41800b5c3f1717687d85fc9018faac0a6e90b39deaa0b99e7fe4fe796ddeb26a'
   const ropsten2 = '0x88e8bc1dd383672e96d77ee247e7524622ff3b15c337bd33ef602f15ba82d920'
 
@@ -211,6 +212,14 @@ contract('Braided', (accounts) => {
       await expectThrow(braided.getPreviousBlock(mainnetID, 8))
       await expectThrow(braided.getPreviousBlock(mainnetID, 0))
       await expectThrow(braided.getPreviousBlock(mainnetID, 11))
+    })
+
+    it('should emit an event when adding a block', async () => {
+      let tx = await braided.addBlock(mainnetID, 10, mainneta, { from: agent1 })
+      tx.logs[0].event.should.be.equal('BlockAdded')
+      tx.logs[0].args.chainID.toNumber().should.be.eq(mainnetID)
+      tx.logs[0].args.blockNumber.toNumber().should.be.eq(10)
+      tx.logs[0].args.blockHash.should.be.eq(mainneta)
     })
   })
 })
