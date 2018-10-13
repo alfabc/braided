@@ -2,6 +2,7 @@
 const childprocess = require('child_process')
 const contract = require('truffle-contract')
 const death = require('death')
+const fs = require('fs')
 const reqCwd = require('req-cwd')
 const treeKill = require('tree-kill')
 const Web3 = require('web3')
@@ -49,13 +50,15 @@ function launch () {
       let proc = childprocess.exec(`${chain.client} ${params}`, (error, stdout, stderr) => {
         if (error);
       })
+      proc.stderr.pipe(fs.createWriteStream(`/tmp/${chain.client}-${key}-err.log`))
+      proc.stdout.pipe(fs.createWriteStream(`/tmp/${chain.client}-${key}-out.log`))
       console.log(`Spawned ${chain.client} pid ${proc.pid} for ${key}`)
       clients[key] = proc
 
       // create a Web3 instance for each client
       web3s[key] = new Web3('ws://localhost:' + wsport)
 
-      sleep(150000)
+      sleep(15)
 
       // add a watcher for new blocks
       // pass in the key so we know which chain it comes from
@@ -101,13 +104,8 @@ function cleanUp () {
   }
 }
 
-function sleep (milliseconds) {
-  console.log('asleep')
-  var start = new Date().getTime()
-  for (var i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > milliseconds) {
-      break
-    }
-  }
+function sleep (seconds) {
+  console.log(`sleeping ${seconds} seconds`)
+  childprocess.execSync(`sleep ${seconds}`)
   console.log('awake')
 }
