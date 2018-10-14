@@ -9,9 +9,9 @@
 // and throwing a bunch of alerts at it. We don't have to mock
 // the Web3 calls.
 
-// However, if we want to check the block/hashes against real
+// However, if we wanted to check the block/hashes against real
 // blocks and hashes on the *watched* chains as well, then
-// we'll need to mock the Web3 calls for those chains.
+// we'd need to mock the Web3 calls for those chains.
 //
 /* eslint-env node, mocha */
 /* eslint no-unused-expressions: 0 */
@@ -24,12 +24,12 @@ const Braided = artifacts.require('../contracts/Braided.sol')
 const expectThrow = require('./helpers/expectThrow.js')
 const md5 = require('md5')
 
-const chainCount = 4
+const strandCount = 4
 const fixtureLines = 30
 let fixtures = []
 
 // For the purposes of this test we're pretending these contracts
-// are deployed on four different chains
+// are deployed on four different strands
 let contracts = []
 
 const mainnetGenesis = '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'
@@ -48,57 +48,57 @@ contract('Braided', (accounts) => {
 
   context('loading test data', () => {
     it('should load the test data', async () => {
-      for (let c = 0; c < chainCount; c++) {
-        fixtures.push(parse(await readFile('./test/data/net' + (c + 1) + '.csv')))
+      for (let s = 0; s < strandCount; s++) {
+        fixtures.push(parse(await readFile('./test/data/net' + (s + 1) + '.csv')))
       }
-      fixtures.length.should.be.eq(chainCount)
+      fixtures.length.should.be.eq(strandCount)
     })
 
-    it('should instantiate a Braided contract for each chain', async () => {
-      // create contracts (as if they were on different chains)
-      for (let c = 0; c < chainCount; c++) {
+    it('should instantiate a Braided contract for each strand', async () => {
+      // create contracts (as if they were on different strands)
+      for (let s = 0; s < strandCount; s++) {
         contracts.push(await Braided.new())
       }
 
-      // add chains, and permissions for agents to add blocks to those chains
-      for (let c = 0; c < chainCount; c++) {
-        if (c !== 0) {
-          await contracts[c].addChain(1, contracts[0].contract.address, mainnetGenesis,
+      // add strands, and permissions for agents to add blocks to those strands
+      for (let s = 0; s < strandCount; s++) {
+        if (s !== 0) {
+          await contracts[s].addStrand(1, contracts[0].contract.address, mainnetGenesis,
             'Foundation', { from: superuser })
-          await contracts[c].addAgent(accounts[c + 1], 1, { from: superuser })
+          await contracts[s].addAgent(accounts[s + 1], 1, { from: superuser })
         }
-        if (c !== 1) {
-          await contracts[c].addChain(2, contracts[1].contract.address, mordenGenesis, 'morden', { from: superuser })
-          await contracts[c].addAgent(accounts[c + 1], 2, { from: superuser })
+        if (s !== 1) {
+          await contracts[s].addStrand(2, contracts[1].contract.address, mordenGenesis, 'morden', { from: superuser })
+          await contracts[s].addAgent(accounts[s + 1], 2, { from: superuser })
         }
-        if (c !== 2) {
-          await contracts[c].addChain(3, contracts[2].contract.address, ropstenGenesis, 'Ropsten', { from: superuser })
-          await contracts[c].addAgent(accounts[c + 1], 3, { from: superuser })
+        if (s !== 2) {
+          await contracts[s].addStrand(3, contracts[2].contract.address, ropstenGenesis, 'Ropsten', { from: superuser })
+          await contracts[s].addAgent(accounts[s + 1], 3, { from: superuser })
         }
-        if (c !== 3) {
-          await contracts[c].addChain(4, contracts[3].contract.address, kovanGenesis, 'Kovan', { from: superuser })
-          await contracts[c].addAgent(accounts[c + 1], 4, { from: superuser })
+        if (s !== 3) {
+          await contracts[s].addStrand(4, contracts[3].contract.address, kovanGenesis, 'Kovan', { from: superuser })
+          await contracts[s].addAgent(accounts[s + 1], 4, { from: superuser })
         }
 
-        // each chain should have all but itself
-        (await contracts[c].getChainCount()).toNumber().should.be.eq(chainCount - 1)
+        // each strand should have all but itself
+        (await contracts[s].getStrandCount()).toNumber().should.be.eq(strandCount - 1)
       }
 
-      contracts.length.should.be.eq(chainCount)
+      contracts.length.should.be.eq(strandCount)
     })
 
     it('should write the test data', async () => {
       // For each line in the sample data
       // skip the header line
       for (let l = 1; l < fixtureLines; l++) {
-        // process the line for each chain
-        for (let c = 0; c < chainCount; c++) {
+        // process the line for each strand
+        for (let s = 0; s < strandCount; s++) {
           // skip new blocks and empty lines
-          if (fixtures[c][l][0] === '' && fixtures[c][l][2] !== '') {
-            let chain = parseInt(fixtures[c][l][2].charAt(4))
-            let block = parseInt(fixtures[c][l][3])
-            let hash = '0x' + fixtures[c][l][4]
-            await contracts[c].addBlock(chain, block, hash, { from: accounts[c + 1] })
+          if (fixtures[s][l][0] === '' && fixtures[s][l][2] !== '') {
+            let strand = parseInt(fixtures[s][l][2].charAt(4))
+            let block = parseInt(fixtures[s][l][3])
+            let hash = '0x' + fixtures[s][l][4]
+            await contracts[s].addBlock(strand, block, hash, { from: accounts[s + 1] })
           }
         }
       }
@@ -111,7 +111,7 @@ contract('Braided', (accounts) => {
     })
 
     it('should have correct highest block numbers', async () => {
-      // chain 0 does not have itself
+      // strand 0 does not have itself
       await expectThrow(contracts[0].getHighestBlockNumber(1));
       (await contracts[1].getHighestBlockNumber(1)).toNumber().should.be.eq(23155);
       (await contracts[2].getHighestBlockNumber(1)).toNumber().should.be.eq(23151);

@@ -75,42 +75,42 @@ contract('Braided', (accounts) => {
 
   // Test linking multiple testnets together
   context('Link testnets', () => {
-    it('should add chains', async () => {
-      await braided.addChain(mainnetID, braided.contract.address, mainnetGenesis, 'Foundation', { from: superuser })
-      await braided.addChain(mordenID, braided.contract.address, mordenGenesis, 'morden', { from: owner1 })
-      await braided.addChain(ropstenID, braided.contract.address, ropstenGenesis, 'Ropsten', { from: superuser })
-      await braided.addChain(kovanID, braided.contract.address, kovanGenesis, 'Kovan', { from: owner1 })
-      await braided.addChain(rinkebyID, braided.contract.address, rinkebyGenesis, 'Rinkeby', { from: owner1 })
-      await braided.addChain(classicID, braided.contract.address, mainnetGenesis, 'Classic', { from: owner1 })
-      await braided.addChain(classictestID, braided.contract.address, mordenGenesis, 'Classic test', { from: owner1 });
-      (await braided.getChainCount()).toNumber().should.be.eq(7)
+    it('should add strands', async () => {
+      await braided.addStrand(mainnetID, braided.contract.address, mainnetGenesis, 'Foundation', { from: superuser })
+      await braided.addStrand(mordenID, braided.contract.address, mordenGenesis, 'morden', { from: owner1 })
+      await braided.addStrand(ropstenID, braided.contract.address, ropstenGenesis, 'Ropsten', { from: superuser })
+      await braided.addStrand(kovanID, braided.contract.address, kovanGenesis, 'Kovan', { from: owner1 })
+      await braided.addStrand(rinkebyID, braided.contract.address, rinkebyGenesis, 'Rinkeby', { from: owner1 })
+      await braided.addStrand(classicID, braided.contract.address, mainnetGenesis, 'Classic', { from: owner1 })
+      await braided.addStrand(classictestID, braided.contract.address, mordenGenesis, 'Classic test', { from: owner1 });
+      (await braided.getStrandCount()).toNumber().should.be.eq(7)
     })
 
-    it('should not allow chain ID 0', async () => {
-      await expectThrow(braided.addChain(0, braided.contract.address, zero, 'zero'))
+    it('should not allow strand ID 0', async () => {
+      await expectThrow(braided.addStrand(0, braided.contract.address, zero, 'zero'))
     })
 
-    it('should not allow non-owner to add chain', async () => {
-      await expectThrow(braided.addChain(7, braided.contract.address, mainnetGenesis, 'unlucky', { from: agent1 }))
+    it('should not allow non-owner to add strand', async () => {
+      await expectThrow(braided.addStrand(7, braided.contract.address, mainnetGenesis, 'unlucky', { from: agent1 }))
     })
 
-    it('should get chain info per ID', async () => {
-      (await braided.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
-      String(await braided.getChainDescription(ropstenID)).should.be.eq('Ropsten')
-      String(await braided.getBraidedContract(ropstenID)).should.be.eq(braided.contract.address)
-      await expectThrow(braided.getGenesisBlockHash(33))
-      await expectThrow(braided.getChainDescription(83))
+    it('should get strand info per ID', async () => {
+      (await braided.getStrandGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
+      String(await braided.getStrandDescription(ropstenID)).should.be.eq('Ropsten')
+      String(await braided.getStrandContract(ropstenID)).should.be.eq(braided.contract.address)
+      await expectThrow(braided.getStrandGenesisBlockHash(33))
+      await expectThrow(braided.getStrandDescription(83))
     })
 
-    it('should not allow a duplicate chain with the same ID', async () => {
-      await expectThrow(braided.addChain(mainnetID, braided.contract.address, zero, 'Dup', { from: owner1 }));
+    it('should not allow a duplicate strand with the same ID', async () => {
+      await expectThrow(braided.addStrand(mainnetID, braided.contract.address, zero, 'Dup', { from: owner1 }));
       // ensure unmodified
-      (await braided.getGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
+      (await braided.getStrandGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
     })
   })
 
   context('Add agents', () => {
-    it('should add chains', async () => {
+    it('should add strands', async () => {
       await braided.addAgent(agent1, mainnetID, { from: owner1 })
       await braided.addAgent(agent2, mainnetID, { from: owner1 })
     })
@@ -147,7 +147,7 @@ contract('Braided', (accounts) => {
       await braided.addBlock(ropstenID, 1, ropsten1, { from: agent4 })
       await braided.addBlock(ropstenID, 2, ropsten2, { from: agent4 })
       await braided.addBlock(classicID, 1, mainnet1, { from: agent4 })
-      // but not on an invalid chain
+      // but not on an invalid strand
       await expectThrow(braided.addBlock(5, 1, mainnet1, { from: agent1 }))
     })
 
@@ -159,17 +159,17 @@ contract('Braided', (accounts) => {
       await expectThrow(braided.addBlock(classicID, 2, mainnet2, { from: rando }))
     })
 
-    it('should retrieve highest block number in a chain', async () => {
+    it('should retrieve highest block number in a strand', async () => {
       (await braided.getHighestBlockNumber(mainnetID)).toNumber().should.be.eq(3);
       (await braided.getHighestBlockNumber(ropstenID)).toNumber().should.be.eq(2);
       (await braided.getHighestBlockNumber(classicID)).toNumber().should.be.eq(1)
     })
 
-    it('should not retrieve highest block number for invalid chains', async () => {
+    it('should not retrieve highest block number for invalid strands', async () => {
       await expectThrow(braided.getHighestBlockNumber(5))
     })
 
-    it('should not retrieve highest block number for empty chains', async () => {
+    it('should not retrieve highest block number for empty strands', async () => {
       await expectThrow(braided.getHighestBlockNumber(kovanID))
     })
 
@@ -182,7 +182,7 @@ contract('Braided', (accounts) => {
       (await braided.getBlockHash(classicID, 1)).should.be.eq(mainnet1)
     })
 
-    it('should require increasing block numbers for any given chain', async () => {
+    it('should require increasing block numbers for any given strand', async () => {
       await braided.addBlock(mainnetID, 9, mainnet9, { from: agent1 })
       await expectThrow(braided.addBlock(mainnetID, 8, mainnet8, { from: agent1 }))
     })
@@ -217,7 +217,7 @@ contract('Braided', (accounts) => {
     it('should emit an event when adding a block', async () => {
       let tx = await braided.addBlock(mainnetID, 10, mainneta, { from: agent1 })
       tx.logs[0].event.should.be.equal('BlockAdded')
-      tx.logs[0].args.chainID.toNumber().should.be.eq(mainnetID)
+      tx.logs[0].args.strandID.toNumber().should.be.eq(mainnetID)
       tx.logs[0].args.blockNumber.toNumber().should.be.eq(10)
       tx.logs[0].args.blockHash.should.be.eq(mainneta)
     })

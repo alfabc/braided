@@ -24,6 +24,8 @@ module.exports = {
       contractAddress: '0x00C8Bc664147389328Cb56f0b1EDc391c591191f' }
   },
 
+  // Describes the agents which have permission to add block/hashes to
+  // a given strand.
   // write chain, [read chains, block count interval, seconds interval]
   // interval "0" means every block or every second (no delay)
   // both apply; longest of the two prevails
