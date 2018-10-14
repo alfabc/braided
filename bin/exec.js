@@ -93,6 +93,23 @@ function launch () {
 
 function handleNewBlock (chainKey, blockHeader) {
   console.log(`handleNewBlock: ${chainKey} ${blockHeader.number} ${blockHeader.hash}`)
+
+  // sometimes a bunch of these come in at once, especially when a chain is
+  // catching up, so work with the current highest block number on the chain.
+
+  // block other threads from processing this chain
+
+  // Walk through the agents
+
+  // -- for each one who is watching the chain
+
+  // -- -- check the block number last recorded on the strand
+
+  // -- -- check the update thresholds
+
+  // -- -- record the block on the strand
+
+  // release thread block
 }
 
 function cleanUp () {
