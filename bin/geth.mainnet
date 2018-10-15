@@ -1,0 +1,2 @@
+#!/bin/sh
+geth --rpc --ws --wsaddr 0.0.0.0 -wsorigins "*"

@@ -1,7 +1,7 @@
 module.exports = {
   // Chains are public blockchains
   chains: {
-    mainnet: { client: 'geth', networkID: 1, mode: 'full', chainName: '' },
+    mainnet: { client: 'custom', wsport: 8546 }, // externally launched
     ropsten: { client: 'geth', networkID: 3, mode: 'light', chainName: 'testnet' },
     rinkeby: { client: 'geth', networkID: 4, mode: 'light', chainName: 'rinkeby' },
     kovan: { client: 'parity', networkID: 42, mode: 'light', chainName: 'kovan' } },

@@ -35,41 +35,44 @@ function launch () {
   return new Promise((resolve, reject) => {
     for (let key in config.chains) {
       let chain = config.chains[key]
-      let params = ''
-      let port = 30700 + chain.networkID
-      let rpcport = 3370 + chain.networkID
-      let wsport = 8546 + chain.networkID
-      if (chain.client === 'geth') {
-        params = `--port ${port} --rpc --rpcaddr "0.0.0.0" --rpcport ${rpcport} --rpcapi "web3,eth,net,debug" --rpccorsdomain "*" --ws --wsport ${wsport} --wsaddr 0.0.0.0 --wsorigins "*" --syncmode "${chain.mode}" --${chain.chainName}` // eslint-disable-line max-len
-      } else if (chain.client === 'parity') {
-        params = `--${chain.mode} --port=${port} --jsonrpc-port=${rpcport} --ws-port=${wsport} --chain=${chain.chainName}` // eslint-disable-line max-len
+      let wsport
+      // Existing running clients are 'custom'
+      if (chain.client === 'custom') {
+        wsport = chain.wsport
       } else {
-        console.log(`Configuration error: Unsupported client '${chain.client}'`)
-        return (1)
+        // Other clients are launched
+        let params = ''
+        let port = 30303 + chain.networkID
+        let rpcport = 3370 + chain.networkID
+        wsport = 8546 + chain.networkID
+
+        if (chain.client === 'geth') {
+          params = `--port ${port} --rpc --rpcaddr "0.0.0.0" --rpcport ${rpcport} --rpcapi "web3,eth,net,debug" --rpccorsdomain "*" --ws --wsport ${wsport} --wsaddr 0.0.0.0 --wsorigins "*" --syncmode "${chain.mode}" --${chain.chainName}` // eslint-disable-line max-len
+        } else if (chain.client === 'parity') {
+          params = `--${chain.mode} --port=${port} --jsonrpc-port=${rpcport} --ws-port=${wsport} --chain=${chain.chainName}` // eslint-disable-line max-len
+        } else {
+          console.log(`Configuration error: Unsupported client '${chain.client}'`)
+          return (1)
+        }
+        let proc = childprocess.exec(`${chain.client} ${params}`, (error, stdout, stderr) => {
+          if (error);
+        })
+        proc.stderr.pipe(fs.createWriteStream(`/tmp/${chain.client}-${key}-err.log`))
+        proc.stdout.pipe(fs.createWriteStream(`/tmp/${chain.client}-${key}-out.log`))
+        console.log(`Spawned ${chain.client} pid ${proc.pid} for ${key}`)
+        clients[key] = proc
+
+        sleep(15)
       }
-      let proc = childprocess.exec(`${chain.client} ${params}`, (error, stdout, stderr) => {
-        if (error);
-      })
-      proc.stderr.pipe(fs.createWriteStream(`/tmp/${chain.client}-${key}-err.log`))
-      proc.stdout.pipe(fs.createWriteStream(`/tmp/${chain.client}-${key}-out.log`))
-      console.log(`Spawned ${chain.client} pid ${proc.pid} for ${key}`)
-      clients[key] = proc
 
       // create a Web3 instance for each client
       web3s[key] = new Web3('ws://localhost:' + wsport)
-
-      sleep(15)
 
       // add a watcher for new blocks
       // pass in the key so we know which chain it comes from
       // console.log(web3s[key])
       // console.log(web3s[key].providers)
-      web3s[key].eth.subscribe('newBlockHeaders', function (error, result) {
-        if (!error) {
-          // console.log(result);
-        }
-        // console.error(error);
-      })
+      web3s[key].eth.subscribe('newBlockHeaders')
         .on('data', function (blockHeader) {
           handleNewBlock(key, blockHeader)
         })
@@ -82,8 +85,6 @@ function launch () {
     for (let key in config.strands) {
       let strand = config.strands[key]
       contracts[key] = contract(braidedArtifacts)
-      // console.log("strand.chain: " + strand.chain)
-      // console.log(web3s)
       contracts[key].setProvider(web3s[strand.chain].currentProvider)
       contracts[key].defaults({ gas: '250000' })
       strands[key] = contracts[key].at(strand.contractAddress)
@@ -113,6 +114,14 @@ function handleNewBlock (chainKey, blockHeader) {
 }
 
 function cleanUp () {
+  // Close all websocket connections, or the connection to an external geth
+  // will prevent this process from exiting.
+  // https://ethereum.stackexchange.com/questions/50134/web3-websocket-connection-prevents-node-process-from-exiting
+  for (let key in web3s) {
+    web3s[key].currentProvider.connection.close()
+  }
+
+  // kill clients we launched
   for (let key in clients) {
     let pid = clients[key].pid
     treeKill(pid, function () {
@@ -122,7 +131,7 @@ function cleanUp () {
 }
 
 function sleep (seconds) {
-  console.log(`sleeping ${seconds} seconds`)
+  process.stdout.write(`sleeping ${seconds} seconds...`)
   childprocess.execSync(`sleep ${seconds}`)
-  console.log('awake')
+  console.log(' done.')
 }
