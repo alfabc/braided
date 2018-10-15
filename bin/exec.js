@@ -13,6 +13,8 @@ const braidedArtifacts = require('../build/contracts/Braided.json')
 
 let clients = {}
 let contracts = {}
+let lastBlockNumbers = {}
+let locks = {}
 let strands = {}
 let web3s = {}
 
@@ -20,14 +22,6 @@ death((signal, err) => cleanUp())
 
 // launch an agent for each listed in the config
 launch()
-
-// for each agent, add the appropriate watchers for each chain
-// according to the config
-for (let agent of config.agents) {
-  console.log(agent)
-  console.log(agent.strand)
-  // console.log(clients[agent.chain])
-}
 
 // launch a client for each chain listed in the config;
 // each includes a Geth/Parity config
@@ -79,6 +73,11 @@ function launch () {
         .on('error', function (error) {
           console.error(`${key} subscription error: ${error}`)
         })
+
+      // caches the last seen block
+      lastBlockNumbers[key] = 0
+      // mutex
+      locks[key] = false
     }
 
     // create contract and instance for each contract on each strand
@@ -92,25 +91,50 @@ function launch () {
   })
 }
 
-function handleNewBlock (chainKey, blockHeader) {
-  console.log(`handleNewBlock: ${chainKey} ${blockHeader.number} ${blockHeader.hash}`)
+async function handleNewBlock (chainKey, blockHeader) {
+  // local mutex for each chain to prevent working on two blocks at once
+  if (locks[chainKey]) {
+    console.log(`handleNewBlock: busy ${chainKey} ${blockHeader.number}`)
+    return
+  } else {
+    locks[chainKey] = true
+  }
 
-  // sometimes a bunch of these come in at once, especially when a chain is
-  // catching up, so work with the current highest block number on the chain.
+  try {
+    // quickly skip stale blocks
+    if (lastBlockNumbers[chainKey] >= blockHeader.number) {
+      console.log(`handleNewBlock: skipping ${chainKey} ${blockHeader.number}`)
+      return
+    }
 
-  // block other threads from processing this chain
+    // sometimes a bunch of these come in at once, especially when a chain is
+    // catching up, so work with the current highest block number on the chain.
+    let block = await web3s[chainKey].eth.getBlock('latest')
+    if (block.number > blockHeader.number) {
+      console.log(`handleNewBlock: skipping ${chainKey} ${blockHeader.number} for ${block.number}`)
+    } else {
+      console.log(`handleNewBlock: handling ${chainKey} ${block.number}`)
+    }
 
-  // Walk through the agents
+    lastBlockNumbers[chainKey] = block.number
 
-  // -- for each one who is watching the chain
+    // Walk through the agents
+    for (let agent of config.agents) {
+      // for each one who is watching the chain
+      let params = agent.watch[chainKey]
+      if (params) {
+        console.log(`handleNewblock: considering ${chainKey} for ${agent.strand} ${params.blocks} ${params.seconds}`)
+        // -- -- check the block number last recorded on the strand
 
-  // -- -- check the block number last recorded on the strand
+        // -- -- check the update thresholds
 
-  // -- -- check the update thresholds
-
-  // -- -- record the block on the strand
-
-  // release thread block
+        // -- -- record the block on the strand
+      }
+    }
+  } finally {
+    // unlock chain
+    locks[chainKey] = false
+  }
 }
 
 function cleanUp () {

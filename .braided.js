@@ -35,26 +35,26 @@ module.exports = {
     //   address: '0x00C8Bc664147389328Cb56f0b1EDc391c591191f',
     //   watch: [
     //     { chain: 'ropsten', blocks: 0, seconds: 86400 }] },
-    // Record every block from Mainnet, Rinkeby and Kovan on the ropsten0 strand
+    // Record blocks from Mainnet, Rinkeby and Kovan on the ropsten0 strand
     { strand: 'ropsten0',
       address: '0x00C8Bc664147389328Cb56f0b1EDc391c591191f',
-      watch: [
-        { chain: 'mainnet', blocks: 0, seconds: 0 },
-        { chain: 'rinkeby', blocks: 0, seconds: 0 },
-        { chain: 'kovan', blocks: 0, seconds: 0 }] },
-    // Record every block from Mainnet, Ropsten and Kovan on the rinkeby0 strand
+      watch: {
+        mainnet: { blocks: 1, seconds: 10 },
+        rinkeby: { blocks: 2, seconds: 20 },
+        kovan: { blocks: 3, seconds: 30 } } },
+    // Record blocks from Mainnet, Ropsten and Kovan on the rinkeby0 strand
     { strand: 'rinkeby0',
       address: '0x00C8Bc664147389328Cb56f0b1EDc391c591191f',
-      watch: [
-        { chain: 'mainnet', blocks: 0, seconds: 0 },
-        { chain: 'ropsten', blocks: 0, seconds: 0 },
-        { chain: 'kovan', blocks: 0, seconds: 0 }] },
-    // Record every block from Mainnet, Ropsten and Kovan on the kovan0 strand
+      watch: {
+        mainnet: { blocks: 1, seconds: 11 },
+        ropsten: { blocks: 2, seconds: 21 },
+        kovan: { blocks: 3, seconds: 31 } } },
+    // Record blocks from Mainnet, Ropsten and Rinkeby on the kovan0 strand
     { strand: 'kovan0',
       address: '0x00C8Bc664147389328Cb56f0b1EDc391c591191f',
-      watch: [
-        { chain: 'mainnet', blocks: 0, seconds: 0 },
-        { chain: 'ropsten', blocks: 0, seconds: 0 },
-        { chain: 'rinkeby', blocks: 0, seconds: 0 }] }
+      watch: {
+        mainnet: { blocks: 1, seconds: 12 },
+        ropsten: { blocks: 2, seconds: 22 },
+        rinkeby: { blocks: 3, seconds: 32 } } }
   ]
 }
