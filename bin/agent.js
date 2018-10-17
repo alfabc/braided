@@ -29,16 +29,18 @@ function launch () {
   return new Promise((resolve, reject) => {
     for (let key in config.chains) {
       let chain = config.chains[key]
-      let wsport
-      // Existing running clients are 'custom'
-      if (chain.client === 'custom') {
-        wsport = chain.wsport
+      let endpoint
+
+      // Existing running clients or remote services...
+      if (chain.client === 'websocket') {
+        endpoint = chain.endpoint
       } else {
         // Other clients are launched
         let params = ''
         let port = 30303 + chain.networkID
         let rpcport = 3370 + chain.networkID
-        wsport = 8546 + chain.networkID
+        let wsport = 8546 + chain.networkID
+        endpoint = 'ws://localhost:' + wsport
 
         if (chain.client === 'geth') {
           params = `--port ${port} --rpc --rpcaddr "0.0.0.0" --rpcport ${rpcport} --rpcapi "web3,eth,net,debug" --rpccorsdomain "*" --ws --wsport ${wsport} --wsaddr 0.0.0.0 --wsorigins "*" --syncmode "${chain.mode}" --${chain.chainName}` // eslint-disable-line max-len
@@ -60,7 +62,7 @@ function launch () {
       }
 
       // create a Web3 instance for each client
-      web3s[key] = new Web3('ws://localhost:' + wsport)
+      web3s[key] = new Web3(endpoint)
 
       // add a watcher for new blocks
       // pass in the key so we know which chain it comes from

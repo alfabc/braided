@@ -2,9 +2,10 @@ module.exports = {
   // Chains are public blockchains
   chains: {
     // mainnet: { client: 'geth', networkID: 1, mode: 'light', chainName: '' },
-    mainnet: { client: 'custom', wsport: 8546 }, // ./bin/geth.mainnet
+    mainnet: { client: 'websocket', endpoint: 'ws://localhost:8546' }, // ./bin/geth.mainnet
     // ropsten: { client: 'geth', networkID: 3, mode: 'light', chainName: 'testnet' },
-    ropsten: { client: 'custom', wsport: 8549 }, // ./bin/geth.ropsten
+    // ropsten: { client: 'websocket', endpoint: 'ws://localhost:8549' }, // ./bin/geth.ropsten
+    ropsten: { client: 'websocket', endpoint: 'wss://ropsten.infura.io/ws' },
     rinkeby: { client: 'geth', networkID: 4, mode: 'light', chainName: 'rinkeby' },
     kovan: { client: 'parity', networkID: 42, mode: 'light', chainName: 'kovan' } },
 
