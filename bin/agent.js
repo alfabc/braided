@@ -7,7 +7,7 @@ const reqCwd = require('req-cwd')
 const treeKill = require('tree-kill')
 const Web3 = require('web3')
 
-const config = reqCwd.silent('./.braided.js') || {}
+const config = reqCwd.silent('./braided-config.js') || {}
 
 const braidedArtifacts = require('../build/contracts/Braided.json')
 
