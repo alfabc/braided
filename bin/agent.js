@@ -125,7 +125,7 @@ async function handleNewBlock (chainKey, blockHeader) {
       // for each one who is watching the chain
       let params = agent.watch[chainKey]
       if (params) {
-        console.log(`handleNewblock: considering ${chainKey} ${block.number} for ${agent.strand} ${params.blocks} ${params.seconds}`)
+        console.log(`handleNewblock: considering ${chainKey} ${block.number} for ${agent.strand} ${params.blocks} ${params.seconds}`) // eslint-disable-line max-len
         // -- -- check the time update threshold
         // -- -- if not met, skip
 
