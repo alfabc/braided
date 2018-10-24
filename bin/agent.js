@@ -125,10 +125,15 @@ async function handleNewBlock (chainKey, blockHeader) {
       // for each one who is watching the chain
       let params = agent.watch[chainKey]
       if (params) {
-        console.log(`handleNewblock: considering ${chainKey} for ${agent.strand} ${params.blocks} ${params.seconds}`)
-        // -- -- check the block number last recorded on the strand
+        console.log(`handleNewblock: considering ${chainKey} ${block.number} for ${agent.strand} ${params.blocks} ${params.seconds}`)
+        // -- -- check the time update threshold
+        // -- -- if not met, skip
 
-        // -- -- check the update thresholds
+        // -- -- check the block number last recorded on the strand
+        // -- -- if already recorded, skip
+
+        // -- -- check the block number update threshold
+        // -- -- if the block does not meet the update threshold, skip
 
         // -- -- record the block on the strand
       }
