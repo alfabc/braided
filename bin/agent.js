@@ -113,7 +113,7 @@ async function handleNewBlock (chainKey, blockHeader) {
     // catching up, so work with the current highest block number on the chain.
     let block = await web3s[chainKey].eth.getBlock('latest')
     if (block.number > blockHeader.number) {
-      console.log(`handleNewBlock: skipping ${chainKey} ${blockHeader.number} for ${block.number}`)
+      console.log(`handleNewBlock: handling ${chainKey} ${block.number} instead of ${blockHeader.number}`)
     } else {
       console.log(`handleNewBlock: handling ${chainKey} ${block.number}`)
     }
