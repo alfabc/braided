@@ -10,6 +10,7 @@
     "test": "test"
   },
   "scripts": {
+    "build-contracts": "mkdir -p ./build/merged ; ./node_modules/.bin/sol-merger './contracts/*.sol' ./build/merged",
     "compile": "truffle compile",
     "coverage": "./node_modules/.bin/solidity-coverage",
     "solium": "./node_modules/.bin/solium --dir contracts/",
@@ -17,6 +18,8 @@
     "migrate-ganache": "truffle migrate --network ganache",
     "migrate-mainnet": "truffle migrate --network mainnet",
     "migrate-ropsten": "truffle migrate --network ropsten",
+    "migrate-rinkeby": "truffle migrate --network rinkeby",
+    "migrate-kovan": "truffle migrate --network kovan",
     "test": "truffle test"
   },
   "repository": {
@@ -57,6 +60,7 @@
     "ganache-cli": "^6.1.8",
     "md5": "^2.2.1",
     "openzeppelin-solidity": "^1.12.0",
+    "sol-merger": "^0.1.2",
     "solc": "^0.4.24",
     "solidity-coverage": "^0.5.11",
     "solium": "^1.1.8",
