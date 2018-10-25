@@ -1,16 +1,5 @@
-/*
- * NB: since truffle-hdwallet-provider 0.0.5 you must wrap HDWallet providers in a
- * function when declaring them. Failure to do so will cause commands to hang. ex:
- * ```
- * mainnet: {
- *     provider: function() {
- *       return new HDWalletProvider(mnemonic, 'https://mainnet.infura.io/<infura-key>')
- *     },
- *     network_id: '1',
- *     gas: 4500000,
- *     gasPrice: 10000000000,
- *   },
- */
+const HDWalletProvider = require('truffle-hdwallet-provider')
+require('dotenv').config()
 
 module.exports = {
   solc: {
@@ -27,10 +16,26 @@ module.exports = {
       network_id: '5777',
       gas: 2000000
     },
+    mainnet: {
+      provider: () => new HDWalletProvider(process.env.BRAIDED_MAINNET_OWNER, 'http://127.0.0.1:8545'),
+      network_id: '1',
+      gasPrice: 10000000000,
+      gas: 4612388
+    },
     ropsten: {
-      host: '127.0.0.1',
-      port: 8545,
+      provider: () => new HDWalletProvider(process.env.BRAIDED_ROPSTEN_OWNER, 'http://127.0.0.1:3373'),
       network_id: '3',
+      gasPrice: 10000000000,
+      gas: 4700000
+    },
+    rinkeby: {
+      provider: () => new HDWalletProvider(process.env.BRAIDED_RINKEBY_OWNER, 'http://127.0.0.1:3374'),
+      network_id: '4',
+      gas: 6700000
+    },
+    kovan: {
+      provider: () => new HDWalletProvider(process.env.BRAIDED_KOVAN_OWNER, 'http://127.0.0.1:3412'),
+      network_id: '42',
       gas: 4700000
     }
   }

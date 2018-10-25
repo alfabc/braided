@@ -15,6 +15,7 @@
     "solium": "./node_modules/.bin/solium --dir contracts/",
     "lint": "./node_modules/.bin/eslint .",
     "migrate-ganache": "truffle migrate --network ganache",
+    "migrate-mainnet": "truffle migrate --network mainnet",
     "migrate-ropsten": "truffle migrate --network ropsten",
     "test": "truffle test"
   },
@@ -44,6 +45,7 @@
     "chai-bignumber": "^2.0.2",
     "coveralls": "^3.0.2",
     "csv-parse": "^3.0.0",
+    "dotenv": "^6.1.0",
     "eslint": "^5.5.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-babel": "^5.1.0",
@@ -60,6 +62,7 @@
     "solium": "^1.1.8",
     "truffle": "^4.1.14",
     "truffle-contract": "^3.0.6",
+    "truffle-hdwallet-provider": "0.0.6",
     "web3": "1.0.0-beta.36"
   }
 }
