@@ -15,7 +15,7 @@ let clients = {}
 let contracts = {}
 let lastBlockNumbers = {}
 let locks = {}
-let strands = {}
+let braids = {}
 let web3s = {}
 
 death((signal, err) => cleanUp())
@@ -82,13 +82,13 @@ function launch () {
       locks[key] = false
     }
 
-    // create contract and instance for each contract on each strand
-    for (let key in config.strands) {
-      let strand = config.strands[key]
+    // create contract and instance for each contract on each braid
+    for (let key in config.braids) {
+      let braid = config.braids[key]
       contracts[key] = contract(braidedArtifacts)
-      contracts[key].setProvider(web3s[strand.chain].currentProvider)
+      contracts[key].setProvider(web3s[braid.chain].currentProvider)
       contracts[key].defaults({ gas: '250000' })
-      strands[key] = contracts[key].at(strand.contractAddress)
+      braids[key] = contracts[key].at(braid.contractAddress)
     }
   })
 }
@@ -125,17 +125,17 @@ async function handleNewBlock (chainKey, blockHeader) {
       // for each one who is watching the chain
       let params = agent.watch[chainKey]
       if (params) {
-        console.log(`handleNewblock: considering ${chainKey} ${block.number} for ${agent.strand} ${params.blocks} ${params.seconds}`) // eslint-disable-line max-len
+        console.log(`handleNewblock: considering ${chainKey} ${block.number} for ${agent.braid} ${params.blocks} ${params.seconds}`) // eslint-disable-line max-len
         // -- -- check the time update threshold
         // -- -- if not met, skip
 
-        // -- -- check the block number last recorded on the strand
+        // -- -- check the block number last recorded on the braid for the strand
         // -- -- if already recorded, skip
 
         // -- -- check the block number update threshold
         // -- -- if the block does not meet the update threshold, skip
 
-        // -- -- record the block on the strand
+        // -- -- record the block on the braid for the strand
       }
     }
   } finally {
