@@ -10,16 +10,9 @@ const braidedArtifacts = require('../build/contracts/Braided.json')
 async function setup () {
   // iterate over the agents that need to be set up
   for (let agent of config.agents) {
-    // Each agent operates on a braid
-    console.log(agent.braid)
-    // the agent's address
-    console.log(agent.agentAddress)
-    // Each braid has a contract address
-    console.log(config.braids[agent.braid].contractAddress)
-    // and we'll need the owner's mnemonic
-    console.log(config.braids[agent.braid].ownerMnemonic)
     // make a web3 connection to the chain that holds the braid
-    let provider = new HDWalletProvider(config.braids[agent.braid].ownerMnemonic,
+    let provider = new HDWalletProvider(
+      config.braids[agent.braid].ownerMnemonic,
       config.braids[agent.braid].providerEndpoint)
     let web3 = new Web3(provider)
     let braidedContract = contract(braidedArtifacts)
@@ -33,10 +26,6 @@ async function setup () {
       console.log(`adding ${key} to ${agent.braid}`)
       let watch = agent.watches[key]
       // add a strand for the chain
-      console.log(`addStrand(${watch.strand},
-        ${config.braids[key].contractAddress},
-        ${config.braids[key].genesisBlockHash},
-        ${config.braids[key].chain})`)
       let tx = await braid.addStrand(watch.strand,
         config.braids[key].contractAddress,
         config.braids[key].genesisBlockHash,
@@ -44,7 +33,6 @@ async function setup () {
         { from: config.braids[agent.braid].ownerAddress })
       console.log(tx)
       // give the agent permission to write to the strand
-      console.log(`addAgent(${agent.agentAddress}, ${watch.strand})`)
       let tx2 = await braid.addAgent(
         agent.agentAddress,
         watch.strand,

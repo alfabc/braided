@@ -1,18 +1,16 @@
 #!/usr/bin/env node
-const braidedArtifacts = require('../build/contracts/Braided.json')
+// const braidedArtifacts = require('../build/contracts/Braided.json')
 const childprocess = require('child_process')
 const config = require('../braided-config.js')
-const contract = require('truffle-contract')
+// const contract = require('truffle-contract')
 const death = require('death')
 const fs = require('fs')
 const treeKill = require('tree-kill')
 const Web3 = require('web3')
 
 let clients = {}
-let contracts = {}
 let lastBlockNumbers = {}
 let locks = {}
-let braids = {}
 let web3s = {}
 
 death((signal, err) => cleanUp())
@@ -63,8 +61,6 @@ function launch () {
 
       // add a watcher for new blocks
       // pass in the key so we know which chain it comes from
-      // console.log(web3s[key])
-      // console.log(web3s[key].providers)
       web3s[key].eth.subscribe('newBlockHeaders')
         .on('data', function (blockHeader) {
           handleNewBlock(key, blockHeader)
@@ -77,15 +73,6 @@ function launch () {
       lastBlockNumbers[key] = 0
       // mutex
       locks[key] = false
-    }
-
-    // create contract and instance for each contract on each chain
-    for (let key in config.braids) {
-      let braid = config.braids[key]
-      contracts[key] = contract(braidedArtifacts)
-      contracts[key].setProvider(web3s[braid.chain].currentProvider)
-      contracts[key].defaults({ gas: '250000' })
-      braids[key] = contracts[key].at(braid.contractAddress)
     }
   })
 }
