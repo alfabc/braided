@@ -9,8 +9,7 @@ const braidedArtifacts = require('../build/contracts/Braided.json')
 
 setup()
 
-function setup () {
-  return new Promise(async () => {
+async function setup () {
     // iterate over the agents that need to be set up
     for (let agent of config.agents) {
       // Each agent operates on a braid
@@ -46,5 +45,4 @@ function setup () {
 //        await braid.addAgent(agent.agentAddress, watch.strand)
       }
     }
-  })
 }
