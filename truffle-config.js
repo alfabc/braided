@@ -31,11 +31,13 @@ module.exports = {
     rinkeby: {
       provider: () => new HDWalletProvider(process.env.BRAIDED_RINKEBY_OWNER, 'http://127.0.0.1:3374'),
       network_id: '4',
+      gasPrice: 10000000000,
       gas: 6700000
     },
     kovan: {
       provider: () => new HDWalletProvider(process.env.BRAIDED_KOVAN_OWNER, 'http://127.0.0.1:3412'),
       network_id: '42',
+      gasPrice: 10000000000,
       gas: 4700000
     }
   }

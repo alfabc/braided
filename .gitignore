@@ -2,7 +2,7 @@
 **/*.swp
 
 # Configuration
-*.env
+.env
 
 # Logs
 logs
