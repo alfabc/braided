@@ -60,8 +60,8 @@ module.exports = {
       watch: {
         mainnet: { strand: 1, blocks: 1, seconds: 11 },
         ropsten: { strand: 3, blocks: 2, seconds: 21 },
-        kovan: { strand: 42, blocks: 3, seconds: 31 } } }
-    Record blocks from Mainnet, Ropsten and Rinkeby on the kovan0 strand
+        kovan: { strand: 42, blocks: 3, seconds: 31 } } },
+    // Record blocks from Mainnet, Ropsten and Rinkeby on the kovan0 strand
     { braid: 'kovan0',
       agentAddress: '0x4487f27ad58abbf8f3b25ee38aba578bc979f67e',
       mnemonic: process.env.BRAIDED_KOVAN_AGENT,
