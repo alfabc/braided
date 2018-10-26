@@ -25,7 +25,7 @@ module.exports = {
     ropsten: {
       provider: () => new HDWalletProvider(process.env.BRAIDED_ROPSTEN_OWNER, process.env.INFURA_ROPSTEN),
       network_id: '3',
-      gasPrice: 10000000000,
+      gasPrice: 50000000000,
       gas: 4700000
     },
     rinkeby: {

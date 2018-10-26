@@ -33,10 +33,10 @@ let fixtures = []
 // are deployed on four different strands
 let contracts = []
 
-const mainnetGenesis = config.braids.mainnet0.genesisBlockHash
-const mordenGenesis = config.braids.morden0.genesisBlockHash
-const ropstenGenesis = config.braids.ropsten0.genesisBlockHash
-const kovanGenesis = config.braids.kovan0.genesisBlockHash
+const mainnetGenesis = config.braids.mainnet.genesisBlockHash
+const mordenGenesis = config.braids.morden.genesisBlockHash
+const ropstenGenesis = config.braids.ropsten.genesisBlockHash
+const kovanGenesis = config.braids.kovan.genesisBlockHash
 
 // test data was created in Google Sheets and used the venerable MD5 hash.
 function fakeHash (value) {

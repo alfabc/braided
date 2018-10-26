@@ -33,11 +33,11 @@ contract('Braided', (accounts) => {
   const classictestID = 62
 
   // genesis block hashes
-  const mainnetGenesis = config.braids.mainnet0.genesisBlockHash
-  const mordenGenesis = config.braids.morden0.genesisBlockHash
-  const ropstenGenesis = config.braids.ropsten0.genesisBlockHash
-  const rinkebyGenesis = config.braids.rinkeby0.genesisBlockHash
-  const kovanGenesis = config.braids.kovan0.genesisBlockHash
+  const mainnetGenesis = config.braids.mainnet.genesisBlockHash
+  const mordenGenesis = config.braids.morden.genesisBlockHash
+  const ropstenGenesis = config.braids.ropsten.genesisBlockHash
+  const rinkebyGenesis = config.braids.rinkeby.genesisBlockHash
+  const kovanGenesis = config.braids.kovan.genesisBlockHash
 
   // Other block hashes of note
   const zero = '0x0000000000000000000000000000000000000000000000000000000000000000'
