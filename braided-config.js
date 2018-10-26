@@ -40,7 +40,7 @@ module.exports = {
       chain: 'rinkeby',
       contractAddress: '0xa4f7e95205ac2e79b85528a0b63587bd1d5eff78',
       genesisBlockHash: '0x6341fd3daf94b748c72ced5a5b26028f2474f5f00d824504e4fa37a75767e177',
-      ownerAddress: '0xf0bf12fa12A78402f821E61b02eE28a186192f9A',
+      ownerAddress: '0xf0bf12fa12a78402f821e61b02ee28a186192f9a',
       ownerMnemonic: process.env.BRAIDED_RINKEBY_OWNER,
       providerEndpoint: process.env.INFURA_RINKEBY },
     kovan: {
