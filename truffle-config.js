@@ -17,25 +17,25 @@ module.exports = {
       gas: 2000000
     },
     mainnet: {
-      provider: () => new HDWalletProvider(process.env.BRAIDED_MAINNET_OWNER, 'http://127.0.0.1:8545'),
+      provider: () => new HDWalletProvider(process.env.BRAIDED_MAINNET_OWNER, process.env.INFURA_MAINNET),
       network_id: '1',
       gasPrice: 10000000000,
       gas: 4612388
     },
     ropsten: {
-      provider: () => new HDWalletProvider(process.env.BRAIDED_ROPSTEN_OWNER, 'http://127.0.0.1:3373'),
+      provider: () => new HDWalletProvider(process.env.BRAIDED_ROPSTEN_OWNER, process.env.INFURA_ROPSTEN),
       network_id: '3',
       gasPrice: 10000000000,
       gas: 4700000
     },
     rinkeby: {
-      provider: () => new HDWalletProvider(process.env.BRAIDED_RINKEBY_OWNER, 'http://127.0.0.1:3374'),
+      provider: () => new HDWalletProvider(process.env.BRAIDED_RINKEBY_OWNER, process.env.INFURA_RINKEBY),
       network_id: '4',
       gasPrice: 10000000000,
       gas: 6700000
     },
     kovan: {
-      provider: () => new HDWalletProvider(process.env.BRAIDED_KOVAN_OWNER, 'http://127.0.0.1:3412'),
+      provider: () => new HDWalletProvider(process.env.BRAIDED_KOVAN_OWNER, process.env.INFURA_KOVAN),
       network_id: '42',
       gasPrice: 10000000000,
       gas: 4700000
