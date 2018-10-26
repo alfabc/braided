@@ -1,15 +1,12 @@
 #!/usr/bin/env node
+const braidedArtifacts = require('../build/contracts/Braided.json')
 const childprocess = require('child_process')
+const config = require('../braided-config.js')
 const contract = require('truffle-contract')
 const death = require('death')
 const fs = require('fs')
-const reqCwd = require('req-cwd')
 const treeKill = require('tree-kill')
 const Web3 = require('web3')
-
-const config = reqCwd.silent('./braided-config.js') || {}
-
-const braidedArtifacts = require('../build/contracts/Braided.json')
 
 let clients = {}
 let contracts = {}
@@ -82,7 +79,7 @@ function launch () {
       locks[key] = false
     }
 
-    // create contract and instance for each contract on each braid
+    // create contract and instance for each contract on each chain
     for (let key in config.braids) {
       let braid = config.braids[key]
       contracts[key] = contract(braidedArtifacts)
@@ -123,9 +120,9 @@ async function handleNewBlock (chainKey, blockHeader) {
     // Walk through the agents
     for (let agent of config.agents) {
       // for each one who is watching the chain
-      let params = agent.watch[chainKey]
-      if (params) {
-        console.log(`handleNewblock: considering ${chainKey} ${block.number} for ${agent.braid} ${params.blocks} ${params.seconds}`) // eslint-disable-line max-len
+      let chainParams = agent.watches[chainKey]
+      if (chainParams) {
+        console.log(`handleNewblock: considering ${chainKey} ${block.number} for ${agent.braid} ${chainParams.blocks} ${chainParams.seconds}`) // eslint-disable-line max-len
         // -- -- check the time update threshold
         // -- -- if not met, skip
 

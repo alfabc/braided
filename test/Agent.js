@@ -16,14 +16,15 @@
 /* eslint-env node, mocha */
 /* eslint no-unused-expressions: 0 */
 /* eslint prefer-const: 0 */
-const parse = require('csv-parse/lib/sync')
-const fs = require('fs')
-const util = require('util')
-const readFile = util.promisify(fs.readFile)
 const Braided = artifacts.require('../contracts/Braided.sol')
+const config = require('../braided-config.js')
 const expectThrow = require('./helpers/expectThrow.js')
+const fs = require('fs')
 const md5 = require('md5')
+const parse = require('csv-parse/lib/sync')
+const util = require('util')
 
+const readFile = util.promisify(fs.readFile)
 const strandCount = 4
 const fixtureLines = 30
 let fixtures = []
@@ -32,10 +33,10 @@ let fixtures = []
 // are deployed on four different strands
 let contracts = []
 
-const mainnetGenesis = '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'
-const mordenGenesis = '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303'
-const ropstenGenesis = '0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d'
-const kovanGenesis = '0xa3c565fc15c7478862d50ccd6561e3c06b24cc509bf388941c25ea985ce32cb9'
+const mainnetGenesis = config.braids.mainnet0.genesisBlockHash
+const mordenGenesis = config.braids.morden0.genesisBlockHash
+const ropstenGenesis = config.braids.ropsten0.genesisBlockHash
+const kovanGenesis = config.braids.kovan0.genesisBlockHash
 
 // test data was created in Google Sheets and used the venerable MD5 hash.
 function fakeHash (value) {

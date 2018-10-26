@@ -1,6 +1,7 @@
 /* eslint-env node, mocha */
 /* eslint no-unused-expressions: 0 */
 /* eslint prefer-const: 0 */
+const config = require('../braided-config.js')
 const Braided = artifacts.require('../contracts/Braided.sol')
 const expectThrow = require('./helpers/expectThrow.js')
 const BigNumber = require('bignumber.js')
@@ -32,11 +33,11 @@ contract('Braided', (accounts) => {
   const classictestID = 62
 
   // genesis block hashes
-  const mainnetGenesis = '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'
-  const mordenGenesis = '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303'
-  const ropstenGenesis = '0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d'
-  const kovanGenesis = '0xa3c565fc15c7478862d50ccd6561e3c06b24cc509bf388941c25ea985ce32cb9'
-  const rinkebyGenesis = '0x6341fd3daf94b748c72ced5a5b26028f2474f5f00d824504e4fa37a75767e177'
+  const mainnetGenesis = config.braids.mainnet0.genesisBlockHash
+  const mordenGenesis = config.braids.morden0.genesisBlockHash
+  const ropstenGenesis = config.braids.ropsten0.genesisBlockHash
+  const rinkebyGenesis = config.braids.rinkeby0.genesisBlockHash
+  const kovanGenesis = config.braids.kovan0.genesisBlockHash
 
   // Other block hashes of note
   const zero = '0x0000000000000000000000000000000000000000000000000000000000000000'
