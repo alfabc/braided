@@ -6,8 +6,8 @@ module.exports = {
     // mainnet: { client: 'geth', networkID: 1, mode: 'light', chainName: '' },
     mainnet: { client: 'websocket', endpoint: 'ws://localhost:8546' }, // ./bin/geth.mainnet
     // ropsten: { client: 'geth', networkID: 3, mode: 'light', chainName: 'testnet' },
-    // ropsten: { client: 'websocket', endpoint: 'ws://localhost:8549' }, // ./bin/geth.ropsten
-    ropsten: { client: 'websocket', endpoint: 'wss://ropsten.infura.io/ws' },
+    ropsten: { client: 'websocket', endpoint: 'ws://localhost:8549' }, // ./bin/geth.ropsten
+    // ropsten: { client: 'websocket', endpoint: 'wss://ropsten.infura.io/ws' },
     rinkeby: { client: 'geth', networkID: 4, mode: 'light', chainName: 'rinkeby' },
     kovan: { client: 'parity', networkID: 42, mode: 'light', chainName: 'kovan' } },
 
