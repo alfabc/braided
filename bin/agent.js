@@ -9,10 +9,14 @@ const HDWalletProvider = require('truffle-hdwallet-provider')
 const treeKill = require('tree-kill')
 const Web3 = require('web3')
 
+let agentProviders = {}
+let braids = {}
+let braidedContracts = {}
 let clients = {}
 let lastBlockNumbers = {}
 let locks = {}
-let web3s = {}
+let web3rs = {} // readers
+let web3ws = {} // writers
 
 death((signal, err) => cleanUp())
 
@@ -58,11 +62,11 @@ function launch () {
       }
 
       // create a Web3 instance for each client
-      web3s[key] = new Web3(endpoint)
+      web3rs[key] = new Web3(endpoint)
 
       // add a watcher for new blocks
       // pass in the key so we know which chain it comes from
-      web3s[key].eth.subscribe('newBlockHeaders')
+      web3rs[key].eth.subscribe('newBlockHeaders')
         .on('data', function (blockHeader) {
           handleNewBlock(key, blockHeader)
         })
@@ -96,7 +100,7 @@ async function handleNewBlock (chainKey, blockHeader) {
 
     // sometimes a bunch of these come in at once, especially when a chain is
     // catching up, so work with the current highest block number on the chain.
-    let block = await web3s[chainKey].eth.getBlock('latest')
+    let block = await web3rs[chainKey].eth.getBlock('latest')
     if (block.number > blockHeader.number) {
       console.log(`handleNewBlock: handling ${chainKey} ${block.number} instead of ${blockHeader.number}`)
     } else {
@@ -114,7 +118,7 @@ async function handleNewBlock (chainKey, blockHeader) {
 
         // use the contract on the chain from which we received the notification
         let braidedContract = contract(braidedArtifacts)
-        braidedContract.setProvider(web3s[chainKey].currentProvider)
+        braidedContract.setProvider(web3rs[chainKey].currentProvider)
         let braid = braidedContract.at(config.braids[agent.braid].contractAddress)
 
         // -- -- check the time update threshold
@@ -140,16 +144,30 @@ async function handleNewBlock (chainKey, blockHeader) {
           continue
         }
 
+        // set up a web3 instance for the provider with the keys for the agent
+        // and cache it for next time
+        if (!web3ws[agent.braid]) {
+          agentProviders[agent.braid] = new HDWalletProvider(
+            agent.agentMnemonic,
+            config.braids[agent.braid].providerEndpoint)
+          web3ws[agent.braid] = new Web3(agentProviders[agent.braid])
+          braidedContracts[agent.braid] = contract(braidedArtifacts)
+          braidedContracts[agent.braid].setProvider(web3ws[agent.braid].currentProvider)
+          braidedContracts[agent.braid].defaults({ gas: '250000' })
+          braids[agent.braid] = braidedContracts[agent.braid].at(config.braids[agent.braid].contractAddress)
+        }
+
         // -- -- record the block on the braid for the strand
-        let agentProvider = new HDWalletProvider(
-          config.braids[agent.braid].agentMnemonic,
-          config.braids[agent.braid].providerEndpoint)
-        braidedContract.setProvider(agentProvider)
         try {
-          // let tx = await braid.addBlock(chainParams.strand, block.number, block.hash)
-          console.log(`handleNewBlock: addBlock(${chainParams.strand}, ${block.number}, ${block.hash})`)
-        } finally {
-          agentProvider.engine.stop()
+          console.log(`handleNewBlock: addBlock(${chainParams.strand}, ${block.number}, ${block.hash}, { from: ${agent.agentAddress}})`)
+          let tx = await braids[agent.braid].addBlock(
+            chainParams.strand,
+            block.number,
+            block.hash,
+            { from: agent.agentAddress })
+          console.log(tx)
+        } catch (err) {
+          console.log(err)
         }
       }
     }
@@ -163,8 +181,13 @@ function cleanUp () {
   // Close all websocket connections, or the connection to an external geth
   // will prevent this process from exiting.
   // https://ethereum.stackexchange.com/questions/50134/web3-websocket-connection-prevents-node-process-from-exiting
-  for (let key in web3s) {
-    web3s[key].currentProvider.connection.close()
+  for (let key in web3rs) {
+    web3rs[key].currentProvider.connection.close()
+  }
+
+  // same for these HDWalletProviders
+  for (let key in agentProviders) {
+    agentProviders[key].engine.stop()
   }
 
   // kill clients we launched
