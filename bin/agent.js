@@ -1,10 +1,11 @@
 #!/usr/bin/env node
-// const braidedArtifacts = require('../build/contracts/Braided.json')
+const braidedArtifacts = require('../build/contracts/Braided.json')
 const childprocess = require('child_process')
 const config = require('../braided-config.js')
-// const contract = require('truffle-contract')
+const contract = require('truffle-contract')
 const death = require('death')
 const fs = require('fs')
+const HDWalletProvider = require('truffle-hdwallet-provider')
 const treeKill = require('tree-kill')
 const Web3 = require('web3')
 
@@ -110,16 +111,46 @@ async function handleNewBlock (chainKey, blockHeader) {
       let chainParams = agent.watches[chainKey]
       if (chainParams) {
         console.log(`handleNewblock: considering ${chainKey} ${block.number} for ${agent.braid} ${chainParams.blocks} ${chainParams.seconds}`) // eslint-disable-line max-len
+
+        // use the contract on the chain from which we received the notification
+        let braidedContract = contract(braidedArtifacts)
+        braidedContract.setProvider(web3s[chainKey].currentProvider)
+        let braid = braidedContract.at(config.braids[agent.braid].contractAddress)
+
         // -- -- check the time update threshold
         // -- -- if not met, skip
 
         // -- -- check the block number last recorded on the braid for the strand
-        // -- -- if already recorded, skip
+        let hBN = 0
+        // when there are no blocks recorded this can throw
+        try {
+          hBN = await braid.getHighestBlockNumber(chainParams.strand)
+        } catch { }
+
+        // -- -- if already recorded, skip this agent
+        if (hBN >= block.number) {
+          console.log(`handleNewBlock: ${block.number} skipped, ${hBN} already recorded`)
+          continue
+        }
 
         // -- -- check the block number update threshold
         // -- -- if the block does not meet the update threshold, skip
+        if (hBN + chainParams.blocks >= block.number) {
+          console.log(`handleNewBlock: ${block.number} skipped, waiting ${chainParams.blocks} blocks after ${hBN}`)
+          continue
+        }
 
         // -- -- record the block on the braid for the strand
+        let agentProvider = new HDWalletProvider(
+          config.braids[agent.braid].agentMnemonic,
+          config.braids[agent.braid].providerEndpoint)
+        braidedContract.setProvider(agentProvider)
+        try {
+          // let tx = await braid.addBlock(chainParams.strand, block.number, block.hash)
+          console.log(`handleNewBlock: addBlock(${chainParams.strand}, ${block.number}, ${block.hash})`)
+        } finally {
+          agentProvider.engine.stop()
+        }
       }
     }
   } finally {
