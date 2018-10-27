@@ -14,6 +14,7 @@ let braids = {}
 let braidedContracts = {}
 let clients = {}
 let lastBlockNumbers = {}
+let lastBlockRecordedTime = {}
 let locks = {}
 let web3rs = {} // readers
 let web3ws = {} // writers
@@ -85,7 +86,7 @@ function launch () {
 async function handleNewBlock (chainKey, blockHeader) {
   // local mutex for each chain to prevent working on two blocks at once
   if (locks[chainKey]) {
-    console.log(`handleNewBlock: busy ${chainKey} ${blockHeader.number}`)
+    console.log(`busy ${chainKey} ${blockHeader.number}`)
     return
   } else {
     locks[chainKey] = true
@@ -94,7 +95,7 @@ async function handleNewBlock (chainKey, blockHeader) {
   try {
     // quickly skip stale blocks
     if (lastBlockNumbers[chainKey] >= blockHeader.number) {
-      console.log(`handleNewBlock: skipping ${chainKey} ${blockHeader.number}`)
+      console.log(`skipping ${chainKey} ${blockHeader.number}`)
       return
     }
 
@@ -102,9 +103,9 @@ async function handleNewBlock (chainKey, blockHeader) {
     // catching up, so work with the current highest block number on the chain.
     let block = await web3rs[chainKey].eth.getBlock('latest')
     if (block.number > blockHeader.number) {
-      console.log(`handleNewBlock: handling ${chainKey} ${block.number} instead of ${blockHeader.number}`)
+      console.log(`handling ${chainKey} ${block.number} instead of ${blockHeader.number}`)
     } else {
-      console.log(`handleNewBlock: handling ${chainKey} ${block.number}`)
+      console.log(`handling ${chainKey} ${block.number}`)
     }
 
     lastBlockNumbers[chainKey] = block.number
@@ -114,33 +115,38 @@ async function handleNewBlock (chainKey, blockHeader) {
       // for each one who is watching the chain
       let chainParams = agent.watches[chainKey]
       if (chainParams) {
-        console.log(`handleNewblock: considering ${chainKey} ${block.number} for ${agent.braid} ${chainParams.blocks} ${chainParams.seconds}`) // eslint-disable-line max-len
+        console.log(`considering ${chainKey} ${block.number} for ${agent.braid} ${chainParams.blocks} ${chainParams.seconds}`) // eslint-disable-line max-len
 
         // use the contract on the chain from which we received the notification
         let braidedContract = contract(braidedArtifacts)
         braidedContract.setProvider(web3rs[chainKey].currentProvider)
         let braid = braidedContract.at(config.braids[agent.braid].contractAddress)
 
-        // -- -- check the time update threshold
-        // -- -- if not met, skip
+        // check the time update threshold
+        if (lastBlockRecordedTime[agent.braid + chainKey] &&
+          (Date.now() - lastBlockRecordedTime[agent.braid + chainKey] > (chainParams.seconds * 1000))) {
+          console.log(`${block.number} skipped, waiting ${Math.round((Date.now() - lastBlockRecordedTime[agent.braid + chainKey]) / 1000)} seconds on ${agent.braid}.${chainKey}`)
+          // too soon!
+          continue
+        }
 
-        // -- -- check the block number last recorded on the braid for the strand
+        // check the block number last recorded on the braid for the strand
         let hBN = 0
         // when there are no blocks recorded this can throw
         try {
           hBN = await braid.getHighestBlockNumber(chainParams.strand)
         } catch { }
 
-        // -- -- if already recorded, skip this agent
+        // if already recorded, skip this agent
         if (hBN >= block.number) {
-          console.log(`handleNewBlock: ${block.number} skipped, ${hBN} already recorded`)
+          console.log(`${block.number} skipped, ${hBN} already recorded`)
           continue
         }
 
-        // -- -- check the block number update threshold
-        // -- -- if the block does not meet the update threshold, skip
+        // check the block number update threshold
+        // if the block does not meet the update threshold, skip
         if (hBN + chainParams.blocks >= block.number) {
-          console.log(`handleNewBlock: ${block.number} skipped, waiting ${chainParams.blocks} blocks after ${hBN}`)
+          console.log(`${block.number} skipped, waiting ${chainParams.blocks} blocks after ${hBN}`)
           continue
         }
 
@@ -157,15 +163,19 @@ async function handleNewBlock (chainKey, blockHeader) {
           braids[agent.braid] = braidedContracts[agent.braid].at(config.braids[agent.braid].contractAddress)
         }
 
-        // -- -- record the block on the braid for the strand
+        // record the block on the braid for the strand
         try {
-          console.log(`handleNewBlock: addBlock(${chainParams.strand}, ${block.number}, ${block.hash}, { from: ${agent.agentAddress}})`)
+          // Note when we last *attempted* a transaction for this...
+          lastBlockRecordedTime[agent.braid + chainKey] = Date.now()
+
+          console.log(`addBlock(${chainParams.strand}, ${block.number}, ${block.hash}, { from: ${agent.agentAddress}}) on ${agent.braid}`)
+          // send the transaction
           let tx = await braids[agent.braid].addBlock(
             chainParams.strand,
             block.number,
             block.hash,
             { from: agent.agentAddress })
-          console.log(tx)
+          console.log(`${tx.tx} on ${agent.braid}`)
         } catch (err) {
           console.log(err)
         }
