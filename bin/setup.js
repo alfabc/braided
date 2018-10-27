@@ -25,19 +25,41 @@ async function setup () {
       // The chain watched
       console.log(`adding ${key} to ${agent.braid}`)
       let watch = agent.watches[key]
-      // add a strand for the chain
-      let tx = await braid.addStrand(watch.strand,
-        config.braids[key].contractAddress,
-        config.braids[key].genesisBlockHash,
-        config.braids[key].chain,
-        { from: config.braids[agent.braid].ownerAddress })
-      console.log(tx)
-      // give the agent permission to write to the strand
-      let tx2 = await braid.addAgent(
-        agent.agentAddress,
-        watch.strand,
-        { from: config.braids[agent.braid].ownerAddress })
-      console.log(tx2)
+
+      // Check to make sure this exact same strand doesn't already exist
+      // This allows us to use this setup procedure to add new strands to
+      // existing contracts.
+      // Use try/catch because while geth returns "null" values,
+      // Parity throws an exception
+      let strandExists = false
+      try {
+        if ((config.braids[key].contractAddress === await braid.getStrandContract(watch.strand)) &&
+          (config.braids[key].genesisBlockHash === await braid.getStrandGenesisBlockHash(watch.strand)) &&
+          (config.braids[key].chain === await braid.getStrandDescription(watch.strand))) {
+          throw new Error()
+        }
+      } catch (err) {
+        strandExists = true
+        console.log(`... skipping: strand already exists on ${agent.braid} for ${key}`)
+      }
+
+      // if it doesn't already exist, add it
+      if (!strandExists) {
+        // add a strand for the chain
+        let tx = await braid.addStrand(watch.strand,
+          config.braids[key].contractAddress,
+          config.braids[key].genesisBlockHash,
+          config.braids[key].chain,
+          { from: config.braids[agent.braid].ownerAddress })
+        console.log(tx)
+
+        // give the agent permission to write to the strand
+        tx = await braid.addAgent(
+          agent.agentAddress,
+          watch.strand,
+          { from: config.braids[agent.braid].ownerAddress })
+        console.log(tx)
+      }
     }
     await provider.engine.stop()
   }
