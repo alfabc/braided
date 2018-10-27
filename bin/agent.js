@@ -113,47 +113,22 @@ async function handleNewBlock (chainKey, blockHeader) {
     // Walk through the agents
     for (let agent of config.agents) {
       // for each one who is watching the chain
-      let chainParams = agent.watches[chainKey]
-      if (chainParams) {
-        console.log(`considering ${chainKey} ${block.number} for ${agent.braid} ${chainParams.blocks} ${chainParams.seconds}`) // eslint-disable-line max-len
-
-        // use the contract on the chain from which we received the notification
-        let braidedContract = contract(braidedArtifacts)
-        braidedContract.setProvider(web3rs[chainKey].currentProvider)
-        let braid = braidedContract.at(config.braids[agent.braid].contractAddress)
+      let braidWatch = agent.watches[chainKey]
+      if (braidWatch) {
+        console.log(`considering ${chainKey} ${block.number} for ${agent.braid} ${braidWatch.blocks} ${braidWatch.seconds}`) // eslint-disable-line max-len
 
         // We identify the braid/chain combo thus
         let combo = `${agent.braid}.${chainKey}`
 
         // check the time update threshold
         if (lastBlockRecordedTime[combo]) {
-          let tick = lastBlockRecordedTime[combo] + (chainParams.seconds * 1000) 
+          let tick = lastBlockRecordedTime[combo] + (braidWatch.seconds * 1000)
           if (tick > Date.now()) {
             let delay = Math.round((tick - Date.now()) / 1000)
             console.log(`${block.number} skipped, waiting ${delay} seconds on ${combo}`)
             // too soon!
             continue
           }
-        }
-
-        // check the block number last recorded on the braid for the strand
-        let hBN = 0
-        // when there are no blocks recorded this can throw
-        try {
-          hBN = await braid.getHighestBlockNumber(chainParams.strand)
-        } catch { }
-
-        // if already recorded, skip this agent
-        if (hBN >= block.number) {
-          console.log(`${block.number} skipped, ${hBN} already recorded`)
-          continue
-        }
-
-        // check the block number update threshold
-        // if the block does not meet the update threshold, skip
-        if (hBN + chainParams.blocks >= block.number) {
-          console.log(`${block.number} skipped, waiting ${chainParams.blocks} blocks after ${hBN}`)
-          continue
         }
 
         // set up a web3 instance for the provider with the keys for the agent
@@ -169,6 +144,28 @@ async function handleNewBlock (chainKey, blockHeader) {
           braids[agent.braid] = braidedContracts[agent.braid].at(config.braids[agent.braid].contractAddress)
         }
 
+        // check the block number last recorded on the braid for the strand
+        let hBN = 0
+        // when there are no blocks recorded this can throw
+        try {
+          hBN = Number(await braids[agent.braid].getHighestBlockNumber(braidWatch.strand))
+        } catch (err) {
+          console.log(`gHBN error: ${err}`)
+        }
+
+        // if already recorded, skip this agent
+        if (hBN >= block.number) {
+          console.log(`${block.number} skipped, ${hBN} already recorded`)
+          continue
+        }
+
+        // check the block number update threshold
+        // if the block does not meet the update threshold, skip
+        if ((hBN + braidWatch.blocks) > block.number) {
+          console.log(`${block.number} skipped, waiting for ${braidWatch.blocks + hBN} (interval ${braidWatch.blocks})`)
+          continue
+        }
+
         // record the block on the braid for the strand
         try {
           // Note when we last *attempted* a transaction for this...
@@ -177,7 +174,7 @@ async function handleNewBlock (chainKey, blockHeader) {
           console.log(`sending ${block.number} on ${combo} at ${lastBlockRecordedTime[combo]}...`)
           // send the transaction
           let tx = await braids[agent.braid].addBlock(
-            chainParams.strand,
+            braidWatch.strand,
             block.number,
             block.hash,
             { from: agent.agentAddress })
