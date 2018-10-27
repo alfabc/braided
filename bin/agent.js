@@ -122,12 +122,18 @@ async function handleNewBlock (chainKey, blockHeader) {
         braidedContract.setProvider(web3rs[chainKey].currentProvider)
         let braid = braidedContract.at(config.braids[agent.braid].contractAddress)
 
+        // We identify the braid/chain combo thus
+        let combo = `${agent.braid}.${chainKey}`
+
         // check the time update threshold
-        if (lastBlockRecordedTime[agent.braid + chainKey] &&
-          (Date.now() - lastBlockRecordedTime[agent.braid + chainKey] > (chainParams.seconds * 1000))) {
-          console.log(`${block.number} skipped, waiting ${Math.round((Date.now() - lastBlockRecordedTime[agent.braid + chainKey]) / 1000)} seconds on ${agent.braid}.${chainKey}`)
-          // too soon!
-          continue
+        if (lastBlockRecordedTime[combo]) {
+          let tick = lastBlockRecordedTime[combo] + (chainParams.seconds * 1000) 
+          if (tick > Date.now()) {
+            let delay = Math.round((tick - Date.now()) / 1000)
+            console.log(`${block.number} skipped, waiting ${delay} seconds on ${combo}`)
+            // too soon!
+            continue
+          }
         }
 
         // check the block number last recorded on the braid for the strand
@@ -166,16 +172,16 @@ async function handleNewBlock (chainKey, blockHeader) {
         // record the block on the braid for the strand
         try {
           // Note when we last *attempted* a transaction for this...
-          lastBlockRecordedTime[agent.braid + chainKey] = Date.now()
+          lastBlockRecordedTime[combo] = Date.now()
 
-          console.log(`addBlock(${chainParams.strand}, ${block.number}, ${block.hash}, { from: ${agent.agentAddress}}) on ${agent.braid}`)
+          console.log(`sending ${block.number} on ${combo} at ${lastBlockRecordedTime[combo]}...`)
           // send the transaction
           let tx = await braids[agent.braid].addBlock(
             chainParams.strand,
             block.number,
             block.hash,
             { from: agent.agentAddress })
-          console.log(`${tx.tx} on ${agent.braid}`)
+          console.log(`sent ${tx.tx} for ${block.number} on ${combo}`)
         } catch (err) {
           console.log(err)
         }
