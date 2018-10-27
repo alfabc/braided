@@ -171,7 +171,7 @@ async function handleNewBlock (chainKey, blockHeader) {
           // Note when we last *attempted* a transaction for this...
           lastBlockRecordedTime[combo] = Date.now()
 
-          console.log(`sending ${block.number} on ${combo} at ${lastBlockRecordedTime[combo]}...`)
+          console.log(`sending ${block.number} on ${combo}...`)
           // send the transaction
           let tx = await braids[agent.braid].addBlock(
             braidWatch.strand,
