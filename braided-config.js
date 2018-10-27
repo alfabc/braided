@@ -35,14 +35,16 @@ module.exports = {
       genesisBlockHash: '0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d',
       ownerAddress: '0xb0e5a65bc680659da0715314f96de6b0646baeb3',
       ownerMnemonic: process.env.BRAIDED_ROPSTEN_OWNER,
-      providerEndpoint: 'http://0.0.0.0:3373' },
+      providerEndpoint: process.env.INFURA_ROPSTEN },
+    // providerEndpoint: 'http://0.0.0.0:3373' },
     rinkeby: {
       chain: 'rinkeby',
       contractAddress: '0xa4f7e95205ac2e79b85528a0b63587bd1d5eff78',
       genesisBlockHash: '0x6341fd3daf94b748c72ced5a5b26028f2474f5f00d824504e4fa37a75767e177',
       ownerAddress: '0xf0bf12fa12a78402f821e61b02ee28a186192f9a',
       ownerMnemonic: process.env.BRAIDED_RINKEBY_OWNER,
-      providerEndpoint: 'http://0.0.0.0:3374' },
+      providerEndpoint: process.env.INFURA_RINKEBY },
+    // providerEndpoint: 'http://0.0.0.0:3374' },
     kovan: {
       chain: 'kovan',
       contractAddress: '0x2f60bb2bbe14f1dfd8146a1469f300a9c313cae1',
@@ -79,14 +81,14 @@ module.exports = {
       watches: {
         // mainnet: { strand: 1, blocks: 1, seconds: 11 },
         ropsten: { strand: 3, blocks: 21, seconds: 120 },
-        kovan: { strand: 42, blocks: 31, seconds: 130 } } }
+        kovan: { strand: 42, blocks: 31, seconds: 130 } } },
     // Record blocks from Mainnet, Ropsten and Rinkeby on the kovan0 strand
-//    { braid: 'kovan',
-//      agentAddress: '0x4487f27ad58abbf8f3b25ee38aba578bc979f67e',
-//      agentMnemonic: process.env.BRAIDED_KOVAN_AGENT,
-//      watches: {
+    { braid: 'kovan',
+      agentAddress: '0x4487f27ad58abbf8f3b25ee38aba578bc979f67e',
+      agentMnemonic: process.env.BRAIDED_KOVAN_AGENT,
+      watches: {
         // mainnet: { strand: 1, blocks: 1, seconds: 12 },
-//        ropsten: { strand: 3, blocks: 12, seconds: 95 },
-//        rinkeby: { strand: 4, blocks: 22, seconds: 105 } } }
+        ropsten: { strand: 3, blocks: 12, seconds: 95 },
+        rinkeby: { strand: 4, blocks: 22, seconds: 105 } } }
   ]
 }
