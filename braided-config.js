@@ -12,7 +12,7 @@ module.exports = {
     // ropsten: { client: 'websocket', endpoint: 'ws://localhost:8550' },
     // ropsten: { client: 'websocket', endpoint: 'wss://ropsten.infura.io/ws' },
     ropsten: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/testnet/geth.ipc' },
-    // rinkeby: { client: 'geth', networkID: 4, mode: 'fast', chainName: 'rinkeby' },
+    // rinkeby: { client: 'geth', networkID: 4, mode: 'light', chainName: 'rinkeby' },
     // rinkeby: { client: 'rpc', endpoint: 'http://localhost:8551' },
     // rinkeby: { client: 'websocket', endpoint: 'ws://localhost:8552' },
     // rinkeby: { client: 'websocket', endpoint: 'wss://rinkeby.infura.io/ws' },
