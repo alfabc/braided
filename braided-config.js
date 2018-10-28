@@ -4,23 +4,23 @@ module.exports = {
   // Chains are public blockchains
   chains: {
     // mainnet: { client: 'geth', networkID: 1, mode: 'light', chainName: '' },
-    // mainnet: { client: 'rpc', endpoint: 'http://localhost:8545' }, // ./bin/geth.mainnet
-    // mainnet: { client: 'websocket', endpoint: 'ws://localhost:8546' }, // ./bin/geth.mainnet
-    mainnet: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/geth.ipc' }, // ./bin/geth.mainnet
+    // mainnet: { client: 'rpc', endpoint: 'http://localhost:8545' },
+    // mainnet: { client: 'websocket', endpoint: 'ws://localhost:8546' },
+    mainnet: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/geth.ipc' },
     // ropsten: { client: 'geth', networkID: 3, mode: 'light', chainName: 'testnet' },
-    // ropsten: { client: 'rpc', endpoint: 'ws://localhost:8549' }, // ./bin/geth.ropsten
-    // ropsten: { client: 'websocket', endpoint: 'ws://localhost:8550' }, // ./bin/geth.ropsten
+    // ropsten: { client: 'rpc', endpoint: 'ws://localhost:8549' },
+    // ropsten: { client: 'websocket', endpoint: 'ws://localhost:8550' },
     // ropsten: { client: 'websocket', endpoint: 'wss://ropsten.infura.io/ws' },
-    ropsten: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/testnet/geth.ipc' },// ./bin/geth.ropsten
+    ropsten: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/testnet/geth.ipc' },
     // rinkeby: { client: 'geth', networkID: 4, mode: 'fast', chainName: 'rinkeby' },
-    // rinkeby: { client: 'rpc', endpoint: 'http://localhost:8551' }, // ./bin/geth.rinkeby
-    // rinkeby: { client: 'websocket', endpoint: 'ws://localhost:8552' }, // ./bin/geth.rinkeby
+    // rinkeby: { client: 'rpc', endpoint: 'http://localhost:8551' },
+    // rinkeby: { client: 'websocket', endpoint: 'ws://localhost:8552' },
     // rinkeby: { client: 'websocket', endpoint: 'wss://rinkeby.infura.io/ws' },
-    rinkeby: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/rinkeby/geth.ipc' }, // ./bin/geth.rinkeby
+    rinkeby: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/rinkeby/geth.ipc' },
     // kovan: { client: 'parity', networkID: 42, mode: 'light', chainName: 'kovan' } },
-    // kovan: { client: 'rpc', endpoint: 'ws://localhost:8553' } }, // ./bin/parity.kovan
-    // kovan: { client: 'websocket', endpoint: 'ws://localhost:8554' } }, // ./bin/parity.kovan
-    kovan: { client: 'ipc', endpoint: '/home/cleduc/.local/share/io.parity.ethereum/jsonrpc.ipc' } }, // ./bin/parity.kovan
+    // kovan: { client: 'rpc', endpoint: 'ws://localhost:8553' } },
+    // kovan: { client: 'websocket', endpoint: 'ws://localhost:8554' } },
+    kovan: { client: 'ipc', endpoint: '/home/cleduc/.local/share/io.parity.ethereum/jsonrpc.ipc' } },
 
   // Braids are deployed Braided contracts on public blockchains
   // There can be multiple strands deployed on a single chain; old versions,
@@ -33,8 +33,8 @@ module.exports = {
       ownerAddress: '0x5160b2f588debd7d131a8f8b4649bf9ac7bfcd59',
       ownerMnemonic: process.env.BRAIDED_MAINNET_OWNER,
       // providerEndpoint: process.env.INFURA_MAINNET },
-      providerEndpoint: 'http://127.0.0.1:8545' },
       // providerEndpoint: '/home/cleduc/.ethereum/geth.ipc' },
+      providerEndpoint: 'http://127.0.0.1:8545' },
     morden: {
       chain: 'morden',
       genesisBlockHash: '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303',
@@ -49,8 +49,8 @@ module.exports = {
       ownerAddress: '0xb0e5a65bc680659da0715314f96de6b0646baeb3',
       ownerMnemonic: process.env.BRAIDED_ROPSTEN_OWNER,
       // providerEndpoint: process.env.INFURA_ROPSTEN },
-      providerEndpoint: 'http://127.0.0.1:8549' },
       // providerEndpoint: '/home/cleduc/.ethereum/testnet/geth.ipc' },
+      providerEndpoint: 'http://127.0.0.1:8549' },
     rinkeby: {
       chain: 'rinkeby',
       contractAddress: '0xa4f7e95205ac2e79b85528a0b63587bd1d5eff78',
@@ -58,8 +58,8 @@ module.exports = {
       ownerAddress: '0xf0bf12fa12a78402f821e61b02ee28a186192f9a',
       ownerMnemonic: process.env.BRAIDED_RINKEBY_OWNER,
       // providerEndpoint: process.env.INFURA_RINKEBY },
-      providerEndpoint: 'http://127.0.0.1:8551' },
       // providerEndpoint: '/home/cleduc/.ethereum/rinkeby/geth.ipc' },
+      providerEndpoint: 'http://127.0.0.1:8551' },
     kovan: {
       chain: 'kovan',
       contractAddress: '0x2f60bb2bbe14f1dfd8146a1469f300a9c313cae1',
@@ -67,8 +67,8 @@ module.exports = {
       ownerAddress: '0x36feec403513a07239f3a7e4f6751a7e651e330a',
       ownerMnemonic: process.env.BRAIDED_KOVAN_OWNER,
       // providerEndpoint: process.env.INFURA_KOVAN }
-      providerEndpoint: 'http://127.0.0.1:8553' }
       // providerEndpoint: '/home/cleduc/.local/share/io.parity.ethereum/jsonrpc.ipc' }
+      providerEndpoint: 'http://127.0.0.1:8553' }
   },
 
   // Describes the agents which have permission to add block/hashes to

@@ -6,7 +6,7 @@ const contract = require('truffle-contract')
 const death = require('death')
 const fs = require('fs')
 const HDWalletProvider = require('truffle-hdwallet-provider')
-const net = require('net');
+const net = require('net')
 const treeKill = require('tree-kill')
 const Web3 = require('web3')
 
