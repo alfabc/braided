@@ -1,2 +1,2 @@
 #!/bin/sh
-geth --port 30306 --rpc --rpcaddr 0.0.0.0 --rpcport 3373 --rpcapi web3,eth,net,debug --rpccorsdomain "*" --ws --wsport 8549 --wsaddr 0.0.0.0 --wsorigins "*" --syncmode "fast" --testnet
+geth --port 30306 --rpc --rpcport 8549 --rpcaddr 0.0.0.0 --rpccorsdomain "*" --rpcapi "eth,net,web3" --ws --wsport 8550 --wsaddr 0.0.0.0 --wsorigins "*" --syncmode "fast" --testnet

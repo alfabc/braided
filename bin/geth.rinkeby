@@ -1,2 +1,2 @@
 #!/bin/sh
-geth --port 30307 --rpc --rpcaddr 0.0.0.0 --rpcport 3374 --rpcapi web3,eth,net,debug --rpccorsdomain "*" --ws --wsport 8550 --wsaddr 0.0.0.0 --wsorigins "*" --syncmode "fast" --rinkeby
+geth --port 30307 --rpc --rpcport 8551 --rpcaddr 0.0.0.0 --rpccorsdomain "*" --rpcapi "eth,net,web3" --ws --wsport 8552 --wsaddr 0.0.0.0 --wsorigins "*" --syncmode "fast" --rinkeby

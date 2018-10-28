@@ -6,6 +6,7 @@ const contract = require('truffle-contract')
 const death = require('death')
 const fs = require('fs')
 const HDWalletProvider = require('truffle-hdwallet-provider')
+const net = require('net');
 const treeKill = require('tree-kill')
 const Web3 = require('web3')
 
@@ -35,6 +36,8 @@ function launch () {
       // Existing running clients or remote services...
       if (chain.client === 'websocket') {
         endpoint = chain.endpoint
+      } else if (chain.client === 'ipc') {
+        endpoint = new Web3.providers.IpcProvider(chain.endpoint, net)
       } else {
         // Other clients are launched
         let params = ''
@@ -136,6 +139,8 @@ async function handleNewBlock (chainKey, blockHeader) {
         if (!web3ws[agent.braid]) {
           agentProviders[agent.braid] = new HDWalletProvider(
             agent.agentMnemonic,
+            // when it's IPC you have to instantiate the provider
+            // new Web3.providers.IpcProvider(config.braids[agent.braid].providerEndpoint, net))
             config.braids[agent.braid].providerEndpoint)
           web3ws[agent.braid] = new Web3(agentProviders[agent.braid])
           braidedContracts[agent.braid] = contract(braidedArtifacts)
