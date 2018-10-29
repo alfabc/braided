@@ -90,7 +90,7 @@ function launch () {
 async function handleNewBlock (chainKey, blockHeader) {
   // local mutex for each chain to prevent working on two blocks at once
   if (locks[chainKey]) {
-    console.log(`busy ${chainKey} ${blockHeader.number}`)
+    console.log(`skipping ${chainKey} ${blockHeader.number}, busy`)
     return
   } else {
     locks[chainKey] = true
@@ -99,7 +99,7 @@ async function handleNewBlock (chainKey, blockHeader) {
   try {
     // quickly skip stale blocks
     if (lastBlockNumbers[chainKey] >= blockHeader.number) {
-      console.log(`skipping ${chainKey} ${blockHeader.number}`)
+      console.log(`skipping ${chainKey} ${blockHeader.number}, stale block`)
       return
     }
 
@@ -116,11 +116,9 @@ async function handleNewBlock (chainKey, blockHeader) {
 
     // Walk through the agents
     for (let agent of config.agents) {
-      // for each one who is watching the chain
+      // for each agent who is watching the chain
       let braidWatch = agent.watches[chainKey]
       if (braidWatch) {
-        console.log(`considering ${chainKey} ${block.number} for ${agent.braid} ${braidWatch.blocks} ${braidWatch.seconds}`) // eslint-disable-line max-len
-
         // We identify the braid/chain combo thus
         let combo = `${agent.braid}.${chainKey}`
 
@@ -129,7 +127,7 @@ async function handleNewBlock (chainKey, blockHeader) {
           let tick = lastBlockRecordedTime[combo] + (braidWatch.seconds * 1000)
           if (tick > Date.now()) {
             let delay = Math.round((tick - Date.now()) / 1000)
-            console.log(`skipping ${block.number}, waiting ${delay} seconds on ${combo}`)
+            console.log(`skipping ${chainKey} ${block.number}, waiting ${delay} seconds on ${combo}`)
             // too soon!
             continue
           }
@@ -161,14 +159,14 @@ async function handleNewBlock (chainKey, blockHeader) {
 
         // if already recorded, skip this agent
         if (hBN >= block.number) {
-          console.log(`skipping ${block.number}, ${hBN} already recorded`)
+          console.log(`skipping ${chainKey} ${block.number}, ${hBN} already recorded`)
           continue
         }
 
         // check the block number update threshold
         // if the block does not meet the update threshold, skip
         if ((hBN + braidWatch.blocks) > block.number) {
-          console.log(`skipping ${block.number}, waiting for ${braidWatch.blocks + hBN} (interval ${braidWatch.blocks})`)
+          console.log(`skipping ${chainKey} ${block.number}, waiting for ${braidWatch.blocks + hBN} (interval ${braidWatch.blocks})`)
           continue
         }
 
@@ -186,14 +184,14 @@ async function handleNewBlock (chainKey, blockHeader) {
             nonces[agent.braid] += 1
           }
 
-          console.log(`sending ${block.number} on ${combo}...`)
+          console.log(`sending ${chainKey} ${block.number} on ${combo}...`)
           // send the transaction
           let tx = await braids[agent.braid].addBlock(
             braidWatch.strand,
             block.number,
             block.hash,
             { from: agent.agentAddress, nonce: nonces[agent.braid] })
-          console.log(`sent ${tx.tx} for ${block.number} on ${combo}`)
+          console.log(`sent ${tx.tx} for ${chainKey} ${block.number} on ${combo}`)
         } catch (err) {
           console.log(err)
         }
