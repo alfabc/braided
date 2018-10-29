@@ -89,23 +89,23 @@ module.exports = {
       agentMnemonic: process.env.BRAIDED_ROPSTEN_AGENT,
       watches: {
         // mainnet: { strand: 1, blocks: 1, seconds: 10 },
-        rinkeby: { strand: 4, blocks: 200, seconds: 600 },
-        kovan: { strand: 42, blocks: 200, seconds: 700 } } },
+        rinkeby: { strand: 4, blocks: 50, seconds: 800 },
+        kovan: { strand: 42, blocks: 140, seconds: 700 } } },
     // Record blocks from Mainnet, Ropsten and Kovan on the rinkeby0 strand
     { braid: 'rinkeby',
       agentAddress: '0xa4a8c40cf200e548305001b9af9965722c70c6ad',
       agentMnemonic: process.env.BRAIDED_RINKEBY_AGENT,
       watches: {
         // mainnet: { strand: 1, blocks: 1, seconds: 11 },
-        ropsten: { strand: 3, blocks: 21, seconds: 120 },
-        kovan: { strand: 42, blocks: 31, seconds: 130 } } },
+        ropsten: { strand: 3, blocks: 8, seconds: 120 },
+        kovan: { strand: 42, blocks: 24, seconds: 122 } } },
     // Record blocks from Mainnet, Ropsten and Rinkeby on the kovan0 strand
     { braid: 'kovan',
       agentAddress: '0x4487f27ad58abbf8f3b25ee38aba578bc979f67e',
       agentMnemonic: process.env.BRAIDED_KOVAN_AGENT,
       watches: {
         // mainnet: { strand: 1, blocks: 1, seconds: 12 },
-        ropsten: { strand: 3, blocks: 12, seconds: 95 },
-        rinkeby: { strand: 4, blocks: 22, seconds: 105 } } }
+        ropsten: { strand: 3, blocks: 6, seconds: 120 },
+        rinkeby: { strand: 4, blocks: 5, seconds: 75 } } }
   ]
 }

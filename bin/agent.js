@@ -17,6 +17,7 @@ let clients = {}
 let lastBlockNumbers = {}
 let lastBlockRecordedTime = {}
 let locks = {}
+let nonces = {}
 let web3rs = {} // readers
 let web3ws = {} // writers
 
@@ -128,7 +129,7 @@ async function handleNewBlock (chainKey, blockHeader) {
           let tick = lastBlockRecordedTime[combo] + (braidWatch.seconds * 1000)
           if (tick > Date.now()) {
             let delay = Math.round((tick - Date.now()) / 1000)
-            console.log(`${block.number} skipped, waiting ${delay} seconds on ${combo}`)
+            console.log(`skipping ${block.number}, waiting ${delay} seconds on ${combo}`)
             // too soon!
             continue
           }
@@ -160,14 +161,14 @@ async function handleNewBlock (chainKey, blockHeader) {
 
         // if already recorded, skip this agent
         if (hBN >= block.number) {
-          console.log(`${block.number} skipped, ${hBN} already recorded`)
+          console.log(`skipping ${block.number}, ${hBN} already recorded`)
           continue
         }
 
         // check the block number update threshold
         // if the block does not meet the update threshold, skip
         if ((hBN + braidWatch.blocks) > block.number) {
-          console.log(`${block.number} skipped, waiting for ${braidWatch.blocks + hBN} (interval ${braidWatch.blocks})`)
+          console.log(`skipping ${block.number}, waiting for ${braidWatch.blocks + hBN} (interval ${braidWatch.blocks})`)
           continue
         }
 
@@ -176,13 +177,22 @@ async function handleNewBlock (chainKey, blockHeader) {
           // Note when we last *attempted* a transaction for this...
           lastBlockRecordedTime[combo] = Date.now()
 
+          // avoid the "underpriced replacement transaction" error
+          // be retrieving the existing nonce (if any) from the provider
+          // (especially after restarting this script)
+          if (nonces[agent.braid] === undefined) {
+            nonces[agent.braid] = await web3ws[agent.braid].eth.getTransactionCount(agent.agentAddress)
+          } else {
+            nonces[agent.braid] += 1
+          }
+
           console.log(`sending ${block.number} on ${combo}...`)
           // send the transaction
           let tx = await braids[agent.braid].addBlock(
             braidWatch.strand,
             block.number,
             block.hash,
-            { from: agent.agentAddress })
+            { from: agent.agentAddress, nonce: nonces[agent.braid] })
           console.log(`sent ${tx.tx} for ${block.number} on ${combo}`)
         } catch (err) {
           console.log(err)
