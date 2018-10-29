@@ -166,7 +166,7 @@ async function handleNewBlock (chainKey, blockHeader) {
         // check the block number update threshold
         // if the block does not meet the update threshold, skip
         if ((hBN + braidWatch.blocks) > block.number) {
-          console.log(`skipping ${chainKey} ${block.number}, waiting for ${braidWatch.blocks + hBN} (interval ${braidWatch.blocks})`)
+          console.log(`skipping ${chainKey} ${block.number}, awaiting ${braidWatch.blocks + hBN} (interval ${braidWatch.blocks})`) // eslint-disable-line max-len
           continue
         }
 
