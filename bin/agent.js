@@ -127,7 +127,7 @@ async function handleNewBlock (chainKey, blockHeader) {
           let tick = lastBlockRecordedTime[combo] + (braidWatch.seconds * 1000)
           if (tick > Date.now()) {
             let delay = Math.round((tick - Date.now()) / 1000)
-            console.log(`skipping ${chainKey} ${block.number}, waiting ${delay} seconds on ${combo}`)
+            console.log(`skipping ${combo} ${block.number}, waiting ${delay} seconds (${braidWatch.seconds - delay}/${braidWatch.seconds} s)`)
             // too soon!
             continue
           }
@@ -166,7 +166,7 @@ async function handleNewBlock (chainKey, blockHeader) {
         // check the block number update threshold
         // if the block does not meet the update threshold, skip
         if ((hBN + braidWatch.blocks) > block.number) {
-          console.log(`skipping ${chainKey} ${block.number}, awaiting ${braidWatch.blocks + hBN} (interval ${braidWatch.blocks})`) // eslint-disable-line max-len
+          console.log(`skipping ${combo} ${block.number}, awaiting ${braidWatch.blocks + hBN} (${Math.abs(hBN - block.number)}/${braidWatch.blocks} blocks)`) // eslint-disable-line max-len
           continue
         }
 
