@@ -127,7 +127,7 @@ async function handleNewBlock (chainKey, blockHeader) {
           let tick = lastBlockRecordedTime[combo] + (braidWatch.seconds * 1000)
           if (tick > Date.now()) {
             let delay = Math.round((tick - Date.now()) / 1000)
-            console.log(`skipping ${combo} ${block.number}, waiting ${delay} seconds (${braidWatch.seconds - delay}/${braidWatch.seconds} s)`)
+            console.log(`skipping ${combo} ${block.number}, waiting ${delay} seconds (${braidWatch.seconds - delay}/${braidWatch.seconds} s)`) // eslint-disable-line max-len
             // too soon!
             continue
           }
