@@ -4,6 +4,7 @@ pragma solidity ^0.4.24;
 interface BraidedInterface {
   function addStrand(uint, address, bytes32, string) external;
   function getStrandCount() external view returns (uint);
+  function getStrandID(uint) external view returns(uint);
   function getStrandContract(uint) external view returns (address);
   function getStrandGenesisBlockHash(uint) external view returns (bytes32);
   function getStrandDescription(uint) external view returns (string);

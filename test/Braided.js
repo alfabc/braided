@@ -95,6 +95,21 @@ contract('Braided', (accounts) => {
       await expectThrow(braided.addStrand(7, braided.contract.address, mainnetGenesis, 'unlucky', { from: agent1 }))
     })
 
+    it('should fail to get strand ID by invalid index', async () => {
+      await expectThrow(braided.getStrandID(7))
+      await expectThrow(braided.getStrandID(8))
+    })
+
+    it('should get strand ID by zero-based index', async () => {
+      (await braided.getStrandID(0)).toNumber().should.be.eq(mainnetID);
+      (await braided.getStrandID(1)).toNumber().should.be.eq(mordenID);
+      (await braided.getStrandID(2)).toNumber().should.be.eq(ropstenID);
+      (await braided.getStrandID(3)).toNumber().should.be.eq(kovanID);
+      (await braided.getStrandID(4)).toNumber().should.be.eq(rinkebyID);
+      (await braided.getStrandID(5)).toNumber().should.be.eq(classicID);
+      (await braided.getStrandID(6)).toNumber().should.be.eq(classictestID)
+    })
+
     it('should get strand info per ID', async () => {
       (await braided.getStrandGenesisBlockHash(mainnetID)).should.be.eq(mainnetGenesis)
       String(await braided.getStrandDescription(ropstenID)).should.be.eq('Ropsten')

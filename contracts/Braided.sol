@@ -64,6 +64,13 @@ contract Braided is BraidedInterface, Superuser {
     return strands.length - 1;
   }
 
+  // retrieve strandID from the zero-based index
+  function getStrandID(uint strandIndex) external view returns(uint) {
+    require(strandIndex < strands.length, INVALID_STRAND);
+    // the 0 in the index is reserved for "invalid"
+    return strands[strandIndex + 1].strandID;
+  }
+
   // get the Braided Contract deployed on the specified strand (if any).
   // If a new instance of the Braided Contract is deployed, then that will
   // have to be a new Strand ID.
