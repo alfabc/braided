@@ -1,3 +1,5 @@
+These are the instructions for setting up your own braid of chains, starting with
+no existing contracts.
 1) Update `braided-config.js` with chains and agents to be used
 2) create `.env` file in root directory of project with mnemonics for each owner and agent, as well as Infura endpoints
 3) Create contracts on all chains using migrations.
