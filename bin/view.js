@@ -8,6 +8,8 @@ const config = require('../braided-config.js')
 const braidedArtifacts = require('../build/contracts/Braided.json')
 
 let blockHashes = {}
+let matches = {}
+let clashes = {}
 
 // read all existing data from known braids on existing chains
 async function readFromChains () {
@@ -56,7 +58,54 @@ async function readFromChains () {
     }
     await provider.engine.stop()
   }
-  console.log(blockHashes)
+
+  for (let braidKey in blockHashes) {
+    console.log(braidKey)
+    for (let strand in blockHashes[braidKey]) {
+      console.log(strand)
+      for (let blockNumber in blockHashes[braidKey][strand]) {
+        for (let braidKey2 in blockHashes) {
+          // skip comparison with our own braid
+          if (braidKey2 === braidKey) continue
+          // skip braid that doesn't record this strand
+          if (!(strand in blockHashes[braidKey2])) continue
+          // if the block appears in this braid/strand...
+          if (blockNumber in blockHashes[braidKey2][strand]) {
+            // if it matches
+            if (blockHashes[braidKey][strand][blockNumber] === blockHashes[braidKey2][strand][blockNumber]) {
+              addMatch(strand, braidKey, braidKey2, blockNumber)
+            } else {
+              // if it doesn't match
+              addClash(strand, braidKey, braidKey2, blockNumber)
+            }
+          }
+        }
+      }
+    }
+  }
+  console.log('Matches:')
+  console.log(matches)
+  console.log('Clashes:')
+  console.log(clashes)
+}
+
+function addMatch (strand, braidKey, braidKey2, blockNumber) {
+  addIncident(matches, strand, braidKey, braidKey2, blockNumber)
+}
+
+function addClash (strand, braidKey, braidKey2, blockNumber) {
+  addIncident(clashes, strand, braidKey, braidKey2, blockNumber)
+}
+
+function addIncident (incidentType, strand, braidKey, braidKey2, blockNumber) {
+  if (!(strand in incidentType)) {
+    incidentType[strand] = {}
+  }
+  if (!(blockNumber in incidentType[strand])) {
+    incidentType[strand][blockNumber] = {}
+  }
+  incidentType[strand][blockNumber][braidKey] = true
+  incidentType[strand][blockNumber][braidKey2] = true
 }
 
 readFromChains()
