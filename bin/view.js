@@ -40,7 +40,7 @@ async function readFromChains () {
         try {
           let blockNumber = await braid.getHighestBlockNumber(watch.strand)
           let blockHash = await braid.getBlockHash(watch.strand, blockNumber)
-          while(blockNumber != 0) {
+          while (blockNumber !== 0) {
             console.log(`${braidKey}.${key}(${watch.strand}) ${blockNumber} ${blockHash}`)
             // store in the array
             blockHashes[braidKey][watch.strand][blockNumber] = blockHash
