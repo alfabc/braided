@@ -92,7 +92,7 @@ module.exports = {
       agentMnemonic: process.env.BRAIDED_ROPSTEN_AGENT,
       watches: {
         // mainnet: { strand: 1, blocks: 1, seconds: 10, special: 1000 },
-        rinkeby: { strand: 4, blocks: 131, seconds: 2250, special: 300 },
+        rinkeby: { strand: 4, blocks: 131, seconds: 2000, special: 300 },
         kovan: { strand: 42, blocks: 31, seconds: 450, special: 500 } } },
     // Record blocks from Mainnet, Ropsten and Kovan on the rinkeby0 strand
     { braid: 'rinkeby',
