@@ -77,6 +77,8 @@ module.exports = {
   // interval "0" means every block or every second (no delay)
   // both apply; longest of the two prevails, except for `special`
   // which is included if the remainder of dividing the block number is zero
+  // This helps multiple strands record the same block numbers, even when
+  // their intervals are different.
   agents: [
     // Record one block per day from Ropsten on the mainnet0 strand
     // { braid: 'mainnet',
@@ -90,7 +92,7 @@ module.exports = {
       agentMnemonic: process.env.BRAIDED_ROPSTEN_AGENT,
       watches: {
         // mainnet: { strand: 1, blocks: 1, seconds: 10, special: 1000 },
-        rinkeby: { strand: 4, blocks: 151, seconds: 2250, special: 200 },
+        rinkeby: { strand: 4, blocks: 131, seconds: 2250, special: 300 },
         kovan: { strand: 42, blocks: 31, seconds: 450, special: 500 } } },
     // Record blocks from Mainnet, Ropsten and Kovan on the rinkeby0 strand
     { braid: 'rinkeby',
