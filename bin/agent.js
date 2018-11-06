@@ -122,14 +122,20 @@ async function handleNewBlock (chainKey, blockHeader) {
         // We identify the braid/chain combo thus
         let combo = `${agent.braid}.${chainKey}`
 
-        // check the time update threshold
-        if (lastBlockRecordedTime[combo]) {
-          let tick = lastBlockRecordedTime[combo] + (braidWatch.seconds * 1000)
-          if (tick > Date.now()) {
-            let delay = Math.round((tick - Date.now()) / 1000)
-            console.log(`skipping ${combo} ${block.number}, waiting ${delay} seconds (${braidWatch.seconds - delay}/${braidWatch.seconds} s)`) // eslint-disable-line max-len
-            // too soon!
-            continue
+        // if the remainder of the "special" value for this block number is zero,
+        // record it regardless of time or block number rules
+        let special = (block.number % braidWatch.special === 0)
+
+        if (!special) {
+          // check the time update threshold
+          if (lastBlockRecordedTime[combo]) {
+            let tick = lastBlockRecordedTime[combo] + (braidWatch.seconds * 1000)
+            if (tick > Date.now()) {
+              let delay = Math.round((tick - Date.now()) / 1000)
+              console.log(`skipping ${combo} ${block.number}, waiting ${delay} seconds (${braidWatch.seconds - delay}/${braidWatch.seconds} s)`) // eslint-disable-line max-len
+              // too soon!
+              continue // consider next agent
+            }
           }
         }
 
@@ -160,14 +166,17 @@ async function handleNewBlock (chainKey, blockHeader) {
         // if already recorded, skip this agent
         if (hBN >= block.number) {
           console.log(`skipping ${chainKey} ${block.number}, ${hBN} already recorded`)
-          continue
+          continue // consider next agent
         }
 
-        // check the block number update threshold
-        // if the block does not meet the update threshold, skip
-        if ((hBN + braidWatch.blocks) > block.number) {
-          console.log(`skipping ${combo} ${block.number}, awaiting ${braidWatch.blocks + hBN} (${(block.number - hBN)}/${braidWatch.blocks} blocks)`) // eslint-disable-line max-len
-          continue
+        // "special" block numbers are always recorded
+        if (!special) {
+          // check the block number update threshold
+          // if the block does not meet the update threshold, skip
+          if ((hBN + braidWatch.blocks) > block.number) {
+            console.log(`skipping ${combo} ${block.number}, awaiting ${braidWatch.blocks + hBN} (${(block.number - hBN)}/${braidWatch.blocks} blocks)`) // eslint-disable-line max-len
+            continue // consider next agent
+          }
         }
 
         // record the block on the braid for the strand

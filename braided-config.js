@@ -75,37 +75,38 @@ module.exports = {
   // a given strand.
   // write chain, [read chains, block count interval, seconds interval]
   // interval "0" means every block or every second (no delay)
-  // both apply; longest of the two prevails
+  // both apply; longest of the two prevails, except for `special`
+  // which is included if the remainder of dividing the block number is zero
   agents: [
     // Record one block per day from Ropsten on the mainnet0 strand
     // { braid: 'mainnet',
     //   agentAddress: '0x826803b0f74c279faf4e327f02f7b8fbb751607d',
     //   agentMnemonic: process.env.BRAIDED_MAINNET_AGENT,
     //   watches: {
-    //     ropsten: { strand: 3, blocks: 0, seconds: 86400 } } },
+    //     ropsten: { strand: 3, blocks: 0, seconds: 86400, special: 1000 } } },
     // Record blocks from Mainnet, Rinkeby and Kovan on the ropsten0 strand
     { braid: 'ropsten',
       agentAddress: '0x10a259146c4ac177a74d17591bf83739587a219d',
       agentMnemonic: process.env.BRAIDED_ROPSTEN_AGENT,
       watches: {
-        // mainnet: { strand: 1, blocks: 1, seconds: 10 },
-        rinkeby: { strand: 4, blocks: 150, seconds: 2250 },
-        kovan: { strand: 42, blocks: 30, seconds: 450 } } },
+        // mainnet: { strand: 1, blocks: 1, seconds: 10, special: 1000 },
+        rinkeby: { strand: 4, blocks: 151, seconds: 2250, special: 200 },
+        kovan: { strand: 42, blocks: 31, seconds: 450, special: 500 } } },
     // Record blocks from Mainnet, Ropsten and Kovan on the rinkeby0 strand
     { braid: 'rinkeby',
       agentAddress: '0xa4a8c40cf200e548305001b9af9965722c70c6ad',
       agentMnemonic: process.env.BRAIDED_RINKEBY_AGENT,
       watches: {
-        // mainnet: { strand: 1, blocks: 1, seconds: 11 },
-        ropsten: { strand: 3, blocks: 30, seconds: 450 },
-        kovan: { strand: 42, blocks: 15, seconds: 225 } } },
+        // mainnet: { strand: 1, blocks: 1, seconds: 11, special: 1000 },
+        ropsten: { strand: 3, blocks: 31, seconds: 450, special: 100 },
+        kovan: { strand: 42, blocks: 17, seconds: 225, special: 80 } } },
     // Record blocks from Mainnet, Ropsten and Rinkeby on the kovan0 strand
     { braid: 'kovan',
       agentAddress: '0x4487f27ad58abbf8f3b25ee38aba578bc979f67e',
       agentMnemonic: process.env.BRAIDED_KOVAN_AGENT,
       watches: {
-        // mainnet: { strand: 1, blocks: 1, seconds: 12 },
-        ropsten: { strand: 3, blocks: 15, seconds: 225 },
-        rinkeby: { strand: 4, blocks: 15, seconds: 225 } } }
+        // mainnet: { strand: 1, blocks: 1, seconds: 12, special: 1000 },
+        ropsten: { strand: 3, blocks: 13, seconds: 200, special: 10 },
+        rinkeby: { strand: 4, blocks: 17, seconds: 225, special: 50 } } }
   ]
 }
