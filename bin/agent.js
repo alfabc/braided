@@ -198,12 +198,13 @@ async function handleNewBlock (chainKey, blockHeader) {
 
           console.log(`sending ${chainKey} ${block.number} on ${combo}...`)
           // send the transaction
-          let tx = await braids[agent.braid].addBlock(
+          braids[agent.braid].addBlock(
             braidWatch.strand,
             block.number,
             block.hash,
-            { from: agent.agentAddress, nonce: nonces[agent.braid] })
-          console.log(`sent ${tx.tx} for ${chainKey} ${block.number} on ${combo}`)
+            { from: agent.agentAddress, nonce: nonces[agent.braid] }).then(function (result) {
+            console.log(`sent ${result.tx} for ${chainKey} ${block.number} on ${combo}`)
+          })
         } catch (err) {
           console.log(err)
         }
