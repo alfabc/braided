@@ -125,6 +125,9 @@ async function handleNewBlock (chainKey, blockHeader) {
         // if the remainder of the "special" value for this block number is zero,
         // record it regardless of time or block number rules
         let special = (block.number % braidWatch.special === 0)
+        if (special) {
+          console.log(`processing ${combo} ${block.number} as a multiple of ${braidWatch.special}`)
+        }
 
         if (!special) {
           // check the time update threshold
