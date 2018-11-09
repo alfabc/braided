@@ -1,6 +1,7 @@
 pragma solidity ^0.4.25;
 
-// A common external interface to Braided contracts
+// A common external interface to Braided contracts first deployed
+// on Ropsten, Rinkeby, and Kovan
 interface BraidedInterface {
   function addStrand(uint, address, bytes32, string) external;
   function getStrandCount() external view returns (uint);

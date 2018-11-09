@@ -1,6 +1,7 @@
 pragma solidity ^0.4.25;
 
-// A common external interface to Braided contracts
+// A common external interface to Braided contracts, with additional methods
+// not present in the original BraidedInterface
 interface BraidedInterfaceV2 {
   function getCreationBlockNumber() external view returns (uint);
   function addStrand(uint, address, bytes32, string) external;

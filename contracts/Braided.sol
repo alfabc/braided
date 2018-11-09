@@ -1,11 +1,14 @@
 pragma solidity ^0.4.25;
 
+import "./BraidedInterface.sol";
 import "./BraidedInterfaceV2.sol";
 import "openzeppelin-solidity/contracts/ownership/Superuser.sol";
 
 
 // Smart contract for interchain linking
-contract Braided is BraidedInterfaceV2, Superuser {
+// Supports the original BraidedInterface deployed as well as additional
+// functionality implemented in V2
+contract Braided is BraidedInterface, BraidedInterfaceV2, Superuser {
 
   // Strand identifies a specific chain + contract on which block/hashes are stored
   struct Strand {
