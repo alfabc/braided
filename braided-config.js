@@ -6,7 +6,7 @@ module.exports = {
     // mainnet: { client: 'geth', networkID: 1, mode: 'light', chainName: '' },
     // mainnet: { client: 'rpc', endpoint: 'http://localhost:8545' },
     // mainnet: { client: 'websocket', endpoint: 'ws://localhost:8546' },
-    mainnet: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/geth.ipc' },
+    // mainnet: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/geth.ipc' },
     // ropsten: { client: 'geth', networkID: 3, mode: 'light', chainName: 'testnet' },
     // ropsten: { client: 'rpc', endpoint: 'ws://localhost:8549' },
     // ropsten: { client: 'websocket', endpoint: 'ws://localhost:8550' },
@@ -26,15 +26,15 @@ module.exports = {
   // There can be multiple strands deployed on a single chain; old versions,
   // abandoned, competing, forked, etc.
   braids: {
-    mainnet: {
-      chain: 'mainnet',
-      contractAddress: '0x0000000000000000000000000000000000000000',
-      genesisBlockHash: '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3',
-      ownerAddress: '0x5160b2f588debd7d131a8f8b4649bf9ac7bfcd59',
-      ownerMnemonic: process.env.BRAIDED_MAINNET_OWNER,
-      // providerEndpoint: process.env.INFURA_MAINNET },
-      // providerEndpoint: '/home/cleduc/.ethereum/geth.ipc' },
-      providerEndpoint: 'http://127.0.0.1:8545' },
+    // mainnet: {
+    //   chain: 'mainnet',
+    //   contractAddress: '0x0000000000000000000000000000000000000000',
+    //   genesisBlockHash: '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3',
+    //   ownerAddress: '0x5160b2f588debd7d131a8f8b4649bf9ac7bfcd59',
+    //   ownerMnemonic: process.env.BRAIDED_MAINNET_OWNER,
+    // // providerEndpoint: process.env.INFURA_MAINNET },
+    // // providerEndpoint: '/home/cleduc/.ethereum/geth.ipc' },
+    //   providerEndpoint: 'http://127.0.0.1:8545' },
     morden: {
       chain: 'morden',
       genesisBlockHash: '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303',
