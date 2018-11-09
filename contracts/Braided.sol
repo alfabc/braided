@@ -1,15 +1,16 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
-import "./BraidedInterface.sol";
+import "./BraidedInterfaceV2.sol";
 import "openzeppelin-solidity/contracts/ownership/Superuser.sol";
 
 
 // Smart contract for interchain linking
-contract Braided is BraidedInterface, Superuser {
+contract Braided is BraidedInterfaceV2, Superuser {
 
   // Strand identifies a specific chain + contract on which block/hashes are stored
   struct Strand {
     uint strandID;
+    uint creationBlockNumber;
     address strandContract; // must support BraidedInterface if present
     bytes32 genesisBlockHash;
     string description;
@@ -38,7 +39,14 @@ contract Braided is BraidedInterface, Superuser {
 
   constructor() public {
     // Strand 0 is reserved
-    strands.push(Strand(0, 0, 0, ""));
+    // remember the block number when this was created
+    // useful for filtering
+    strands.push(Strand(0, block.number, 0, 0, ""));
+  }
+
+  // get block number in which braid was created
+  function getCreationBlockNumber() external view returns (uint) {
+    return strands[0].creationBlockNumber;
   }
 
   // Add a strand
@@ -48,7 +56,7 @@ contract Braided is BraidedInterface, Superuser {
     // strandID must not already be in use
     require(strandIndexByStrandID[strandID] == 0, INVALID_STRAND);
     // Add the strand
-    strands.push(Strand(strandID, strandContract, genesisBlockHash, description));
+    strands.push(Strand(strandID, block.number, strandContract, genesisBlockHash, description));
     // make it possible to find the strand in the array by strandID
     strandIndexByStrandID[strandID] = strands.length - 1;
   }
@@ -81,6 +89,11 @@ contract Braided is BraidedInterface, Superuser {
   // get the genesis block hash for the specified strand
   function getStrandGenesisBlockHash(uint strandID) external view validStrandID(strandID) returns (bytes32) {
     return strands[strandIndexByStrandID[strandID]].genesisBlockHash;
+  }
+
+  // get the description for the specified strand
+  function getStrandCreationBlockNumber(uint strandID) external view validStrandID(strandID) returns (uint) {
+    return strands[strandIndexByStrandID[strandID]].creationBlockNumber;
   }
 
   // get the description for the specified strand
