@@ -14,7 +14,8 @@ module.exports = {
       host: 'localhost',
       port: 7545,
       network_id: '5777',
-      gas: 2000000
+      gasPrice: 20000000000,
+      gas: 6721975
     },
     mainnet: {
       provider: () => new HDWalletProvider(process.env.BRAIDED_MAINNET_OWNER, process.env.INFURA_MAINNET),
