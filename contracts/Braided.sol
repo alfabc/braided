@@ -128,6 +128,11 @@ contract Braided is BraidedInterface, BraidedInterfaceV2, Superuser {
     emit BlockAdded(strandID, blockNumber, blockHash);
   }
 
+  // get the number of block/hashes recorded on the specified strand
+  function getBlockCount(uint strandID) external view validStrandID(strandID) returns (uint) {
+    return blocks[strandID].length;
+  }
+
   // get the block hash for the block number on the specified strand
   function getBlockHash(uint strandID, uint blockNumber) external view validStrandID(strandID) returns (bytes32) {
     Block memory theBlock = blocks[strandID][blockByNumber[strandID][blockNumber]];

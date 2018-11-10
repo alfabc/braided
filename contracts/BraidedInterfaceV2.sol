@@ -14,6 +14,7 @@ interface BraidedInterfaceV2 {
   function addAgent(address, uint) external;
   function removeAgent(address, uint) external;
   function addBlock(uint, uint, bytes32) external;
+  function getBlockCount(uint) external view returns (uint);
   function getBlockHash(uint, uint) external view returns (bytes32);
   function getHighestBlockNumber(uint) external view returns (uint);
   function getLowestBlockNumber(uint) external view returns (uint);

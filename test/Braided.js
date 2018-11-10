@@ -260,6 +260,18 @@ contract('Braided', (accounts) => {
       await expectThrow(braided.getPreviousBlock(mainnetID, 11))
     })
 
+    it('should get the number of blocks recorded for a chain', async () => {
+      // invalid strandID
+      await expectThrow(braided.getBlockCount(5));
+      (await braided.getBlockCount(mainnetID)).toNumber().should.be.eq(4);
+      (await braided.getBlockCount(mordenID)).toNumber().should.be.eq(3);
+      (await braided.getBlockCount(ropstenID)).toNumber().should.be.eq(2);
+      (await braided.getBlockCount(rinkebyID)).toNumber().should.be.eq(0);
+      (await braided.getBlockCount(kovanID)).toNumber().should.be.eq(0);
+      (await braided.getBlockCount(classicID)).toNumber().should.be.eq(1);
+      (await braided.getBlockCount(classictestID)).toNumber().should.be.eq(0)
+    })
+
     it('should emit an event when adding a block', async () => {
       let tx = await braided.addBlock(mainnetID, 10, mainneta, { from: agent1 })
       tx.logs[0].event.should.be.equal('BlockAdded')
