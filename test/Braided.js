@@ -48,6 +48,9 @@ contract('Braided', (accounts) => {
   const mainnet8 = '0x2ce94342df186bab4165c268c43ab982d360c9474f429fec5565adfc5d1f258b'
   const mainnet9 = '0x997e47bf4cac509c627753c06385ac866641ec6f883734ff7944411000dc576e'
   const mainneta = '0x4ff4a38b278ab49f7739d3a4ed4e12714386a9fdf72192f2e8f7da7822f10b4d'
+  const mordena = '0x29d96a4042e6b5e2336fbcf5d9decfec1ea2e69a444e92ed6c59bb4491f05ef5'
+  const mordenc = '0x23cb530876baebc086c3ed9abeebf8cf8795e9c1da5fca258ba51c297be51819'
+  const mordene = '0xf8d81fefe56e94b10910eb34dab88ee917a4b84b4e01f4ad3fcb702786ac08a5'
   const ropsten1 = '0x41800b5c3f1717687d85fc9018faac0a6e90b39deaa0b99e7fe4fe796ddeb26a'
   const ropsten2 = '0x88e8bc1dd383672e96d77ee247e7524622ff3b15c337bd33ef602f15ba82d920'
 
@@ -190,10 +193,22 @@ contract('Braided', (accounts) => {
       await expectThrow(braided.addBlock(classicID, 2, mainnet2, { from: rando }))
     })
 
+    it('should retrieve lowest block number in a strand', async () => {
+      (await braided.getLowestBlockNumber(mainnetID)).toNumber().should.be.eq(1);
+      (await braided.getLowestBlockNumber(ropstenID)).toNumber().should.be.eq(1);
+      (await braided.getLowestBlockNumber(classicID)).toNumber().should.be.eq(1)
+      await braided.addAgent(agent2, mordenID, { from: owner1 })
+      await braided.addBlock(mordenID, 10, mordena, { from: agent2 })
+      await braided.addBlock(mordenID, 12, mordenc, { from: agent2 })
+      await braided.addBlock(mordenID, 14, mordene, { from: agent2 });
+      (await braided.getLowestBlockNumber(mordenID)).toNumber().should.be.eq(10)
+    })
+
     it('should retrieve highest block number in a strand', async () => {
       (await braided.getHighestBlockNumber(mainnetID)).toNumber().should.be.eq(3);
       (await braided.getHighestBlockNumber(ropstenID)).toNumber().should.be.eq(2);
-      (await braided.getHighestBlockNumber(classicID)).toNumber().should.be.eq(1)
+      (await braided.getHighestBlockNumber(classicID)).toNumber().should.be.eq(1);
+      (await braided.getHighestBlockNumber(mordenID)).toNumber().should.be.eq(14)
     })
 
     it('should not retrieve highest block number for invalid strands', async () => {

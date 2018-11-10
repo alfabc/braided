@@ -16,6 +16,7 @@ interface BraidedInterfaceV2 {
   function addBlock(uint, uint, bytes32) external;
   function getBlockHash(uint, uint) external view returns (bytes32);
   function getHighestBlockNumber(uint) external view returns (uint);
+  function getLowestBlockNumber(uint) external view returns (uint);
   function getPreviousBlockNumber(uint, uint) external view returns (uint);
   function getPreviousBlock(uint, uint) external view returns (uint, bytes32);
 }

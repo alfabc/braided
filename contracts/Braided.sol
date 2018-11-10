@@ -142,6 +142,11 @@ contract Braided is BraidedInterface, BraidedInterfaceV2, Superuser {
     return blocks[strandID][blocks[strandID].length - 1].blockNumber;
   }
 
+  // get the lowest block number recorded for the specified strand
+  function getLowestBlockNumber(uint strandID) external view validStrandID(strandID) returns (uint) {
+    return blocks[strandID][0].blockNumber;
+  }
+
   // get the previous block number recorded to the one supplied for the
   // specified strand (used to walk the strand backwards)
   function getPreviousBlockNumber(uint strandID, uint blockNumber) external view validStrandID(strandID) returns (uint) {
