@@ -64,20 +64,20 @@ contract('Braided', (accounts) => {
       // add strands, and permissions for agents to add blocks to those strands
       for (let s = 0; s < strandCount; s++) {
         if (s !== 0) {
-          await contracts[s].addStrand(1, contracts[0].contract.address, mainnetGenesis,
+          await contracts[s].addStrand(1, contracts[0].address, mainnetGenesis,
             'Foundation', { from: superuser })
           await contracts[s].addAgent(accounts[s + 1], 1, { from: superuser })
         }
         if (s !== 1) {
-          await contracts[s].addStrand(2, contracts[1].contract.address, mordenGenesis, 'morden', { from: superuser })
+          await contracts[s].addStrand(2, contracts[1].address, mordenGenesis, 'morden', { from: superuser })
           await contracts[s].addAgent(accounts[s + 1], 2, { from: superuser })
         }
         if (s !== 2) {
-          await contracts[s].addStrand(3, contracts[2].contract.address, ropstenGenesis, 'Ropsten', { from: superuser })
+          await contracts[s].addStrand(3, contracts[2].address, ropstenGenesis, 'Ropsten', { from: superuser })
           await contracts[s].addAgent(accounts[s + 1], 3, { from: superuser })
         }
         if (s !== 3) {
-          await contracts[s].addStrand(4, contracts[3].contract.address, kovanGenesis, 'Kovan', { from: superuser })
+          await contracts[s].addStrand(4, contracts[3].address, kovanGenesis, 'Kovan', { from: superuser })
           await contracts[s].addAgent(accounts[s + 1], 4, { from: superuser })
         }
 

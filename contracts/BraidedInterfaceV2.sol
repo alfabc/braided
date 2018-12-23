@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 // A common external interface to Braided contracts, with additional methods
 // not present in the original BraidedInterface

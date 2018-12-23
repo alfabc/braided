@@ -61,10 +61,9 @@
     "md5": "^2.2.1",
     "openzeppelin-solidity": "^1.12.0",
     "sol-merger": "^0.1.2",
-    "solc": "^0.4.24",
     "solidity-coverage": "^0.5.11",
     "solium": "^1.1.8",
-    "truffle": "^5.0.0-beta.1",
+    "truffle": "^5.0.0-beta.2",
     "truffle-contract": "^3.0.6",
     "truffle-hdwallet-provider": "0.0.6",
     "web3": "1.0.0-beta.36"
