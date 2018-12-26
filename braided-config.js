@@ -35,13 +35,13 @@ module.exports = {
       // providerEndpoint: process.env.INFURA_MAINNET },
       // providerEndpoint: '/home/cleduc/.ethereum/geth.ipc' },
       providerEndpoint: 'http://127.0.0.1:8545' },
-    morden: {
-      chain: 'morden',
-      genesisBlockHash: '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303',
-      contractAddress: '0x0000000000000000000000000000000000000000',
-      ownerAddress: '0x0000000000000000000000000000000000000000',
-      ownerMnemonic: '',
-      providerEndpoint: '' },
+    // morden: {
+    // chain: 'morden',
+    // genesisBlockHash: '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303',
+    // contractAddress: '0x0000000000000000000000000000000000000000',
+    // ownerAddress: '0x0000000000000000000000000000000000000000',
+    // ownerMnemonic: '',
+    // providerEndpoint: '' },
     ropsten: {
       chain: 'ropsten',
       contractAddress: '0xa60b375aa200949a56c26e99fcff0a0dae6e9a51',
