@@ -204,7 +204,7 @@ async function handleNewBlock (chainKey, blockHeader) {
             block.hash,
             { from: agent.agentAddress, nonce: nonces[agent.braid] }).then(function (result) {
             console.log(`sent ${result.tx} for ${chainKey} ${block.number} on ${combo}`)
-          })
+          }).catch(err => console.log(err))
         } catch (err) {
           console.log(err)
         }
