@@ -1,0 +1,2 @@
+#!/bin/sh
+geth --port 30308 --rpc --rpcport 8552 --rpcaddr 0.0.0.0 --rpccorsdomain "*" --rpcapi "eth,net,web3" --ws --wsport 8553 --wsaddr 0.0.0.0 --wsorigins "*" --syncmode "fast" --goerli $@

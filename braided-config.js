@@ -17,9 +17,13 @@ module.exports = {
     // rinkeby: { client: 'websocket', endpoint: 'ws://localhost:8552' },
     // rinkeby: { client: 'websocket', endpoint: 'wss://rinkeby.infura.io/ws' },
     rinkeby: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/rinkeby/geth.ipc' },
+    // goerli: { client: 'geth', networkID: 5, mode: 'light', chainName: 'rinkeby' },
+    // goerli: { client: 'rpc', endpoint: 'http://localhost:8552' },
+    // goerli: { client: 'websocket', endpoint: 'ws://localhost:8553' },
+    goerli: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/goerli/geth.ipc' },
     // kovan: { client: 'parity', networkID: 42, mode: 'light', chainName: 'kovan' } },
-    // kovan: { client: 'rpc', endpoint: 'ws://localhost:8553' } },
-    // kovan: { client: 'websocket', endpoint: 'ws://localhost:8554' } },
+    // kovan: { client: 'rpc', endpoint: 'ws://localhost:8554' } },
+    // kovan: { client: 'websocket', endpoint: 'ws://localhost:8555' } },
     kovan: { client: 'ipc', endpoint: '/home/cleduc/.local/share/io.parity.ethereum/jsonrpc.ipc' } },
 
   // Braids are deployed Braided contracts on public blockchains
