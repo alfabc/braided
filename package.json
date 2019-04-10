@@ -19,6 +19,7 @@
     "migrate-mainnet": "truffle migrate --network mainnet",
     "migrate-ropsten": "truffle migrate --network ropsten",
     "migrate-rinkeby": "truffle migrate --network rinkeby",
+    "migrate-goerli": "truffle migrate --network goerli",
     "migrate-kovan": "truffle migrate --network kovan",
     "test": "truffle test"
   },

@@ -41,7 +41,7 @@ module.exports = {
       gas: 6700000
     },
     goerli: {
-      provider: () => new HDWalletProvider(process.env.BRAIDED_GOERLI_OWNER, process.env.INFURA_RINKEBY),
+      provider: () => new HDWalletProvider(process.env.BRAIDED_GOERLI_OWNER, process.env.INFURA_GOERLI),
       network_id: '5',
       gasPrice: 10000000000,
       gas: 8000000
