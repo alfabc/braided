@@ -1,1 +1,1 @@
-parity --port=30345 --jsonrpc-port=8554 --ws-port=8555 --chain=kovan
+parity --port=30345 --jsonrpc-port=8555 --ws-port=8556 --chain=kovan
