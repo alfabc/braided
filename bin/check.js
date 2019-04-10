@@ -42,6 +42,7 @@ async function readFromChains () {
       chainBlockHashes[braidKey][blockNumber] = { number: block.number, hash: block.hash, matches: {}, score: 0 }
     }
   }
+  console.log(chainBlockHashes)
 
   // get Braided block/hashes for each braid
   for (let agent of config.agents) {
