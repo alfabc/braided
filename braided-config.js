@@ -115,6 +115,15 @@ module.exports = {
         // mainnet: { strand: 1, blocks: 1, seconds: 11, special: 1000 },
         ropsten: { strand: 3, blocks: 31, seconds: 450, special: 100 },
         kovan: { strand: 42, blocks: 17, seconds: 225, special: 100 } } },
+    // Record blocks from Mainnet, Ropsten, Rinkeby and Kovan on the goerli0 strand
+    { braid: 'goerli',
+      agentAddress: '0x79047aBf3af2a1061B108D71d6dc7BdB06474790',
+      agentMnemonic: process.env.BRAIDED_GOERLI_AGENT,
+      watches: {
+        // mainnet: { strand: 1, blocks: 32, seconds: 450, special: 100 },
+        ropsten: { strand: 3, blocks: 33, seconds: 450, special: 100 },
+        rinkeby: { strand: 4, blocks: 35, seconds: 450, special: 100 },
+        kovan: { strand: 42, blocks: 37, seconds: 450, special: 100 } } },
     // Record blocks from Mainnet, Ropsten and Rinkeby on the kovan0 strand
     { braid: 'kovan',
       agentAddress: '0x4487f27ad58abbf8f3b25ee38aba578bc979f67e',
