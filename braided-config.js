@@ -64,6 +64,15 @@ module.exports = {
       // providerEndpoint: process.env.INFURA_RINKEBY },
       // providerEndpoint: '/home/cleduc/.ethereum/rinkeby/geth.ipc' },
       providerEndpoint: 'http://127.0.0.1:8551' },
+    goerli: {
+      chain: 'goerli',
+      contractAddress: '',
+      genesisBlockHash: '0xbf7e331f7f7c1dd2e05159666b3bf8bc7a8a3a9eb1d518969eab529dd9b88c1a',
+      ownerAddress: '0xf0bf12fa12a78402f821e61b02ee28a186192f9a',
+      ownerMnemonic: process.env.BRAIDED_GOERLI_OWNER,
+      // providerEndpoint: process.env.INFURA_GOERLI },
+      // providerEndpoint: '/home/cleduc/.ethereum/goerli/geth.ipc' },
+      providerEndpoint: 'http://127.0.0.1:8553' },
     kovan: {
       chain: 'kovan',
       contractAddress: '0x2f60bb2bbe14f1dfd8146a1469f300a9c313cae1',
@@ -72,7 +81,7 @@ module.exports = {
       ownerMnemonic: process.env.BRAIDED_KOVAN_OWNER,
       // providerEndpoint: process.env.INFURA_KOVAN }
       // providerEndpoint: '/home/cleduc/.local/share/io.parity.ethereum/jsonrpc.ipc' }
-      providerEndpoint: 'http://127.0.0.1:8553' }
+      providerEndpoint: 'http://127.0.0.1:8555' }
   },
 
   // Describes the agents which have permission to add block/hashes to

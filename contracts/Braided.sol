@@ -1,14 +1,17 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.7;
 
 import "./BraidedInterface.sol";
 import "./BraidedInterfaceV2.sol";
-import "openzeppelin-solidity/contracts/ownership/Superuser.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/access/Roles.sol";
 
 
 // Smart contract for interchain linking
 // Supports the original BraidedInterface deployed as well as additional
 // functionality implemented in V2
-contract Braided is BraidedInterface, BraidedInterfaceV2, Superuser {
+contract Braided is BraidedInterface, BraidedInterfaceV2, Ownable {
+
+  using Roles for Roles.Role;
 
   // Strand identifies a specific chain + contract on which block/hashes are stored
   struct Strand {
@@ -41,10 +44,11 @@ contract Braided is BraidedInterface, BraidedInterfaceV2, Superuser {
   event BlockAdded(uint indexed strandID, uint indexed blockNumber, bytes32 blockHash);
 
   constructor() public {
+    // Creator is owner
     // Strand 0 is reserved
     // remember the block number when this was created
     // useful for filtering
-    strands.push(Strand(0, block.number, 0, 0, ""));
+    strands.push(Strand(0, block.number, address(0), 0, ""));
   }
 
   // get block number in which braid was created
@@ -53,7 +57,7 @@ contract Braided is BraidedInterface, BraidedInterfaceV2, Superuser {
   }
 
   // Add a strand
-  function addStrand(uint strandID, address strandContract, bytes32 genesisBlockHash, string description) external onlyOwnerOrSuperuser() {
+  function addStrand(uint strandID, address strandContract, bytes32 genesisBlockHash, string calldata description) external onlyOwner() {
     // strand 0 is reserved
     require(strandID != 0, INVALID_STRAND);
     // strandID must not already be in use
@@ -100,17 +104,17 @@ contract Braided is BraidedInterface, BraidedInterfaceV2, Superuser {
   }
 
   // get the description for the specified strand
-  function getStrandDescription(uint strandID) external view validStrandID(strandID) returns (string) {
+  function getStrandDescription(uint strandID) external view validStrandID(strandID) returns (string memory) {
     return strands[strandIndexByStrandID[strandID]].description;
   }
 
   // grant role to specified account
-  function addAgent(address agent, uint strandID) external onlyOwnerOrSuperuser() validStrandID(strandID) {
+  function addAgent(address agent, uint strandID) external onlyOwner() validStrandID(strandID) {
     addBlockRoles[strandID].add(agent);
   }
 
   // revoke role from specied account
-  function removeAgent(address agent, uint strandID) external onlyOwnerOrSuperuser() validStrandID(strandID) {
+  function removeAgent(address agent, uint strandID) external onlyOwner() validStrandID(strandID) {
     addBlockRoles[strandID].remove(agent);
   }
 

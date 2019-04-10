@@ -1,14 +1,14 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.7;
 
 // A common external interface to Braided contracts first deployed
 // on Ropsten, Rinkeby, and Kovan
 interface BraidedInterface {
-  function addStrand(uint, address, bytes32, string) external;
+  function addStrand(uint, address, bytes32, string calldata) external;
   function getStrandCount() external view returns (uint);
   function getStrandID(uint) external view returns(uint);
   function getStrandContract(uint) external view returns (address);
   function getStrandGenesisBlockHash(uint) external view returns (bytes32);
-  function getStrandDescription(uint) external view returns (string);
+  function getStrandDescription(uint) external view returns (string memory);
   function addAgent(address, uint) external;
   function removeAgent(address, uint) external;
   function addBlock(uint, uint, bytes32) external;

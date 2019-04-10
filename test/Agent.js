@@ -34,8 +34,8 @@ let fixtures = []
 let contracts = []
 
 const mainnetGenesis = config.braids.mainnet.genesisBlockHash
-const mordenGenesis = config.braids.morden.genesisBlockHash
 const ropstenGenesis = config.braids.ropsten.genesisBlockHash
+const rinkebyGenesis = config.braids.rinkeby.genesisBlockHash
 const kovanGenesis = config.braids.kovan.genesisBlockHash
 
 // test data was created in Google Sheets and used the venerable MD5 hash.
@@ -45,7 +45,7 @@ function fakeHash (value) {
 }
 
 contract('Braided', (accounts) => {
-  let superuser = accounts[0]
+  let owner = accounts[0]
 
   context('loading test data', () => {
     it('should load the test data', async () => {
@@ -65,20 +65,20 @@ contract('Braided', (accounts) => {
       for (let s = 0; s < strandCount; s++) {
         if (s !== 0) {
           await contracts[s].addStrand(1, contracts[0].address, mainnetGenesis,
-            'Foundation', { from: superuser })
-          await contracts[s].addAgent(accounts[s + 1], 1, { from: superuser })
+            'Foundation', { from: owner })
+          await contracts[s].addAgent(accounts[s + 1], 1, { from: owner })
         }
         if (s !== 1) {
-          await contracts[s].addStrand(2, contracts[1].address, mordenGenesis, 'morden', { from: superuser })
-          await contracts[s].addAgent(accounts[s + 1], 2, { from: superuser })
+          await contracts[s].addStrand(2, contracts[1].address, rinkebyGenesis, 'morden', { from: owner })
+          await contracts[s].addAgent(accounts[s + 1], 2, { from: owner })
         }
         if (s !== 2) {
-          await contracts[s].addStrand(3, contracts[2].address, ropstenGenesis, 'Ropsten', { from: superuser })
-          await contracts[s].addAgent(accounts[s + 1], 3, { from: superuser })
+          await contracts[s].addStrand(3, contracts[2].address, ropstenGenesis, 'Ropsten', { from: owner })
+          await contracts[s].addAgent(accounts[s + 1], 3, { from: owner })
         }
         if (s !== 3) {
-          await contracts[s].addStrand(4, contracts[3].address, kovanGenesis, 'Kovan', { from: superuser })
-          await contracts[s].addAgent(accounts[s + 1], 4, { from: superuser })
+          await contracts[s].addStrand(4, contracts[3].address, kovanGenesis, 'Kovan', { from: owner })
+          await contracts[s].addAgent(accounts[s + 1], 4, { from: owner })
         }
 
         // each strand should have all but itself

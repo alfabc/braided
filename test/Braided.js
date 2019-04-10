@@ -14,7 +14,7 @@ contract('Braided', (accounts) => {
   let braided
 
   // users
-  const superuser = accounts[0]
+  const owner0 = accounts[0]
   const owner1 = accounts[1]
   const owner2 = accounts[2]
   const agent1 = accounts[3]
@@ -25,18 +25,18 @@ contract('Braided', (accounts) => {
 
   // Network IDs (from https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md)
   const mainnetID = 1
-  const mordenID = 2
   const ropstenID = 3
   const rinkebyID = 4
+  const goerliID = 5
   const kovanID = 42
   const classicID = 61
   const classictestID = 62
 
   // genesis block hashes
   const mainnetGenesis = config.braids.mainnet.genesisBlockHash
-  const mordenGenesis = config.braids.morden.genesisBlockHash
   const ropstenGenesis = config.braids.ropsten.genesisBlockHash
   const rinkebyGenesis = config.braids.rinkeby.genesisBlockHash
+  const goerliGenesis = config.braids.goerli.genesisBlockHash
   const kovanGenesis = config.braids.kovan.genesisBlockHash
 
   // Other block hashes of note
@@ -48,9 +48,9 @@ contract('Braided', (accounts) => {
   const mainnet8 = '0x2ce94342df186bab4165c268c43ab982d360c9474f429fec5565adfc5d1f258b'
   const mainnet9 = '0x997e47bf4cac509c627753c06385ac866641ec6f883734ff7944411000dc576e'
   const mainneta = '0x4ff4a38b278ab49f7739d3a4ed4e12714386a9fdf72192f2e8f7da7822f10b4d'
-  const mordena = '0x29d96a4042e6b5e2336fbcf5d9decfec1ea2e69a444e92ed6c59bb4491f05ef5'
-  const mordenc = '0x23cb530876baebc086c3ed9abeebf8cf8795e9c1da5fca258ba51c297be51819'
-  const mordene = '0xf8d81fefe56e94b10910eb34dab88ee917a4b84b4e01f4ad3fcb702786ac08a5'
+  const goerlia = '0x206d138db2c9f30a257fab5ffc593e96ffdd96350842d1501647d24164da4bdf'
+  const goerlic = '0x98de0d0a6d58f5da8cb8177e7371e496f37ac6cf2bbf145d0deaaf2d3934915b'
+  const goerlie = '0x10aa4db0d143ab9303a20cd99a0f8b4ad9b75a48eec9d62b9475a706acda67f5'
   const ropsten1 = '0x41800b5c3f1717687d85fc9018faac0a6e90b39deaa0b99e7fe4fe796ddeb26a'
   const ropsten2 = '0x88e8bc1dd383672e96d77ee247e7524622ff3b15c337bd33ef602f15ba82d920'
 
@@ -59,35 +59,35 @@ contract('Braided', (accounts) => {
     (await web3.eth.getBlock('latest')).number.should.eq((await braided.getCreationBlockNumber()).toNumber())
   })
 
-  // Exercises use of openzeppelin-solidity/Superuser
+  // Exercises use of openzeppelin-solidity/Owner
   context('ownership and permissions', () => {
-    it('should not allow non-superuser/non-owner to set new owner', async () => {
+    it('should not allow non-owner to set new owner', async () => {
       await expectThrow(braided.transferOwnership(rando, { from: rando }))
     })
 
-    it('should allow superuser/owner to set new owner', async () => {
-      await braided.transferOwnership(owner1, { from: superuser })
+    it('should allow owner to set new owner', async () => {
+      await braided.transferOwnership(owner1, { from: owner0 })
     })
 
     it('should allow owner to set new owner', async () => {
       await braided.transferOwnership(owner2, { from: owner1 })
     })
 
-    it('should allow superuser to set new owner', async () => {
-      await braided.transferOwnership(owner1, { from: superuser })
+    it('should allow owner to set new owner', async () => {
+      await braided.transferOwnership(owner1, { from: owner2 })
     })
   })
 
   // Test linking multiple testnets together
   context('Link testnets', () => {
     it('should add strands', async () => {
-      await braided.addStrand(mainnetID, braided.address, mainnetGenesis, 'Foundation', { from: superuser });
+      await braided.addStrand(mainnetID, braided.address, mainnetGenesis, 'Foundation', { from: owner1 });
       (await web3.eth.getBlock('latest')).number.should.eq(
         (await braided.getStrandCreationBlockNumber(mainnetID)).toNumber())
-      await braided.addStrand(mordenID, braided.address, mordenGenesis, 'morden', { from: owner1 });
+      await braided.addStrand(goerliID, braided.address, goerliGenesis, 'goerli', { from: owner1 });
       (await web3.eth.getBlock('latest')).number.should.eq(
-        (await braided.getStrandCreationBlockNumber(mordenID)).toNumber())
-      await braided.addStrand(ropstenID, braided.address, ropstenGenesis, 'Ropsten', { from: superuser });
+        (await braided.getStrandCreationBlockNumber(goerliID)).toNumber())
+      await braided.addStrand(ropstenID, braided.address, ropstenGenesis, 'Ropsten', { from: owner1 });
       (await web3.eth.getBlock('latest')).number.should.eq(
         (await braided.getStrandCreationBlockNumber(ropstenID)).toNumber())
       await braided.addStrand(kovanID, braided.address, kovanGenesis, 'Kovan', { from: owner1 });
@@ -99,7 +99,7 @@ contract('Braided', (accounts) => {
       await braided.addStrand(classicID, braided.address, mainnetGenesis, 'Classic', { from: owner1 });
       (await web3.eth.getBlock('latest')).number.should.eq(
         (await braided.getStrandCreationBlockNumber(classicID)).toNumber())
-      await braided.addStrand(classictestID, braided.address, mordenGenesis, 'Classic test', { from: owner1 });
+      await braided.addStrand(classictestID, braided.address, goerliGenesis, 'Classic test', { from: owner1 });
       (await web3.eth.getBlock('latest')).number.should.eq(
         (await braided.getStrandCreationBlockNumber(classictestID)).toNumber());
       (await braided.getStrandCount()).toNumber().should.be.eq(7)
@@ -120,7 +120,7 @@ contract('Braided', (accounts) => {
 
     it('should get strand ID by zero-based index', async () => {
       (await braided.getStrandID(0)).toNumber().should.be.eq(mainnetID);
-      (await braided.getStrandID(1)).toNumber().should.be.eq(mordenID);
+      (await braided.getStrandID(1)).toNumber().should.be.eq(goerliID);
       (await braided.getStrandID(2)).toNumber().should.be.eq(ropstenID);
       (await braided.getStrandID(3)).toNumber().should.be.eq(kovanID);
       (await braided.getStrandID(4)).toNumber().should.be.eq(rinkebyID);
@@ -149,26 +149,26 @@ contract('Braided', (accounts) => {
       await braided.addAgent(agent2, mainnetID, { from: owner1 })
     })
 
-    it('should allow superuser to add agents', async () => {
-      await braided.addAgent(agent3, mainnetID, { from: superuser })
-      await braided.addAgent(agent4, mainnetID, { from: superuser })
-      await braided.addAgent(agent4, ropstenID, { from: superuser })
-      await braided.addAgent(agent4, classicID, { from: superuser })
+    it('should allow owner to add agents', async () => {
+      await braided.addAgent(agent3, mainnetID, { from: owner1 })
+      await braided.addAgent(agent4, mainnetID, { from: owner1 })
+      await braided.addAgent(agent4, ropstenID, { from: owner1 })
+      await braided.addAgent(agent4, classicID, { from: owner1 })
     })
 
-    it('should not allow non-superuser/non-owner to add agent', async () => {
+    it('should not allow non-owner to add agent', async () => {
       await expectThrow(braided.addAgent(agent1, mainnetID, { from: owner2 }))
     })
 
-    it('should allow superuser to remove agent', async () => {
-      await braided.removeAgent(agent2, mainnetID, { from: superuser })
+    it('should allow owner to remove agent', async () => {
+      await braided.removeAgent(agent2, mainnetID, { from: owner1 })
     })
 
     it('should allow owner to remove agent', async () => {
       await braided.removeAgent(agent3, mainnetID, { from: owner1 })
     })
 
-    it('should not allow non-superuser/non-owner to remove agent', async () => {
+    it('should not allow non-owner to remove agent', async () => {
       await expectThrow(braided.addAgent(agent1, mainnetID, { from: owner2 }))
     })
   })
@@ -186,7 +186,7 @@ contract('Braided', (accounts) => {
     })
 
     it('should not allow non-agents to add hashes', async () => {
-      await expectThrow(braided.addBlock(classicID, 2, mainnet2, { from: superuser }))
+      await expectThrow(braided.addBlock(classicID, 2, mainnet2, { from: owner0 }))
       await expectThrow(braided.addBlock(classicID, 2, mainnet2, { from: owner2 }))
       await expectThrow(braided.addBlock(classicID, 2, mainnet2, { from: agent2 }))
       await expectThrow(braided.addBlock(classicID, 2, mainnet2, { from: agent3 }))
@@ -197,22 +197,22 @@ contract('Braided', (accounts) => {
       (await braided.getLowestBlockNumber(mainnetID)).toNumber().should.be.eq(1);
       (await braided.getLowestBlockNumber(ropstenID)).toNumber().should.be.eq(1);
       (await braided.getLowestBlockNumber(classicID)).toNumber().should.be.eq(1)
-      await braided.addAgent(agent2, mordenID, { from: owner1 })
-      await braided.addBlock(mordenID, 10, mordena, { from: agent2 })
-      await braided.addBlock(mordenID, 12, mordenc, { from: agent2 })
-      await braided.addBlock(mordenID, 14, mordene, { from: agent2 });
-      (await braided.getLowestBlockNumber(mordenID)).toNumber().should.be.eq(10)
+      await braided.addAgent(agent2, goerliID, { from: owner1 })
+      await braided.addBlock(goerliID, 10, goerlia, { from: agent2 })
+      await braided.addBlock(goerliID, 12, goerlic, { from: agent2 })
+      await braided.addBlock(goerliID, 14, goerlie, { from: agent2 });
+      (await braided.getLowestBlockNumber(goerliID)).toNumber().should.be.eq(10)
     })
 
     it('should retrieve highest block number in a strand', async () => {
       (await braided.getHighestBlockNumber(mainnetID)).toNumber().should.be.eq(3);
       (await braided.getHighestBlockNumber(ropstenID)).toNumber().should.be.eq(2);
       (await braided.getHighestBlockNumber(classicID)).toNumber().should.be.eq(1);
-      (await braided.getHighestBlockNumber(mordenID)).toNumber().should.be.eq(14)
+      (await braided.getHighestBlockNumber(goerliID)).toNumber().should.be.eq(14)
     })
 
     it('should not retrieve highest block number for invalid strands', async () => {
-      await expectThrow(braided.getHighestBlockNumber(5))
+      await expectThrow(braided.getHighestBlockNumber(2))
     })
 
     it('should not retrieve highest block number for empty strands', async () => {
@@ -262,9 +262,9 @@ contract('Braided', (accounts) => {
 
     it('should get the number of blocks recorded for a chain', async () => {
       // invalid strandID
-      await expectThrow(braided.getBlockCount(5));
+      await expectThrow(braided.getBlockCount(2));
       (await braided.getBlockCount(mainnetID)).toNumber().should.be.eq(4);
-      (await braided.getBlockCount(mordenID)).toNumber().should.be.eq(3);
+      (await braided.getBlockCount(goerliID)).toNumber().should.be.eq(3);
       (await braided.getBlockCount(ropstenID)).toNumber().should.be.eq(2);
       (await braided.getBlockCount(rinkebyID)).toNumber().should.be.eq(0);
       (await braided.getBlockCount(kovanID)).toNumber().should.be.eq(0);
