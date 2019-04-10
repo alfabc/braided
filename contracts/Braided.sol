@@ -21,7 +21,7 @@ contract Braided is BraidedInterface, BraidedInterfaceV2, Ownable {
     bytes32 genesisBlockHash;
     string description;
   }
-  
+ 
   // identifies a block by number and its hash
   struct Block {
     uint blockNumber;
@@ -140,7 +140,7 @@ contract Braided is BraidedInterface, BraidedInterfaceV2, Ownable {
   // get the block hash for the block number on the specified strand
   function getBlockHash(uint strandID, uint blockNumber) external view validStrandID(strandID) returns (bytes32) {
     Block memory theBlock = blocks[strandID][blockByNumber[strandID][blockNumber]];
-    // blockByNumber has 0 for blocks that don't exist, 
+    // blockByNumber has 0 for blocks that don't exist,
     // which could give the wrong block, so check.
     require(theBlock.blockNumber == blockNumber, INVALID_BLOCK);
     return theBlock.blockHash;
