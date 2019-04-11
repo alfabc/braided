@@ -66,7 +66,7 @@ module.exports = {
       providerEndpoint: 'http://127.0.0.1:8551' },
     goerli: {
       chain: 'goerli',
-      contractAddress: '',
+      contractAddress: '0x7ef66b77759e12Caf3dDB3E4AFF524E577C59D8D',
       genesisBlockHash: '0xbf7e331f7f7c1dd2e05159666b3bf8bc7a8a3a9eb1d518969eab529dd9b88c1a',
       ownerAddress: '0xf0bf12fa12a78402f821e61b02ee28a186192f9a',
       ownerMnemonic: process.env.BRAIDED_GOERLI_OWNER,
