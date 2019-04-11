@@ -1,17 +1,41 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.7;
 
-// A common external interface to Braided contracts
+// A common external interface to Braided contracts first deployed
+// on Ropsten, Rinkeby, and Kovan
 interface BraidedInterface {
-  function addStrand(uint, address, bytes32, string) external;
+  function addStrand(uint, address, bytes32, string calldata) external;
   function getStrandCount() external view returns (uint);
+  function getStrandID(uint) external view returns(uint);
   function getStrandContract(uint) external view returns (address);
   function getStrandGenesisBlockHash(uint) external view returns (bytes32);
-  function getStrandDescription(uint) external view returns (string);
+  function getStrandDescription(uint) external view returns (string memory);
   function addAgent(address, uint) external;
   function removeAgent(address, uint) external;
   function addBlock(uint, uint, bytes32) external;
   function getBlockHash(uint, uint) external view returns (bytes32);
   function getHighestBlockNumber(uint) external view returns (uint);
+  function getPreviousBlockNumber(uint, uint) external view returns (uint);
+  function getPreviousBlock(uint, uint) external view returns (uint, bytes32);
+}
+
+// A common external interface to Braided contracts, with additional methods
+// not present in the original BraidedInterface
+interface BraidedInterfaceV2 {
+  function getCreationBlockNumber() external view returns (uint);
+  function addStrand(uint, address, bytes32, string calldata) external;
+  function getStrandCount() external view returns (uint);
+  function getStrandID(uint) external view returns(uint);
+  function getStrandCreationBlockNumber(uint) external view returns(uint);
+  function getStrandContract(uint) external view returns (address);
+  function getStrandGenesisBlockHash(uint) external view returns (bytes32);
+  function getStrandDescription(uint) external view returns (string memory);
+  function addAgent(address, uint) external;
+  function removeAgent(address, uint) external;
+  function addBlock(uint, uint, bytes32) external;
+  function getBlockCount(uint) external view returns (uint);
+  function getBlockHash(uint, uint) external view returns (bytes32);
+  function getHighestBlockNumber(uint) external view returns (uint);
+  function getLowestBlockNumber(uint) external view returns (uint);
   function getPreviousBlockNumber(uint, uint) external view returns (uint);
   function getPreviousBlock(uint, uint) external view returns (uint, bytes32);
 }
@@ -22,284 +46,127 @@ interface BraidedInterface {
  * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
-  address public owner;
+    address private _owner;
 
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-  event OwnershipRenounced(address indexed previousOwner);
-  event OwnershipTransferred(
-    address indexed previousOwner,
-    address indexed newOwner
-  );
+    /**
+     * @dev The Ownable constructor sets the original `owner` of the contract to the sender
+     * account.
+     */
+    constructor () internal {
+        _owner = msg.sender;
+        emit OwnershipTransferred(address(0), _owner);
+    }
 
+    /**
+     * @return the address of the owner.
+     */
+    function owner() public view returns (address) {
+        return _owner;
+    }
 
-  /**
-   * @dev The Ownable constructor sets the original `owner` of the contract to the sender
-   * account.
-   */
-  constructor() public {
-    owner = msg.sender;
-  }
+    /**
+     * @dev Throws if called by any account other than the owner.
+     */
+    modifier onlyOwner() {
+        require(isOwner());
+        _;
+    }
 
-  /**
-   * @dev Throws if called by any account other than the owner.
-   */
-  modifier onlyOwner() {
-    require(msg.sender == owner);
-    _;
-  }
+    /**
+     * @return true if `msg.sender` is the owner of the contract.
+     */
+    function isOwner() public view returns (bool) {
+        return msg.sender == _owner;
+    }
 
-  /**
-   * @dev Allows the current owner to relinquish control of the contract.
-   * @notice Renouncing to ownership will leave the contract without an owner.
-   * It will not be possible to call the functions with the `onlyOwner`
-   * modifier anymore.
-   */
-  function renounceOwnership() public onlyOwner {
-    emit OwnershipRenounced(owner);
-    owner = address(0);
-  }
+    /**
+     * @dev Allows the current owner to relinquish control of the contract.
+     * It will not be possible to call the functions with the `onlyOwner`
+     * modifier anymore.
+     * @notice Renouncing ownership will leave the contract without an owner,
+     * thereby removing any functionality that is only available to the owner.
+     */
+    function renounceOwnership() public onlyOwner {
+        emit OwnershipTransferred(_owner, address(0));
+        _owner = address(0);
+    }
 
-  /**
-   * @dev Allows the current owner to transfer control of the contract to a newOwner.
-   * @param _newOwner The address to transfer ownership to.
-   */
-  function transferOwnership(address _newOwner) public onlyOwner {
-    _transferOwnership(_newOwner);
-  }
+    /**
+     * @dev Allows the current owner to transfer control of the contract to a newOwner.
+     * @param newOwner The address to transfer ownership to.
+     */
+    function transferOwnership(address newOwner) public onlyOwner {
+        _transferOwnership(newOwner);
+    }
 
-  /**
-   * @dev Transfers control of the contract to a newOwner.
-   * @param _newOwner The address to transfer ownership to.
-   */
-  function _transferOwnership(address _newOwner) internal {
-    require(_newOwner != address(0));
-    emit OwnershipTransferred(owner, _newOwner);
-    owner = _newOwner;
-  }
+    /**
+     * @dev Transfers control of the contract to a newOwner.
+     * @param newOwner The address to transfer ownership to.
+     */
+    function _transferOwnership(address newOwner) internal {
+        require(newOwner != address(0));
+        emit OwnershipTransferred(_owner, newOwner);
+        _owner = newOwner;
+    }
 }
 
 /**
  * @title Roles
- * @author Francisco Giordano (@frangio)
  * @dev Library for managing addresses assigned to a Role.
- * See RBAC.sol for example usage.
  */
 library Roles {
-  struct Role {
-    mapping (address => bool) bearer;
-  }
+    struct Role {
+        mapping (address => bool) bearer;
+    }
 
-  /**
-   * @dev give an address access to this role
-   */
-  function add(Role storage _role, address _addr)
-    internal
-  {
-    _role.bearer[_addr] = true;
-  }
+    /**
+     * @dev give an account access to this role
+     */
+    function add(Role storage role, address account) internal {
+        require(account != address(0));
+        require(!has(role, account));
 
-  /**
-   * @dev remove an address' access to this role
-   */
-  function remove(Role storage _role, address _addr)
-    internal
-  {
-    _role.bearer[_addr] = false;
-  }
+        role.bearer[account] = true;
+    }
 
-  /**
-   * @dev check if an address has this role
-   * // reverts
-   */
-  function check(Role storage _role, address _addr)
-    internal
-    view
-  {
-    require(has(_role, _addr));
-  }
+    /**
+     * @dev remove an account's access to this role
+     */
+    function remove(Role storage role, address account) internal {
+        require(account != address(0));
+        require(has(role, account));
 
-  /**
-   * @dev check if an address has this role
-   * @return bool
-   */
-  function has(Role storage _role, address _addr)
-    internal
-    view
-    returns (bool)
-  {
-    return _role.bearer[_addr];
-  }
-}
+        role.bearer[account] = false;
+    }
 
-/**
- * @title RBAC (Role-Based Access Control)
- * @author Matt Condon (@Shrugs)
- * @dev Stores and provides setters and getters for roles and addresses.
- * Supports unlimited numbers of roles and addresses.
- * See //contracts/mocks/RBACMock.sol for an example of usage.
- * This RBAC method uses strings to key roles. It may be beneficial
- * for you to write your own implementation of this interface using Enums or similar.
- */
-contract RBAC {
-  using Roles for Roles.Role;
-
-  mapping (string => Roles.Role) private roles;
-
-  event RoleAdded(address indexed operator, string role);
-  event RoleRemoved(address indexed operator, string role);
-
-  /**
-   * @dev reverts if addr does not have role
-   * @param _operator address
-   * @param _role the name of the role
-   * // reverts
-   */
-  function checkRole(address _operator, string _role)
-    public
-    view
-  {
-    roles[_role].check(_operator);
-  }
-
-  /**
-   * @dev determine if addr has role
-   * @param _operator address
-   * @param _role the name of the role
-   * @return bool
-   */
-  function hasRole(address _operator, string _role)
-    public
-    view
-    returns (bool)
-  {
-    return roles[_role].has(_operator);
-  }
-
-  /**
-   * @dev add a role to an address
-   * @param _operator address
-   * @param _role the name of the role
-   */
-  function addRole(address _operator, string _role)
-    internal
-  {
-    roles[_role].add(_operator);
-    emit RoleAdded(_operator, _role);
-  }
-
-  /**
-   * @dev remove a role from an address
-   * @param _operator address
-   * @param _role the name of the role
-   */
-  function removeRole(address _operator, string _role)
-    internal
-  {
-    roles[_role].remove(_operator);
-    emit RoleRemoved(_operator, _role);
-  }
-
-  /**
-   * @dev modifier to scope access to a single role (uses msg.sender as addr)
-   * @param _role the name of the role
-   * // reverts
-   */
-  modifier onlyRole(string _role)
-  {
-    checkRole(msg.sender, _role);
-    _;
-  }
-
-  /**
-   * @dev modifier to scope access to a set of roles (uses msg.sender as addr)
-   * @param _roles the names of the roles to scope access to
-   * // reverts
-   *
-   * @TODO - when solidity supports dynamic arrays as arguments to modifiers, provide this
-   *  see: https://github.com/ethereum/solidity/issues/2467
-   */
-  // modifier onlyRoles(string[] _roles) {
-  //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i < _roles.length; i++) {
-  //         if (hasRole(msg.sender, _roles[i])) {
-  //             hasAnyRole = true;
-  //             break;
-  //         }
-  //     }
-
-  //     require(hasAnyRole);
-
-  //     _;
-  // }
-}
-
-/**
- * @title Superuser
- * @dev The Superuser contract defines a single superuser who can transfer the ownership
- * of a contract to a new address, even if he is not the owner.
- * A superuser can transfer his role to a new address.
- */
-contract Superuser is Ownable, RBAC {
-  string public constant ROLE_SUPERUSER = "superuser";
-
-  constructor () public {
-    addRole(msg.sender, ROLE_SUPERUSER);
-  }
-
-  /**
-   * @dev Throws if called by any account that's not a superuser.
-   */
-  modifier onlySuperuser() {
-    checkRole(msg.sender, ROLE_SUPERUSER);
-    _;
-  }
-
-  modifier onlyOwnerOrSuperuser() {
-    require(msg.sender == owner || isSuperuser(msg.sender));
-    _;
-  }
-
-  /**
-   * @dev getter to determine if address has superuser role
-   */
-  function isSuperuser(address _addr)
-    public
-    view
-    returns (bool)
-  {
-    return hasRole(_addr, ROLE_SUPERUSER);
-  }
-
-  /**
-   * @dev Allows the current superuser to transfer his role to a newSuperuser.
-   * @param _newSuperuser The address to transfer ownership to.
-   */
-  function transferSuperuser(address _newSuperuser) public onlySuperuser {
-    require(_newSuperuser != address(0));
-    removeRole(msg.sender, ROLE_SUPERUSER);
-    addRole(_newSuperuser, ROLE_SUPERUSER);
-  }
-
-  /**
-   * @dev Allows the current superuser or owner to transfer control of the contract to a newOwner.
-   * @param _newOwner The address to transfer ownership to.
-   */
-  function transferOwnership(address _newOwner) public onlyOwnerOrSuperuser {
-    _transferOwnership(_newOwner);
-  }
+    /**
+     * @dev check if an account has this role
+     * @return bool
+     */
+    function has(Role storage role, address account) internal view returns (bool) {
+        require(account != address(0));
+        return role.bearer[account];
+    }
 }
 
 // Smart contract for interchain linking
-contract Braided is BraidedInterface, Superuser {
+// Supports the original BraidedInterface deployed as well as additional
+// functionality implemented in V2
+contract Braided is BraidedInterface, BraidedInterfaceV2, Ownable {
+
+  using Roles for Roles.Role;
 
   // Strand identifies a specific chain + contract on which block/hashes are stored
   struct Strand {
     uint strandID;
+    uint creationBlockNumber;
     address strandContract; // must support BraidedInterface if present
     bytes32 genesisBlockHash;
     string description;
   }
-  
+ 
   // identifies a block by number and its hash
   struct Block {
     uint blockNumber;
@@ -322,18 +189,26 @@ contract Braided is BraidedInterface, Superuser {
   event BlockAdded(uint indexed strandID, uint indexed blockNumber, bytes32 blockHash);
 
   constructor() public {
+    // Creator is owner
     // Strand 0 is reserved
-    strands.push(Strand(0, 0, 0, ""));
+    // remember the block number when this was created
+    // useful for filtering
+    strands.push(Strand(0, block.number, address(0), 0, ""));
+  }
+
+  // get block number in which braid was created
+  function getCreationBlockNumber() external view returns (uint) {
+    return strands[0].creationBlockNumber;
   }
 
   // Add a strand
-  function addStrand(uint strandID, address strandContract, bytes32 genesisBlockHash, string description) external onlyOwnerOrSuperuser() {
+  function addStrand(uint strandID, address strandContract, bytes32 genesisBlockHash, string calldata description) external onlyOwner() {
     // strand 0 is reserved
     require(strandID != 0, INVALID_STRAND);
     // strandID must not already be in use
     require(strandIndexByStrandID[strandID] == 0, INVALID_STRAND);
     // Add the strand
-    strands.push(Strand(strandID, strandContract, genesisBlockHash, description));
+    strands.push(Strand(strandID, block.number, strandContract, genesisBlockHash, description));
     // make it possible to find the strand in the array by strandID
     strandIndexByStrandID[strandID] = strands.length - 1;
   }
@@ -349,6 +224,13 @@ contract Braided is BraidedInterface, Superuser {
     return strands.length - 1;
   }
 
+  // retrieve strandID from the zero-based index
+  function getStrandID(uint strandIndex) external view returns(uint) {
+    require(strandIndex < strands.length, INVALID_STRAND);
+    // the 0 in the index is reserved for "invalid"
+    return strands[strandIndex + 1].strandID;
+  }
+
   // get the Braided Contract deployed on the specified strand (if any).
   // If a new instance of the Braided Contract is deployed, then that will
   // have to be a new Strand ID.
@@ -362,17 +244,22 @@ contract Braided is BraidedInterface, Superuser {
   }
 
   // get the description for the specified strand
-  function getStrandDescription(uint strandID) external view validStrandID(strandID) returns (string) {
+  function getStrandCreationBlockNumber(uint strandID) external view validStrandID(strandID) returns (uint) {
+    return strands[strandIndexByStrandID[strandID]].creationBlockNumber;
+  }
+
+  // get the description for the specified strand
+  function getStrandDescription(uint strandID) external view validStrandID(strandID) returns (string memory) {
     return strands[strandIndexByStrandID[strandID]].description;
   }
 
   // grant role to specified account
-  function addAgent(address agent, uint strandID) external onlyOwnerOrSuperuser() validStrandID(strandID) {
+  function addAgent(address agent, uint strandID) external onlyOwner() validStrandID(strandID) {
     addBlockRoles[strandID].add(agent);
   }
 
   // revoke role from specied account
-  function removeAgent(address agent, uint strandID) external onlyOwnerOrSuperuser() validStrandID(strandID) {
+  function removeAgent(address agent, uint strandID) external onlyOwner() validStrandID(strandID) {
     addBlockRoles[strandID].remove(agent);
   }
 
@@ -390,10 +277,15 @@ contract Braided is BraidedInterface, Superuser {
     emit BlockAdded(strandID, blockNumber, blockHash);
   }
 
+  // get the number of block/hashes recorded on the specified strand
+  function getBlockCount(uint strandID) external view validStrandID(strandID) returns (uint) {
+    return blocks[strandID].length;
+  }
+
   // get the block hash for the block number on the specified strand
   function getBlockHash(uint strandID, uint blockNumber) external view validStrandID(strandID) returns (bytes32) {
     Block memory theBlock = blocks[strandID][blockByNumber[strandID][blockNumber]];
-    // blockByNumber has 0 for blocks that don't exist, 
+    // blockByNumber has 0 for blocks that don't exist,
     // which could give the wrong block, so check.
     require(theBlock.blockNumber == blockNumber, INVALID_BLOCK);
     return theBlock.blockHash;
@@ -402,6 +294,11 @@ contract Braided is BraidedInterface, Superuser {
   // get the highest block number recorded for the specified strand
   function getHighestBlockNumber(uint strandID) external view validStrandID(strandID) returns (uint) {
     return blocks[strandID][blocks[strandID].length - 1].blockNumber;
+  }
+
+  // get the lowest block number recorded for the specified strand
+  function getLowestBlockNumber(uint strandID) external view validStrandID(strandID) returns (uint) {
+    return blocks[strandID][0].blockNumber;
   }
 
   // get the previous block number recorded to the one supplied for the
