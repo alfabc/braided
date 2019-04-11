@@ -45,20 +45,30 @@ async function setup () {
 
       // if it doesn't already exist, add it
       if (!strandExists) {
-        // add a strand for the chain
-        let tx = await braid.addStrand(watch.strand,
-          config.braids[key].contractAddress,
-          config.braids[key].genesisBlockHash,
-          config.braids[key].chain,
-          { from: config.braids[agent.braid].ownerAddress })
-        console.log(tx)
+        try {
+          // add a strand for the chain
+          let tx = await braid.addStrand(watch.strand,
+            config.braids[key].contractAddress,
+            config.braids[key].genesisBlockHash,
+            config.braids[key].chain,
+            { from: config.braids[agent.braid].ownerAddress })
+          console.log(tx)
+        } catch (err) {
+          console.log("Failed to addStrand:  " + watch.strand + config.braids[key])
+          console.log(err)
+        }
 
-        // give the agent permission to write to the strand
-        tx = await braid.addAgent(
-          agent.agentAddress,
-          watch.strand,
-          { from: config.braids[agent.braid].ownerAddress })
-        console.log(tx)
+        try {
+          // give the agent permission to write to the strand
+          tx = await braid.addAgent(
+            agent.agentAddress,
+            watch.strand,
+            { from: config.braids[agent.braid].ownerAddress })
+          console.log(tx)
+        } catch (err) {
+          console.log("Failed to addAgent:  " + watch.strand + agent.agentAddress)
+          console.log(err)
+        }
       }
     }
     await provider.engine.stop()
