@@ -68,7 +68,7 @@ module.exports = {
       chain: 'goerli',
       contractAddress: '0x7ef66b77759e12Caf3dDB3E4AFF524E577C59D8D',
       genesisBlockHash: '0xbf7e331f7f7c1dd2e05159666b3bf8bc7a8a3a9eb1d518969eab529dd9b88c1a',
-      ownerAddress: '0xf0bf12fa12a78402f821e61b02ee28a186192f9a',
+      ownerAddress: '0x3a71bC7Fa03A7340823307c8D6E9771Ed28F7d33',
       ownerMnemonic: process.env.BRAIDED_GOERLI_OWNER,
       // providerEndpoint: process.env.INFURA_GOERLI },
       // providerEndpoint: '/home/cleduc/.ethereum/goerli/geth.ipc' },

@@ -5,7 +5,7 @@ const Web3 = require('web3')
 
 const config = require('../braided-config.js')
 
-const braidedArtifacts = require('../build/contracts/Braided.json')
+const braidedArtifacts = require('../build/contracts/BraidedInterface.json')
 
 async function setup () {
   // iterate over the agents that need to be set up
