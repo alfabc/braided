@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const braidedArtifacts = require('../build/contracts/Braided.json')
+const braidedArtifacts = require('../build/contracts/BraidedInterface.json')
 const childprocess = require('child_process')
 const config = require('../braided-config.js')
 const contract = require('truffle-contract')
