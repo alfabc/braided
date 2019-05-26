@@ -6,7 +6,7 @@ module.exports = {
     // mainnet: { client: 'geth', networkID: 1, mode: 'light', chainName: '' },
     // mainnet: { client: 'rpc', endpoint: 'http://localhost:8545' },
     // mainnet: { client: 'websocket', endpoint: 'ws://localhost:8546' },
-    // mainnet: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/geth.ipc' },
+    mainnet: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/geth.ipc' },
     // ropsten: { client: 'geth', networkID: 3, mode: 'light', chainName: 'testnet' },
     // ropsten: { client: 'rpc', endpoint: 'ws://localhost:8549' },
     // ropsten: { client: 'websocket', endpoint: 'ws://localhost:8550' },
