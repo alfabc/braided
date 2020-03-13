@@ -6,7 +6,7 @@ module.exports = {
     // mainnet: { client: 'geth', networkID: 1, mode: 'light', chainName: '' },
     // mainnet: { client: 'rpc', endpoint: 'http://localhost:8545' },
     // mainnet: { client: 'websocket', endpoint: 'ws://localhost:8546' },
-    mainnet: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/geth.ipc' },
+    // mainnet: { client: 'ipc', endpoint: '/home/cleduc/.ethereum/geth.ipc' },
     // ropsten: { client: 'geth', networkID: 3, mode: 'light', chainName: 'testnet' },
     // ropsten: { client: 'rpc', endpoint: 'ws://localhost:8549' },
     // ropsten: { client: 'websocket', endpoint: 'ws://localhost:8550' },
@@ -124,17 +124,17 @@ module.exports = {
       agentMnemonic: process.env.BRAIDED_GOERLI_AGENT,
       watches: {
         // mainnet: { strand: 1, blocks: 5, seconds: 60, special: 100 },
-        ropsten: { strand: 3, blocks: 17, seconds: 120, special: 100 },
-        rinkeby: { strand: 4, blocks: 18, seconds: 120, special: 100 },
-        kovan: { strand: 42, blocks: 19, seconds: 45, special: 100 } } },
+        ropsten: { strand: 3, blocks: 27, seconds: 190, special: 100 },
+        rinkeby: { strand: 4, blocks: 38, seconds: 220, special: 100 },
+        kovan: { strand: 42, blocks: 49, seconds: 245, special: 100 } } },
     // Record blocks from Mainnet, Ropsten and Rinkeby on the kovan0 strand
     { braid: 'kovan',
       agentAddress: '0x4487f27ad58abbf8f3b25ee38aba578bc979f67e',
       agentMnemonic: process.env.BRAIDED_KOVAN_AGENT,
       watches: {
         // mainnet: { strand: 1, blocks: 3, seconds: 30, special: 100 },
-        ropsten: { strand: 3, blocks: 13, seconds: 200, special: 50 },
-        rinkeby: { strand: 4, blocks: 17, seconds: 225, special: 50 },
-        goerli: { strand: 5, blocks: 15, seconds: 120, special: 50 } } }
+        ropsten: { strand: 3, blocks: 183, seconds: 1500, special: 100 },
+        rinkeby: { strand: 4, blocks: 187, seconds: 1325, special: 100 },
+        goerli: { strand: 5, blocks: 185, seconds: 1420, special: 100 } } }
   ]
 }

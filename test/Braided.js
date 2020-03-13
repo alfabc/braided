@@ -3,14 +3,31 @@
 /* eslint prefer-const: 0 */
 const config = require('../braided-config.js')
 const Braided = artifacts.require('../contracts/Braided.sol')
+const BraidedPayable = artifacts.require('../contracts/BraidedPayable.sol')
 const expectThrow = require('./helpers/expectThrow.js')
 const BigNumber = require('bignumber.js')
 const should = require('chai') // eslint-disable-line no-unused-vars
   .use(require('chai-bignumber')(BigNumber))
   .use(require('chai-as-promised'))
   .should()
+const grant = new BigNumber(web3.utils.toWei('0.1', 'ether'));
 
+// Braided contract should not accept payments
 contract('Braided', (accounts) => {
+  let braided
+
+  before(async () => {
+    braided = await Braided.new();
+  })
+
+  context('Braided not payable', () => {
+    it('should not receive payments', async () => {
+      await expectThrow(web3.eth.sendTransaction({ from: accounts[0], to: braided.address, value: grant }));
+    })
+  })
+})
+
+contract('BraidedPayable', (accounts) => {
   let braided
 
   // users
@@ -24,6 +41,7 @@ contract('Braided', (accounts) => {
   const rando = accounts[7]
 
   // Network IDs (from https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md)
+  const braidZeroID = 0
   const mainnetID = 1
   const ropstenID = 3
   const rinkebyID = 4
@@ -31,6 +49,7 @@ contract('Braided', (accounts) => {
   const kovanID = 42
   const classicID = 61
   const classictestID = 62
+  const invalidID = 99090
 
   // genesis block hashes
   const mainnetGenesis = config.braids.mainnet.genesisBlockHash
@@ -55,7 +74,7 @@ contract('Braided', (accounts) => {
   const ropsten2 = '0x88e8bc1dd383672e96d77ee247e7524622ff3b15c337bd33ef602f15ba82d920'
 
   before(async () => {
-    braided = await Braided.new();
+    braided = await BraidedPayable.new();
     (await web3.eth.getBlock('latest')).number.should.eq((await braided.getCreationBlockNumber()).toNumber())
   })
 
@@ -106,7 +125,7 @@ contract('Braided', (accounts) => {
     })
 
     it('should not allow strand ID 0', async () => {
-      await expectThrow(braided.addStrand(0, braided.address, zero, 'zero'))
+      await expectThrow(braided.addStrand(braidZeroID, braided.address, zero, 'zero'))
     })
 
     it('should not allow non-owner to add strand', async () => {
@@ -173,6 +192,54 @@ contract('Braided', (accounts) => {
     })
   })
 
+  context('Payments', () => {
+    it('should send payments to the owner by default', async () => {
+      var balance = new BigNumber(await web3.eth.getBalance(owner1));
+
+      // use regular send to contract from rando
+//      await web3.eth.sendTransaction({ from: rando, to: braided.address, value: grant });
+//      (await web3.eth.getBalance(owner1)).should.be.bignumber.equal(balance = balance.plus(grant))
+
+      await braided.pay(mainnetID, { from: rando, value: grant });
+      (await web3.eth.getBalance(owner1)).should.be.bignumber.equal(balance = balance.plus(grant))
+
+      await braided.pay(classicID, { from: rando, value: grant });
+      (await web3.eth.getBalance(owner1)).should.be.bignumber.equal(balance.plus(grant))
+    })
+
+    xit('should allow only the owner to set payees', async () => {
+      await expectThrow(braided.setPayee(owner2, braidZeroID, { from: owner2 }))
+      await expectThrow(braided.setPayee(owner2, braidZeroID, { from: rando }))
+      await braided.setPayee(owner2, braidZeroID, { from: owner1 })
+
+      await expectThrow(braided.setPayee(agent1, mainnetID, { from: owner2 }))
+      await braided.setPayee(agent1, mainnetID, { from: owner1 })
+
+      await braided.setPayee(agent4, classicID, { from: owner1 })
+    })
+
+    xit('should route payment to the correct payee', async () => {
+      // use regular send to contract from rando
+      // verify it went to owner2
+
+      // get agent1 balance
+      await braided.pay(mainnetID, { from: rando })
+      // verify it went to agent1
+
+      // get agent4 balance
+      await braided.pay(classicID, { from: rando })
+      // verify it went to agent4
+
+      // get owner1 balance
+      await braided.pay(ropstenID, { from: rando })
+      // verify it went to owner1
+    })
+
+    xit('should not accept payments for invalid strands', async () => {
+      await expectThrow(braided.pay(invalidID, { from: rando }))
+    })
+  })
+
   context('set and get hashes', () => {
     it('should allow agents to add hashes', async () => {
       await braided.addBlock(mainnetID, 1, mainnet1, { from: agent1 })
@@ -182,7 +249,7 @@ contract('Braided', (accounts) => {
       await braided.addBlock(ropstenID, 2, ropsten2, { from: agent4 })
       await braided.addBlock(classicID, 1, mainnet1, { from: agent4 })
       // but not on an invalid strand
-      await expectThrow(braided.addBlock(5, 1, mainnet1, { from: agent1 }))
+      await expectThrow(braided.addBlock(invalidID, 1, mainnet1, { from: agent1 }))
     })
 
     it('should not allow non-agents to add hashes', async () => {

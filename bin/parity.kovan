@@ -1,1 +1,2 @@
-parity --port=30345 --jsonrpc-port=8555 --ws-port=8556 --chain=kovan
+# parity --no-periodic-snapshot --port=30345 --jsonrpc-port=8555 --ws-port=8556 --chain=kovan $@
+parity --port=30345 --jsonrpc-port=8555 --ws-port=8556 --chain=kovan $@
