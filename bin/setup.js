@@ -30,35 +30,53 @@ async function setup () {
       // This allows us to use this setup procedure to add new strands to
       // existing contracts.
       // Use try/catch because while geth returns "null" values,
-      // Parity throws an exception
-      let strandExists = false
+      let strandExists = true
       try {
-        if ((config.braids[key].contractAddress === await braid.getStrandContract(watch.strand)) &&
-          (config.braids[key].genesisBlockHash === await braid.getStrandGenesisBlockHash(watch.strand)) &&
-          (config.braids[key].chain === await braid.getStrandDescription(watch.strand))) {
-          throw new Error()
-        }
+        let strandContract = await braid.getStrandContract(watch.strand)
+        let strandGenesisBlockHash = await braid.getStrandGenesisBlockHash(watch.strand)
+        let strandDescription = await braid.getStrandDescription(watch.strand)
+        console.log(`considering ${agent.braid}.${key}`)
+        // console.log(`  contract ${config.braids[key].contractAddress} existing ${strandContract}`)
+        // console.log(`  genesis ${config.braids[key].genesisBlockHash} existing ${strandGenesisBlockHash}`)
+        // console.log(`  description ${config.braids[key].chain} existing ${strandDescription}`)
+
+        // sometimes there may be an EIP-55 compliant contract address
+        strandExists = ((config.braids[key].contractAddress.toUpperCase() === strandContract.toUpperCase()) &&
+          (config.braids[key].genesisBlockHash === strandGenesisBlockHash) &&
+          (config.braids[key].chain === strandDescription))
+      // Parity throws an exception when the result is null, so assume not existing
       } catch (err) {
-        strandExists = true
-        console.log(`... skipping: strand already exists on ${agent.braid} for ${key}`)
+        strandExists = false
       }
 
       // if it doesn't already exist, add it
-      if (!strandExists) {
-        // add a strand for the chain
-        let tx = await braid.addStrand(watch.strand,
-          config.braids[key].contractAddress,
-          config.braids[key].genesisBlockHash,
-          config.braids[key].chain,
-          { from: config.braids[agent.braid].ownerAddress })
-        console.log(tx)
+      if (strandExists) {
+        console.log(`... skipping: exact same strand already exists on ${agent.braid} for ${key}`)
+      } else {
+        try {
+          // add a strand for the chain
+          let tx = await braid.addStrand(watch.strand,
+            config.braids[key].contractAddress,
+            config.braids[key].genesisBlockHash,
+            config.braids[key].chain,
+            { from: config.braids[agent.braid].ownerAddress })
+          console.log(tx)
+        } catch (err) {
+          console.log(`Failed to addStrand: ${agent.braid}.${key} ${watch.strand}`)
+          console.log(err)
+        }
 
-        // give the agent permission to write to the strand
-        tx = await braid.addAgent(
-          agent.agentAddress,
-          watch.strand,
-          { from: config.braids[agent.braid].ownerAddress })
-        console.log(tx)
+        try {
+          // give the agent permission to write to the strand
+          let tx = await braid.addAgent(
+            agent.agentAddress,
+            watch.strand,
+            { from: config.braids[agent.braid].ownerAddress })
+          console.log(tx)
+        } catch (err) {
+          console.log(`Failed to addAgent: ${agent.braid} ${watch.strand} ${agent.agentAddress}`)
+          console.log(err)
+        }
       }
     }
     await provider.engine.stop()
