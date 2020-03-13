@@ -109,7 +109,7 @@ async function handleNewBlock (chainKey, blockHeader) {
     if (block.number > blockHeader.number) {
       console.log(`handling ${chainKey} ${block.number} instead of ${blockHeader.number}`)
     } else {
-      console.log(`handling ${chainKey} ${block.number}`)
+      // console.log(`handling ${chainKey} ${block.number}`)
     }
 
     lastBlockNumbers[chainKey] = block.number
@@ -196,15 +196,24 @@ async function handleNewBlock (chainKey, blockHeader) {
             nonces[agent.braid] += 1
           }
 
-          console.log(`sending ${chainKey} ${block.number} on ${combo}...`)
+          console.log(`sending ${chainKey} ${block.number} on ${combo} with nonce ${nonces[agent.braid]}...`)
           // send the transaction
           braids[agent.braid].addBlock(
             braidWatch.strand,
             block.number,
             block.hash,
-            { from: agent.agentAddress, nonce: nonces[agent.braid] }).then(function (result) {
+            { from: agent.agentAddress, nonce: nonces[agent.braid] }).then((result) => {
             console.log(`sent ${result.tx} for ${chainKey} ${block.number} on ${combo}`)
-          }).catch(err => console.log(err))
+          }).catch((err) => {
+            if (err.message === 'replacement transaction underpriced') {
+              console.log(`Nonce ${nonces[agent.braid]} already submitted for ${chainKey} ${block.number} on ${combo}`)
+              nonces[agent.braid] += 1
+            } else if (err.message.includes('processed in 240 seconds')) {
+              console.log(`Timed out for ${chainKey} ${block.number} on ${combo}`)
+            } else {
+              console.log(err)
+            }
+          })
         } catch (err) {
           console.log(err)
         }
@@ -221,7 +230,10 @@ function cleanUp () {
   // will prevent this process from exiting.
   // https://ethereum.stackexchange.com/questions/50134/web3-websocket-connection-prevents-node-process-from-exiting
   for (let key in web3rs) {
-    web3rs[key].currentProvider.connection.close()
+    // however, IPC doesn't have a disconnect method because whatever
+    if (web3rs[key].currentProvider.disconnect !== undefined) {
+      web3rs[key].currentProvider.disconnect()
+    }
   }
 
   // same for these HDWalletProviders
@@ -236,6 +248,9 @@ function cleanUp () {
       console.log(`shutting down pid ${pid} for ${key}`)
     })
   }
+
+  // we feel very strongly about shutting down now
+  process.exit(0)
 }
 
 function sleep (seconds) {
