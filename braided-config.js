@@ -123,7 +123,7 @@ module.exports = {
       agentAddress: '0x79047aBf3af2a1061B108D71d6dc7BdB06474790',
       agentMnemonic: process.env.BRAIDED_GOERLI_AGENT,
       watches: {
-        mainnet: { strand: 1, blocks: 5, seconds: 60, special: 100 },
+        mainnet: { strand: 1, blocks: 20, seconds: 300, special: 100 },
         ropsten: { strand: 3, blocks: 17, seconds: 120, special: 100 },
         rinkeby: { strand: 4, blocks: 18, seconds: 120, special: 100 },
         kovan: { strand: 42, blocks: 19, seconds: 45, special: 100 } } },
