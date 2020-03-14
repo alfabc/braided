@@ -90,7 +90,7 @@ function launch () {
 async function handleNewBlock (chainKey, blockHeader) {
   // local mutex for each chain to prevent working on two blocks at once
   if (locks[chainKey]) {
-    console.log(`skipping ${chainKey} ${blockHeader.number}, busy`)
+    // console.log(`skipping ${chainKey} ${blockHeader.number}, busy`)
     return
   } else {
     locks[chainKey] = true
@@ -99,7 +99,7 @@ async function handleNewBlock (chainKey, blockHeader) {
   try {
     // quickly skip stale blocks
     if (lastBlockNumbers[chainKey] >= blockHeader.number) {
-      console.log(`skipping ${chainKey} ${blockHeader.number}, stale block`)
+      // console.log(`skipping ${chainKey} ${blockHeader.number}, stale block`)
       return
     }
 
@@ -109,7 +109,7 @@ async function handleNewBlock (chainKey, blockHeader) {
     if (block.number > blockHeader.number) {
       console.log(`handling ${chainKey} ${block.number} instead of ${blockHeader.number}`)
     } else {
-      console.log(`handling ${chainKey} ${block.number}`)
+      // console.log(`handling ${chainKey} ${block.number}`)
     }
 
     lastBlockNumbers[chainKey] = block.number
@@ -134,8 +134,9 @@ async function handleNewBlock (chainKey, blockHeader) {
           if (lastBlockRecordedTime[combo]) {
             let tick = lastBlockRecordedTime[combo] + (braidWatch.seconds * 1000)
             if (tick > Date.now()) {
-              let delay = Math.round((tick - Date.now()) / 1000)
-              console.log(`skipping ${combo} ${block.number}, waiting ${delay} seconds (${braidWatch.seconds - delay}/${braidWatch.seconds} s)`) // eslint-disable-line max-len
+              // let delay = Math.round((tick - Date.now()) / 1000)
+              // eslint-disable-next-line max-len
+              // console.log(`skipping ${combo} ${block.number}, waiting ${delay} seconds (${braidWatch.seconds - delay}/${braidWatch.seconds} s)`)
               // too soon!
               continue // consider next agent
             }
@@ -161,14 +162,21 @@ async function handleNewBlock (chainKey, blockHeader) {
         let hBN = 0
         // when there are no blocks recorded this can throw
         try {
-          hBN = Number(await braids[agent.braid].getHighestBlockNumber(braidWatch.strand))
+          const res = await braids[agent.braid].getHighestBlockNumber(braidWatch.strand)
+          hBN = Number(res)
+          // if the strand isn't set up, it'll return -1 of an unsigned integer
+          if (hBN === 3963877391197344453575983046348115674221700746820753546331534351508065746944) {
+            // This braid is not initialized. Run bin/setup.js
+            console.log(`Strand ${braidWatch.strand} is not initialized for ${combo}.`)
+            continue
+          }
         } catch (err) {
           console.log(`gHBN error: ${err}`)
         }
 
         // if already recorded, skip this agent
         if (hBN >= block.number) {
-          console.log(`skipping ${chainKey} ${block.number}, ${hBN} already recorded`)
+          // console.log(`skipping ${chainKey} ${block.number}, ${hBN} already recorded`)
           continue // consider next agent
         }
 
@@ -177,7 +185,8 @@ async function handleNewBlock (chainKey, blockHeader) {
           // check the block number update threshold
           // if the block does not meet the update threshold, skip
           if ((hBN + braidWatch.blocks) > block.number) {
-            console.log(`skipping ${combo} ${block.number}, awaiting ${braidWatch.blocks + hBN} (${(block.number - hBN)}/${braidWatch.blocks} blocks)`) // eslint-disable-line max-len
+            // eslint-disable-next-line max-len
+            // console.log(`skipping ${combo} ${block.number}, awaiting ${braidWatch.blocks + hBN} (${(block.number - hBN)}/${braidWatch.blocks} blocks)`)
             continue // consider next agent
           }
         }
@@ -196,15 +205,26 @@ async function handleNewBlock (chainKey, blockHeader) {
             nonces[agent.braid] += 1
           }
 
-          console.log(`sending ${chainKey} ${block.number} on ${combo}...`)
+          console.log(`sending ${chainKey} ${block.number} on ${combo} with nonce ${nonces[agent.braid]}...`)
           // send the transaction
           braids[agent.braid].addBlock(
             braidWatch.strand,
             block.number,
             block.hash,
-            { from: agent.agentAddress, nonce: nonces[agent.braid] }).then(function (result) {
+            { from: agent.agentAddress, nonce: nonces[agent.braid] }).then((result) => {
             console.log(`sent ${result.tx} for ${chainKey} ${block.number} on ${combo}`)
-          }).catch(err => console.log(err))
+          }).catch((err) => {
+            // If there is already a transaction for the given nonce, just increment and move on.
+            if ((err.message === 'replacement transaction underpriced') ||
+              (err.message === 'nonce too low')) {
+              console.log(`Nonce ${nonces[agent.braid]} already submitted for ${chainKey} ${block.number} on ${combo}`)
+              nonces[agent.braid] += 1
+            } else if (err.message.includes('processed in 240 seconds')) {
+              console.log(`Timed out for ${chainKey} ${block.number} on ${combo}`)
+            } else {
+              console.log(err)
+            }
+          })
         } catch (err) {
           console.log(err)
         }
@@ -221,7 +241,10 @@ function cleanUp () {
   // will prevent this process from exiting.
   // https://ethereum.stackexchange.com/questions/50134/web3-websocket-connection-prevents-node-process-from-exiting
   for (let key in web3rs) {
-    web3rs[key].currentProvider.connection.close()
+    // however, IPC doesn't have a disconnect method because whatever
+    if (web3rs[key].currentProvider.disconnect !== undefined) {
+      web3rs[key].currentProvider.disconnect()
+    }
   }
 
   // same for these HDWalletProviders
@@ -236,6 +259,9 @@ function cleanUp () {
       console.log(`shutting down pid ${pid} for ${key}`)
     })
   }
+
+  // we feel very strongly about shutting down now
+  process.exit(0)
 }
 
 function sleep (seconds) {

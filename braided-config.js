@@ -36,9 +36,9 @@ module.exports = {
       genesisBlockHash: '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3',
       ownerAddress: '0x5160b2f588debd7d131a8f8b4649bf9ac7bfcd59',
       ownerMnemonic: process.env.BRAIDED_MAINNET_OWNER,
-      // providerEndpoint: process.env.INFURA_MAINNET },
-      // providerEndpoint: '/home/cleduc/.ethereum/geth.ipc' },
-      providerEndpoint: 'http://127.0.0.1:8545' },
+      providerEndpoint: process.env.INFURA_MAINNET },
+    // // providerEndpoint: '/home/cleduc/.ethereum/geth.ipc' },
+    // // providerEndpoint: 'http://127.0.0.1:8545' },
     // morden: {
     // chain: 'morden',
     // genesisBlockHash: '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303',
@@ -105,36 +105,36 @@ module.exports = {
       agentAddress: '0x10a259146c4ac177a74d17591bf83739587a219d',
       agentMnemonic: process.env.BRAIDED_ROPSTEN_AGENT,
       watches: {
-        // mainnet: { strand: 1, blocks: 60, seconds: 500, special: 1000 },
-        rinkeby: { strand: 4, blocks: 131, seconds: 2000, special: 300 },
-        kovan: { strand: 42, blocks: 31, seconds: 450, special: 500 },
-        goerli: { strand: 5, blocks: 43, seconds: 600, special: 200 } } },
+        // mainnet: { strand: 1, blocks: 60, seconds: 600, special: 1000 },
+        rinkeby: { strand: 4, blocks: 131, seconds: 2000, special: 3000 },
+        kovan: { strand: 42, blocks: 31, seconds: 450, special: 5000 },
+        goerli: { strand: 5, blocks: 43, seconds: 600, special: 2000 } } },
     // Record blocks from Mainnet, Ropsten and Kovan on the rinkeby0 strand
     { braid: 'rinkeby',
       agentAddress: '0xa4a8c40cf200e548305001b9af9965722c70c6ad',
       agentMnemonic: process.env.BRAIDED_RINKEBY_AGENT,
       watches: {
-        // mainnet: { strand: 1, blocks: 12, seconds: 120, special: 100 },
-        ropsten: { strand: 3, blocks: 31, seconds: 450, special: 100 },
-        kovan: { strand: 42, blocks: 17, seconds: 225, special: 100 },
-        goerli: { strand: 5, blocks: 23, seconds: 250, special: 100 } } },
+        // mainnet: { strand: 1, blocks: 12, seconds: 120, special: 1000 },
+        ropsten: { strand: 3, blocks: 31, seconds: 450, special: 1000 },
+        kovan: { strand: 42, blocks: 17, seconds: 225, special: 1000 },
+        goerli: { strand: 5, blocks: 23, seconds: 250, special: 1000 } } },
     // Record blocks from Mainnet, Ropsten, Rinkeby and Kovan on the goerli0 strand
     { braid: 'goerli',
       agentAddress: '0x79047aBf3af2a1061B108D71d6dc7BdB06474790',
       agentMnemonic: process.env.BRAIDED_GOERLI_AGENT,
       watches: {
-        // mainnet: { strand: 1, blocks: 5, seconds: 60, special: 100 },
-        ropsten: { strand: 3, blocks: 17, seconds: 120, special: 100 },
-        rinkeby: { strand: 4, blocks: 18, seconds: 120, special: 100 },
-        kovan: { strand: 42, blocks: 19, seconds: 45, special: 100 } } },
+        mainnet: { strand: 1, blocks: 20, seconds: 300, special: 1000 },
+        ropsten: { strand: 3, blocks: 17, seconds: 120, special: 1000 },
+        rinkeby: { strand: 4, blocks: 18, seconds: 120, special: 1000 },
+        kovan: { strand: 42, blocks: 19, seconds: 45, special: 1000 } } },
     // Record blocks from Mainnet, Ropsten and Rinkeby on the kovan0 strand
     { braid: 'kovan',
       agentAddress: '0x4487f27ad58abbf8f3b25ee38aba578bc979f67e',
       agentMnemonic: process.env.BRAIDED_KOVAN_AGENT,
       watches: {
-        // mainnet: { strand: 1, blocks: 3, seconds: 30, special: 100 },
-        ropsten: { strand: 3, blocks: 13, seconds: 200, special: 50 },
-        rinkeby: { strand: 4, blocks: 17, seconds: 225, special: 50 },
-        goerli: { strand: 5, blocks: 15, seconds: 120, special: 50 } } }
+        // mainnet: { strand: 1, blocks: 3, seconds: 30, special: 1000 },
+        ropsten: { strand: 3, blocks: 13, seconds: 200, special: 1000 },
+        rinkeby: { strand: 4, blocks: 17, seconds: 225, special: 1000 },
+        goerli: { strand: 5, blocks: 15, seconds: 120, special: 1000 } } }
   ]
 }

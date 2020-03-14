@@ -21,7 +21,7 @@ contract Braided is BraidedInterface, BraidedInterfaceV2, Ownable {
     bytes32 genesisBlockHash;
     string description;
   }
- 
+
   // identifies a block by number and its hash
   struct Block {
     uint blockNumber;
