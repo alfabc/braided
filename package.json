@@ -44,7 +44,7 @@
     "babel-register": "^6.26.0",
     "bignumber.js": "^7.2.1",
     "coveralls": "^3.0.9",
-    "csv-parse": "^3.0.0",
+    "csv-parse": "^4.8.8",
     "dotenv": "^6.2.0",
     "ethereumjs-abi": "^0.6.8",
     "ethereumjs-vm": "^2.6.0",
