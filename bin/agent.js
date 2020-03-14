@@ -106,12 +106,6 @@ async function handleNewBlock (chainKey, blockHeader) {
     // sometimes a bunch of these come in at once, especially when a chain is
     // catching up, so work with the current highest block number on the chain.
     let block = await web3rs[chainKey].eth.getBlock('latest')
-    if (block.number > blockHeader.number) {
-      console.log(`handling ${chainKey} ${block.number} instead of ${blockHeader.number}`)
-    } else {
-      // console.log(`handling ${chainKey} ${block.number}`)
-    }
-
     lastBlockNumbers[chainKey] = block.number
 
     // Walk through the agents
@@ -122,7 +116,7 @@ async function handleNewBlock (chainKey, blockHeader) {
         // We identify the braid/chain combo thus
         let combo = `${agent.braid}.${chainKey}`
 
-        // if the remainder of the "special" value for this block number is zero,
+        // if the remainder of the "special" value for this block number is zero
         // record it regardless of time or block number rules
         let special = (block.number % braidWatch.special === 0)
         if (special) {
