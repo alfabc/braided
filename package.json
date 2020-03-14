@@ -52,6 +52,7 @@
     "md5": "^2.2.1",
     "openzeppelin-solidity": "^2.5.0",
     "sol-merger": "^0.1.4",
+    "tree-kill": "^1.2.2",
     "truffle": "^5.1.17",
     "truffle-contract": "^3.0.8",
     "truffle-hdwallet-provider": "1.0.6",
