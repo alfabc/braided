@@ -1,2 +1,2 @@
 #!/bin/sh
-geth --rpc --rpcaddr 0.0.0.0 --rpccorsdomain "*" --rpcapi "eth,net,web3" --ws --wsaddr 0.0.0.0 -wsorigins "*" $@
+geth --syncmode light --rpc --rpcaddr 0.0.0.0 --rpccorsdomain "*" --rpcapi "eth,net,web3" --ws --wsaddr 0.0.0.0 -wsorigins "*" $@

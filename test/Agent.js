@@ -33,7 +33,7 @@ let fixtures = []
 // are deployed on four different strands
 let contracts = []
 
-// const mainnetGenesis = config.braids.mainnet.genesisBlockHash
+const mainnetGenesis = config.braids.mainnet.genesisBlockHash
 const ropstenGenesis = config.braids.ropsten.genesisBlockHash
 const rinkebyGenesis = config.braids.rinkeby.genesisBlockHash
 const kovanGenesis = config.braids.kovan.genesisBlockHash
@@ -63,11 +63,11 @@ contract('Braided', (accounts) => {
 
       // add strands, and permissions for agents to add blocks to those strands
       for (let s = 0; s < strandCount; s++) {
-        /* if (s !== 0) {
+        if (s !== 0) {
           await contracts[s].addStrand(1, contracts[0].address, mainnetGenesis,
             'Foundation', { from: owner })
           await contracts[s].addAgent(accounts[s + 1], 1, { from: owner })
-        } */
+        }
         if (s !== 1) {
           await contracts[s].addStrand(2, contracts[1].address, rinkebyGenesis, 'morden', { from: owner })
           await contracts[s].addAgent(accounts[s + 1], 2, { from: owner })
